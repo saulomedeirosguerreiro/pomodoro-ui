@@ -19,6 +19,13 @@ export interface PomodoroSession {
   startedAt: string
   completedAt: string
   createdAt: string
+  /**
+   * Vínculo opcional com a tarefa em foco no momento da sessão. Aditivo (Frente 2 do modo sem conta):
+   * já existia em `CreateSessionPayload`, mas não na entidade retornada — o backend remoto ainda não
+   * popula este campo hoje; quando passar a devolver, plugamos sem mudar o tipo de novo. Sem isso,
+   * `localDataSource.listTasks` não consegue computar `TaskItem.completedPomodoros` em leitura.
+   */
+  taskId?: number | null
 }
 
 export interface PagedResult<T> {
