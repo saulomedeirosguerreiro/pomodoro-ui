@@ -1,23 +1,25 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ProgressBar } from '../components/common/ProgressBar'
-import { achievementsService } from '../lib/achievementsService'
+import { useDataSource } from '../context/DataSourceContext'
 import { formatDateTime } from '../lib/format'
 import type { Achievement } from '../types/api'
 import styles from './ConquistasPage.module.css'
 
 export function ConquistasPage() {
+  const { dataSource } = useDataSource()
   const [achievements, setAchievements] = useState<Achievement[] | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
+    if (!dataSource) return
     try {
-      const items = await achievementsService.list()
+      const items = await dataSource.listAchievements()
       setError(null)
       setAchievements(items)
     } catch {
       setError('Não foi possível carregar as conquistas.')
     }
-  }, [])
+  }, [dataSource])
 
   useEffect(() => {
     load()

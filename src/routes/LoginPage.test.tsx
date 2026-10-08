@@ -38,6 +38,20 @@ function mockGuest() {
   })
 }
 
+function mockAuth(login = vi.fn().mockResolvedValue(undefined)) {
+  const acknowledgeSessionExpired = vi.fn()
+  vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
+    user: null,
+    isLoading: false,
+    sessionExpired: false,
+    login,
+    logout: vi.fn(),
+    refreshProfile: vi.fn(),
+    acknowledgeSessionExpired,
+  })
+  return { acknowledgeSessionExpired }
+}
+
 async function submitLogin() {
   await userEvent.type(screen.getByLabelText('E-mail'), 'joao@email.com')
   await userEvent.type(screen.getByLabelText('Senha'), 'correta')
@@ -48,13 +62,7 @@ describe('LoginPage', () => {
   it('mostra mensagem genérica de erro quando o login falha', async () => {
     mockGuest()
     vi.mocked(hasAnyLocalGuestData).mockReturnValue(false)
-    vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
-      user: null,
-      isLoading: false,
-      login: vi.fn().mockRejectedValue(new ApiError(401, { code: 'unauthorized', message: 'E-mail ou senha inválidos.' })),
-      logout: vi.fn(),
-      refreshProfile: vi.fn(),
-    })
+    mockAuth(vi.fn().mockRejectedValue(new ApiError(401, { code: 'unauthorized', message: 'E-mail ou senha inválidos.' })))
 
     renderLoginPage()
     await submitLogin()
@@ -65,13 +73,7 @@ describe('LoginPage', () => {
   it('login sem dados locais pendentes navega direto para /timer (comportamento atual preservado)', async () => {
     mockGuest()
     vi.mocked(hasAnyLocalGuestData).mockReturnValue(false)
-    vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
-      user: null,
-      isLoading: false,
-      login: vi.fn().mockResolvedValue(undefined),
-      logout: vi.fn(),
-      refreshProfile: vi.fn(),
-    })
+    mockAuth()
 
     renderLoginPage()
     await submitLogin()
@@ -82,18 +84,21 @@ describe('LoginPage', () => {
   it('login com dados locais pendentes mostra o diálogo de 3 opções ANTES de navegar (US-85)', async () => {
     mockGuest()
     vi.mocked(hasAnyLocalGuestData).mockReturnValue(true)
-    vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
-      user: null,
-      isLoading: false,
-      login: vi.fn().mockResolvedValue(undefined),
-      logout: vi.fn(),
-      refreshProfile: vi.fn(),
-    })
+    mockAuth()
 
     renderLoginPage()
     await submitLogin()
 
     expect(await screen.findByText('Você tem dados salvos neste navegador')).toBeInTheDocument()
     expect(screen.queryByText('Tela do timer')).not.toBeInTheDocument()
+  })
+
+  it('ao montar, limpa a flag de sessão expirada (US-82)', () => {
+    mockGuest()
+    const { acknowledgeSessionExpired } = mockAuth()
+
+    renderLoginPage()
+
+    expect(acknowledgeSessionExpired).toHaveBeenCalledTimes(1)
   })
 })

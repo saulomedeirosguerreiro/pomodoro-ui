@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import buttons from '../components/common/buttons.module.css'
 import { AuthLayout } from '../components/common/AuthLayout'
@@ -17,7 +17,7 @@ interface LocationState {
 }
 
 export function LoginPage() {
-  const { login } = useAuth()
+  const { login, acknowledgeSessionExpired } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const state = (location.state as LocationState | null) ?? null
@@ -27,6 +27,12 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [successMessage] = useState(state?.message)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // US-82: se chegamos aqui por sessão de conta expirada (ProtectedRoute), limpa a flag assim que a
+  // tela monta — evita que um login bem-sucedido logo depois seja tratado como "ainda expirada".
+  useEffect(() => {
+    acknowledgeSessionExpired()
+  }, [acknowledgeSessionExpired])
 
   // US-85/D9: login em conta JÁ EXISTENTE com dados locais pendentes pergunta via diálogo de 3 opções
   // antes de navegar (diferente do cadastro, que importa automático — ver RegisterPage).

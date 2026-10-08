@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import * as AuthContext from '../context/AuthContext'
 import * as GuestContext from '../context/GuestContext'
 import { authService } from '../lib/authService'
-import { hasAnyLocalGuestData, wipeAllLocalGuestData } from '../lib/localDataWipe'
+import { hasAnyLocalGuestData } from '../lib/localDataWipe'
 import { migrationService } from '../lib/migrationService'
 import type { ImportGuestDataResponse } from '../lib/migrationService'
 import { RegisterPage } from './RegisterPage'
@@ -37,21 +37,25 @@ function renderRegisterPage() {
 }
 
 function mockGuest(name: string | null = null) {
+  const clearGuestData = vi.fn()
   vi.spyOn(GuestContext, 'useGuest').mockReturnValue({
     guest: name ? { id: 'guest-1', name, createdAt: '2026-01-01T00:00:00Z' } : null,
     isLoading: false,
     startGuest: vi.fn(),
-    clearGuestData: vi.fn(),
+    clearGuestData,
   })
+  return clearGuestData
 }
 
 function mockAuth(refreshProfile = vi.fn().mockResolvedValue(undefined)) {
   vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
     user: null,
     isLoading: false,
+    sessionExpired: false,
     login: vi.fn(),
     logout: vi.fn(),
     refreshProfile,
+    acknowledgeSessionExpired: vi.fn(),
   })
   return refreshProfile
 }
@@ -129,7 +133,7 @@ describe('RegisterPage', () => {
   })
 
   it('cadastro com dados locais pendentes importa automaticamente, sem diálogo, e navega para /timer quando nada foi pulado', async () => {
-    mockGuest('Visitante')
+    const clearGuestData = mockGuest('Visitante')
     const refreshProfile = mockAuth()
     vi.mocked(authService.register).mockResolvedValue({ id: 1, name: 'Visitante', email: 'joao@email.com' })
     vi.mocked(authService.login).mockResolvedValue({ token: 'tok-123', user: { id: 1, name: 'Visitante', email: 'joao@email.com' } })
@@ -141,7 +145,7 @@ describe('RegisterPage', () => {
 
     expect(await screen.findByText('Tela do timer')).toBeInTheDocument()
     expect(migrationService.importLocalData).toHaveBeenCalledWith({ guestId: 'guest-1', tasks: [], sessions: [] })
-    expect(wipeAllLocalGuestData).toHaveBeenCalledTimes(1)
+    expect(clearGuestData).toHaveBeenCalledTimes(1)
     expect(refreshProfile).toHaveBeenCalledTimes(1)
     expect(screen.queryByText('Importação concluída')).not.toBeInTheDocument()
   })
@@ -169,7 +173,7 @@ describe('RegisterPage', () => {
   })
 
   it('falha ao importar após o cadastro: não apaga dados locais e manda para /login com aviso', async () => {
-    mockGuest('Visitante')
+    const clearGuestData = mockGuest('Visitante')
     mockAuth()
     vi.mocked(authService.register).mockResolvedValue({ id: 1, name: 'Visitante', email: 'joao@email.com' })
     vi.mocked(authService.login).mockRejectedValue(new Error('login falhou'))
@@ -179,7 +183,7 @@ describe('RegisterPage', () => {
     await fillAndSubmit()
 
     expect(await screen.findByText('Tela de login')).toBeInTheDocument()
-    expect(wipeAllLocalGuestData).not.toHaveBeenCalled()
+    expect(clearGuestData).not.toHaveBeenCalled()
     expect(migrationService.importLocalData).not.toHaveBeenCalled()
   })
 })

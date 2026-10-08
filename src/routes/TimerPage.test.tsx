@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import * as TimerContextModule from '../context/TimerContext'
 import { SettingsProvider } from '../context/SettingsContext'
-import { pomodorosService } from '../lib/pomodorosService'
-import { tasksService } from '../lib/tasksService'
+import { buildMockDataSource, DATA_SOURCE_MODES, mockUseDataSource } from '../test/dataSourceMocks'
+import type { DataSource } from '../lib/dataSource'
 import type { TaskItem } from '../types/api'
 import { TimerPage } from './TimerPage'
 
@@ -30,23 +30,6 @@ function buildTask(overrides: Partial<TaskItem> = {}): TaskItem {
     ...overrides,
   }
 }
-
-vi.mock('../lib/pomodorosService', () => ({
-  pomodorosService: {
-    list: vi.fn(),
-    create: vi.fn(),
-  },
-}))
-
-vi.mock('../lib/tasksService', () => ({
-  tasksService: {
-    list: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-    setStatus: vi.fn(),
-    remove: vi.fn(),
-  },
-}))
 
 function mockTimer(overrides?: Partial<ReturnType<typeof TimerContextModule.useTimerContext>>) {
   vi.spyOn(TimerContextModule, 'useTimerContext').mockReturnValue({
@@ -77,10 +60,14 @@ function mockTimer(overrides?: Partial<ReturnType<typeof TimerContextModule.useT
   })
 }
 
-describe('TimerPage', () => {
+describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
+  let dataSource: DataSource
+
   beforeEach(() => {
-    vi.mocked(pomodorosService.list).mockResolvedValue({ items: [], totalCount: 0, limit: 10, offset: 0 })
-    vi.mocked(tasksService.list).mockResolvedValue([])
+    dataSource = buildMockDataSource()
+    vi.mocked(dataSource.listSessions).mockResolvedValue({ items: [], totalCount: 0, limit: 10, offset: 0 })
+    vi.mocked(dataSource.listTasks).mockResolvedValue([])
+    mockUseDataSource(dataSource, mode)
   })
 
   afterEach(() => {
@@ -94,7 +81,7 @@ describe('TimerPage', () => {
     expect(screen.getByText('25:00')).toBeInTheDocument()
     expect(screen.getByText('Foco')).toBeInTheDocument()
 
-    await waitFor(() => expect(pomodorosService.list).toHaveBeenCalled())
+    await waitFor(() => expect(dataSource.listSessions).toHaveBeenCalled())
   })
 
   it('clicar em "Começar Foco" aciona o início do timer', async () => {
@@ -148,7 +135,7 @@ describe('TimerPage', () => {
   })
 
   it('exibe a Missão do Momento com a tarefa em foco e o checklist com as tarefas pendentes', async () => {
-    vi.mocked(tasksService.list).mockResolvedValue([buildTask({ status: 'em_curso' })])
+    vi.mocked(dataSource.listTasks).mockResolvedValue([buildTask({ status: 'em_curso' })])
     mockTimer()
 
     renderTimerPage()
@@ -159,10 +146,10 @@ describe('TimerPage', () => {
     expect(screen.getByText('1 de 4 pomodoros')).toBeInTheDocument()
   })
 
-  it('"Focar nesta" no checklist chama tasksService.setStatus e atualiza a tarefa em foco do timer', async () => {
+  it('"Focar nesta" no checklist chama dataSource.setTaskStatus e atualiza a tarefa em foco do timer', async () => {
     const refreshFocusedTask = vi.fn()
-    vi.mocked(tasksService.list).mockResolvedValue([buildTask()])
-    vi.mocked(tasksService.setStatus).mockResolvedValue(buildTask({ status: 'em_curso' }))
+    vi.mocked(dataSource.listTasks).mockResolvedValue([buildTask()])
+    vi.mocked(dataSource.setTaskStatus).mockResolvedValue(buildTask({ status: 'em_curso' }))
     mockTimer({ refreshFocusedTask })
 
     renderTimerPage()
@@ -170,13 +157,13 @@ describe('TimerPage', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Focar nesta' }))
 
-    expect(tasksService.setStatus).toHaveBeenCalledWith(1, 'em_curso')
+    expect(dataSource.setTaskStatus).toHaveBeenCalledWith(1, 'em_curso')
     await waitFor(() => expect(refreshFocusedTask).toHaveBeenCalled())
   })
 
-  it('marcar uma tarefa como concluída no checklist chama tasksService.setStatus com feito', async () => {
-    vi.mocked(tasksService.list).mockResolvedValue([buildTask()])
-    vi.mocked(tasksService.setStatus).mockResolvedValue(buildTask({ status: 'feito' }))
+  it('marcar uma tarefa como concluída no checklist chama dataSource.setTaskStatus com feito', async () => {
+    vi.mocked(dataSource.listTasks).mockResolvedValue([buildTask()])
+    vi.mocked(dataSource.setTaskStatus).mockResolvedValue(buildTask({ status: 'feito' }))
     mockTimer()
 
     renderTimerPage()
@@ -184,6 +171,6 @@ describe('TimerPage', () => {
 
     await userEvent.click(screen.getByRole('checkbox', { name: 'Relatório mensal' }))
 
-    expect(tasksService.setStatus).toHaveBeenCalledWith(1, 'feito')
+    expect(dataSource.setTaskStatus).toHaveBeenCalledWith(1, 'feito')
   })
 })

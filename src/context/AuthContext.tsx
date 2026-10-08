@@ -8,9 +8,18 @@ import type { UserProfile } from '../types/api'
 interface AuthContextValue {
   user: UserProfile | null
   isLoading: boolean
+  /**
+   * US-82: true quando a sessão caiu por 401 (token expirado/inválido), não por `logout()` explícito.
+   * Distingue "a pessoa tinha conta e foi derrubada" de "a pessoa nunca se identificou" — o guard de
+   * rota usa isso para mandar para `/login` com aviso, em vez de `/boas-vindas` (que pareceria que ela
+   * nunca teve conta).
+   */
+  sessionExpired: boolean
   login: (email: string, password: string) => Promise<void>
   logout: () => void
   refreshProfile: () => Promise<void>
+  /** Limpa a flag depois do redirect ser tratado (ex.: ao montar `LoginPage`). */
+  acknowledgeSessionExpired: () => void
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -18,6 +27,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [sessionExpired, setSessionExpired] = useState(false)
 
   const refreshProfile = useCallback(async () => {
     const profile = await usersService.getMe()
@@ -36,7 +46,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refreshProfile])
 
   useEffect(() => {
-    const handleUnauthorized = () => setUser(null)
+    const handleUnauthorized = () => {
+      setUser(null)
+      setSessionExpired(true)
+    }
     window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorized)
     return () => window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized)
   }, [])
@@ -52,8 +65,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }, [])
 
+  const acknowledgeSessionExpired = useCallback(() => setSessionExpired(false), [])
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout, refreshProfile }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, sessionExpired, login, logout, refreshProfile, acknowledgeSessionExpired }}
+    >
       {children}
     </AuthContext.Provider>
   )

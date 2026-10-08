@@ -2,19 +2,10 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import * as TimerContextModule from '../context/TimerContext'
-import { tasksService } from '../lib/tasksService'
+import type { DataSource } from '../lib/dataSource'
+import { buildMockDataSource, DATA_SOURCE_MODES, mockUseDataSource } from '../test/dataSourceMocks'
 import type { TaskItem } from '../types/api'
 import { TarefasPage } from './TarefasPage'
-
-vi.mock('../lib/tasksService', () => ({
-  tasksService: {
-    list: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-    setStatus: vi.fn(),
-    remove: vi.fn(),
-  },
-}))
 
 function buildTask(overrides: Partial<TaskItem> = {}): TaskItem {
   return {
@@ -33,8 +24,13 @@ function buildTask(overrides: Partial<TaskItem> = {}): TaskItem {
 
 const refreshFocusedTask = vi.fn()
 
-describe('TarefasPage', () => {
+describe.each(DATA_SOURCE_MODES)('TarefasPage (mode: %s)', (mode) => {
+  let dataSource: DataSource
+
   beforeEach(() => {
+    dataSource = buildMockDataSource()
+    mockUseDataSource(dataSource, mode)
+
     vi.spyOn(TimerContextModule, 'useTimerContext').mockReturnValue({
       type: 'foco',
       phase: 'parado',
@@ -67,15 +63,15 @@ describe('TarefasPage', () => {
   })
 
   it('mostra estado vazio quando não há tarefas', async () => {
-    vi.mocked(tasksService.list).mockResolvedValue([])
+    vi.mocked(dataSource.listTasks).mockResolvedValue([])
 
     render(<TarefasPage />)
 
     expect(await screen.findByText('Nenhuma tarefa encontrada.')).toBeInTheDocument()
   })
 
-  it('lista as tarefas vindas da API', async () => {
-    vi.mocked(tasksService.list).mockResolvedValue([buildTask()])
+  it('lista as tarefas vindas do dataSource', async () => {
+    vi.mocked(dataSource.listTasks).mockResolvedValue([buildTask()])
 
     render(<TarefasPage />)
 
@@ -85,18 +81,18 @@ describe('TarefasPage', () => {
   })
 
   it('filtrar por status busca novamente com o status escolhido', async () => {
-    vi.mocked(tasksService.list).mockResolvedValue([])
+    vi.mocked(dataSource.listTasks).mockResolvedValue([])
     render(<TarefasPage />)
     await screen.findByText('Nenhuma tarefa encontrada.')
 
     await userEvent.click(screen.getByRole('tab', { name: 'Feito' }))
 
-    expect(tasksService.list).toHaveBeenLastCalledWith('feito')
+    expect(dataSource.listTasks).toHaveBeenLastCalledWith('feito')
   })
 
   it('cria uma nova tarefa pelo formulário', async () => {
-    vi.mocked(tasksService.list).mockResolvedValue([])
-    vi.mocked(tasksService.create).mockResolvedValue(buildTask())
+    vi.mocked(dataSource.listTasks).mockResolvedValue([])
+    vi.mocked(dataSource.createTask).mockResolvedValue(buildTask())
     render(<TarefasPage />)
     await screen.findByText('Nenhuma tarefa encontrada.')
 
@@ -104,7 +100,7 @@ describe('TarefasPage', () => {
     await userEvent.type(screen.getByLabelText('Título'), 'Nova tarefa')
     await userEvent.click(screen.getByRole('button', { name: 'Salvar' }))
 
-    expect(tasksService.create).toHaveBeenCalledWith({
+    expect(dataSource.createTask).toHaveBeenCalledWith({
       title: 'Nova tarefa',
       description: null,
       priority: 'media',
@@ -112,43 +108,43 @@ describe('TarefasPage', () => {
     })
   })
 
-  it('"Focar nesta" chama setStatus com em_curso e atualiza a tarefa em foco do timer', async () => {
-    vi.mocked(tasksService.list).mockResolvedValue([buildTask()])
-    vi.mocked(tasksService.setStatus).mockResolvedValue(buildTask({ status: 'em_curso' }))
+  it('"Focar nesta" chama setTaskStatus com em_curso e atualiza a tarefa em foco do timer', async () => {
+    vi.mocked(dataSource.listTasks).mockResolvedValue([buildTask()])
+    vi.mocked(dataSource.setTaskStatus).mockResolvedValue(buildTask({ status: 'em_curso' }))
     render(<TarefasPage />)
     await screen.findByText('Relatório mensal')
 
     await userEvent.click(screen.getByRole('button', { name: 'Focar nesta' }))
 
-    expect(tasksService.setStatus).toHaveBeenCalledWith(1, 'em_curso')
+    expect(dataSource.setTaskStatus).toHaveBeenCalledWith(1, 'em_curso')
     expect(refreshFocusedTask).toHaveBeenCalled()
   })
 
-  it('"Marcar como feita" chama setStatus com feito', async () => {
-    vi.mocked(tasksService.list).mockResolvedValue([buildTask()])
-    vi.mocked(tasksService.setStatus).mockResolvedValue(buildTask({ status: 'feito' }))
+  it('"Marcar como feita" chama setTaskStatus com feito', async () => {
+    vi.mocked(dataSource.listTasks).mockResolvedValue([buildTask()])
+    vi.mocked(dataSource.setTaskStatus).mockResolvedValue(buildTask({ status: 'feito' }))
     render(<TarefasPage />)
     await screen.findByText('Relatório mensal')
 
     await userEvent.click(screen.getByRole('button', { name: 'Marcar como feita' }))
 
-    expect(tasksService.setStatus).toHaveBeenCalledWith(1, 'feito')
+    expect(dataSource.setTaskStatus).toHaveBeenCalledWith(1, 'feito')
   })
 
-  it('"Excluir" chama remove', async () => {
-    vi.mocked(tasksService.list).mockResolvedValue([buildTask()])
-    vi.mocked(tasksService.remove).mockResolvedValue(undefined)
+  it('"Excluir" chama removeTask', async () => {
+    vi.mocked(dataSource.listTasks).mockResolvedValue([buildTask()])
+    vi.mocked(dataSource.removeTask).mockResolvedValue(undefined)
     render(<TarefasPage />)
     await screen.findByText('Relatório mensal')
 
     await userEvent.click(screen.getByRole('button', { name: 'Excluir' }))
 
-    expect(tasksService.remove).toHaveBeenCalledWith(1)
+    expect(dataSource.removeTask).toHaveBeenCalledWith(1)
   })
 
-  it('"Editar" abre o formulário preenchido e salvar chama update', async () => {
-    vi.mocked(tasksService.list).mockResolvedValue([buildTask()])
-    vi.mocked(tasksService.update).mockResolvedValue(buildTask({ title: 'Relatório revisado' }))
+  it('"Editar" abre o formulário preenchido e salvar chama updateTask', async () => {
+    vi.mocked(dataSource.listTasks).mockResolvedValue([buildTask()])
+    vi.mocked(dataSource.updateTask).mockResolvedValue(buildTask({ title: 'Relatório revisado' }))
     render(<TarefasPage />)
     await screen.findByText('Relatório mensal')
 
@@ -158,7 +154,7 @@ describe('TarefasPage', () => {
     await userEvent.type(titleInput, 'Relatório revisado')
     await userEvent.click(screen.getByRole('button', { name: 'Salvar' }))
 
-    expect(tasksService.update).toHaveBeenCalledWith(1, {
+    expect(dataSource.updateTask).toHaveBeenCalledWith(1, {
       title: 'Relatório revisado',
       description: 'Fechar números do mês',
       priority: 'media',

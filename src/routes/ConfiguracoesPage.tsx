@@ -2,8 +2,11 @@ import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/common/Button'
 import { Checkbox } from '../components/common/Checkbox'
+import { Dialog } from '../components/common/Dialog'
 import { FormField } from '../components/common/FormField'
 import { useAuth } from '../context/AuthContext'
+import { useDataSource } from '../context/DataSourceContext'
+import { useGuest } from '../context/GuestContext'
 import { useSettings } from '../context/SettingsContext'
 import { getNotificationPermission, requestNotificationPermission } from '../lib/notifications'
 import { usersService } from '../lib/usersService'
@@ -13,6 +16,8 @@ import styles from './ConfiguracoesPage.module.css'
 export function ConfiguracoesPage() {
   const { settings, updateSettings } = useSettings()
   const { logout } = useAuth()
+  const { mode } = useDataSource()
+  const { clearGuestData } = useGuest()
   const navigate = useNavigate()
   const [permission, setPermission] = useState(getNotificationPermission())
 
@@ -42,6 +47,12 @@ export function ConfiguracoesPage() {
     } finally {
       setIsDeleting(false)
     }
+  }
+
+  /** Guest não tem senha nem servidor para confirmar — só uma confirmação local antes de limpar o storage. */
+  function handleWipeGuestData() {
+    clearGuestData()
+    navigate('/boas-vindas')
   }
 
   return (
@@ -101,52 +112,83 @@ export function ConfiguracoesPage() {
         </p>
       </section>
 
-      <section className={`${styles.card} ${styles.dangerZone}`}>
-        <h2>Excluir conta</h2>
-        <p className={styles.hint}>
-          Remove sua conta e todo o histórico (sessões, tarefas, conquistas) para sempre. Essa ação não pode
-          ser desfeita.
-        </p>
+      {mode === 'guest' ? (
+        <section className={`${styles.card} ${styles.dangerZone}`}>
+          <h2>Apagar meus dados deste dispositivo</h2>
+          <p className={styles.hint}>
+            Você está usando o PomoGarden sem conta: tarefas, sessões e conquistas ficam salvas só neste navegador.
+            Apagar os dados deste dispositivo os remove para sempre — não há como recuperá-los depois.
+          </p>
 
-        {!isConfirmingDelete ? (
           <Button variant="ghost" className={styles.dangerButton} onClick={() => setIsConfirmingDelete(true)}>
-            Excluir minha conta
+            Apagar meus dados deste dispositivo
           </Button>
-        ) : (
-          <form className={styles.deleteForm} onSubmit={handleDeleteAccount} noValidate>
-            {deleteError && (
-              <p className={styles.deleteError} role="alert">
-                {deleteError}
+
+          {isConfirmingDelete && (
+            <Dialog titleText="Apagar todos os dados deste dispositivo?" onDismiss={() => setIsConfirmingDelete(false)}>
+              <p className={styles.hint}>
+                Essa ação não pode ser desfeita. Tarefas, sessões e conquistas salvas neste navegador serão apagadas
+                permanentemente.
               </p>
-            )}
-            <FormField
-              label="Confirme sua senha para excluir a conta"
-              name="deletePassword"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={deletePassword}
-              onChange={(e) => setDeletePassword(e.target.value)}
-            />
-            <div className={styles.deleteActions}>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => {
-                  setIsConfirmingDelete(false)
-                  setDeletePassword('')
-                  setDeleteError(null)
-                }}
-              >
-                Cancelar
-              </Button>
-              <Button type="submit" className={styles.dangerButton} disabled={isDeleting}>
-                {isDeleting ? 'Excluindo…' : 'Excluir definitivamente'}
-              </Button>
-            </div>
-          </form>
-        )}
-      </section>
+              <div className={styles.deleteActions}>
+                <Button variant="ghost" onClick={() => setIsConfirmingDelete(false)}>
+                  Cancelar
+                </Button>
+                <Button className={styles.dangerButton} onClick={handleWipeGuestData}>
+                  Apagar definitivamente
+                </Button>
+              </div>
+            </Dialog>
+          )}
+        </section>
+      ) : (
+        <section className={`${styles.card} ${styles.dangerZone}`}>
+          <h2>Excluir conta</h2>
+          <p className={styles.hint}>
+            Remove sua conta e todo o histórico (sessões, tarefas, conquistas) para sempre. Essa ação não pode
+            ser desfeita.
+          </p>
+
+          {!isConfirmingDelete ? (
+            <Button variant="ghost" className={styles.dangerButton} onClick={() => setIsConfirmingDelete(true)}>
+              Excluir minha conta
+            </Button>
+          ) : (
+            <form className={styles.deleteForm} onSubmit={handleDeleteAccount} noValidate>
+              {deleteError && (
+                <p className={styles.deleteError} role="alert">
+                  {deleteError}
+                </p>
+              )}
+              <FormField
+                label="Confirme sua senha para excluir a conta"
+                name="deletePassword"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+              />
+              <div className={styles.deleteActions}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => {
+                    setIsConfirmingDelete(false)
+                    setDeletePassword('')
+                    setDeleteError(null)
+                  }}
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit" className={styles.dangerButton} disabled={isDeleting}>
+                  {isDeleting ? 'Excluindo…' : 'Excluir definitivamente'}
+                </Button>
+              </div>
+            </form>
+          )}
+        </section>
+      )}
     </div>
   )
 }

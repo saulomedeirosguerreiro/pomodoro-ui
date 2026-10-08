@@ -1,16 +1,24 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import * as AuthContext from '../../context/AuthContext'
 import * as GuestContext from '../../context/GuestContext'
 import { ProtectedRoute } from './ProtectedRoute'
 import { PublicOnlyRoute } from './PublicOnlyRoute'
 
+/** Expõe `location.state.message` no DOM para asserção do redirect de sessão expirada (US-82). */
+function LoginProbe() {
+  const location = useLocation()
+  const state = location.state as { message?: string } | null
+  return <p>Tela de login{state?.message ? ` — ${state.message}` : ''}</p>
+}
+
 function renderProtected(initialPath: string) {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
         <Route path="/boas-vindas" element={<p>Tela de boas-vindas</p>} />
+        <Route path="/login" element={<LoginProbe />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<p>Tela do dashboard</p>} />
         </Route>
@@ -33,13 +41,18 @@ function renderPublicOnly(initialPath: string) {
   )
 }
 
-function mockAuth(user: { id: number; name: string; email: string; completedSessions: number } | null) {
+function mockAuth(
+  user: { id: number; name: string; email: string; completedSessions: number } | null,
+  sessionExpired = false,
+) {
   vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
     user,
     isLoading: false,
+    sessionExpired,
     login: vi.fn(),
     logout: vi.fn(),
     refreshProfile: vi.fn(),
+    acknowledgeSessionExpired: vi.fn(),
   })
 }
 
@@ -78,6 +91,15 @@ describe('ProtectedRoute', () => {
     renderProtected('/dashboard')
 
     expect(screen.getByText('Tela do dashboard')).toBeInTheDocument()
+  })
+
+  it('sessão de conta expirada (401) redireciona para /login com aviso, não para /boas-vindas (US-82)', () => {
+    mockAuth(null, true)
+    mockGuest(null)
+
+    renderProtected('/dashboard')
+
+    expect(screen.getByText('Tela de login — Sua sessão expirou. Entre novamente.')).toBeInTheDocument()
   })
 })
 

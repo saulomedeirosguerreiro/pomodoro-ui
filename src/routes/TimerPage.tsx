@@ -7,38 +7,41 @@ import { MissionCard } from '../components/Tasks/MissionCard'
 import { ModeSwitcher } from '../components/Timer/ModeSwitcher'
 import { TimerControls } from '../components/Timer/TimerControls'
 import { TimerDisplay } from '../components/Timer/TimerDisplay'
+import { useDataSource } from '../context/DataSourceContext'
 import { useTimerContext } from '../context/TimerContext'
-import { pomodorosService } from '../lib/pomodorosService'
+import type { TaskPayload } from '../lib/tasksService'
 import { computeCycleCount } from '../lib/timerLogic'
-import { tasksService, type TaskPayload } from '../lib/tasksService'
 import type { PomodoroSession, TaskItem } from '../types/api'
 import styles from './TimerPage.module.css'
 
 export function TimerPage() {
   const timer = useTimerContext()
+  const { dataSource } = useDataSource()
 
   const [history, setHistory] = useState<PomodoroSession[] | null>(null)
   const [tasks, setTasks] = useState<TaskItem[] | null>(null)
   const [taskError, setTaskError] = useState<string | null>(null)
 
   const loadHistory = useCallback(async () => {
+    if (!dataSource) return
     try {
-      const page = await pomodorosService.list(10, 0)
+      const page = await dataSource.listSessions(10, 0)
       setHistory(page.items)
     } catch {
       // "Ciclo N de 4" só fica impreciso até a próxima tentativa; não bloqueia o timer.
     }
-  }, [])
+  }, [dataSource])
 
   const loadTasks = useCallback(async () => {
+    if (!dataSource) return
     try {
-      const items = await tasksService.list()
+      const items = await dataSource.listTasks()
       setTaskError(null)
       setTasks(items)
     } catch {
       setTaskError('Não foi possível carregar as tarefas.')
     }
-  }, [])
+  }, [dataSource])
 
   useEffect(() => {
     loadHistory()
@@ -64,12 +67,14 @@ export function TimerPage() {
   const focusedTask = tasks?.find((t) => t.status === 'em_curso') ?? null
 
   async function handleCreateTask(payload: TaskPayload) {
-    await tasksService.create(payload)
+    if (!dataSource) return
+    await dataSource.createTask(payload)
     await loadTasks()
   }
 
   async function handleMarkTaskDone(task: TaskItem) {
-    await tasksService.setStatus(task.id, 'feito')
+    if (!dataSource) return
+    await dataSource.setTaskStatus(task.id, 'feito')
     await loadTasks()
     if (task.status === 'em_curso') {
       timer.refreshFocusedTask()
@@ -77,7 +82,8 @@ export function TimerPage() {
   }
 
   async function handleFocusTask(task: TaskItem) {
-    await tasksService.setStatus(task.id, 'em_curso')
+    if (!dataSource) return
+    await dataSource.setTaskStatus(task.id, 'em_curso')
     await loadTasks()
     timer.refreshFocusedTask()
   }

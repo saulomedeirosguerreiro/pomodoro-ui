@@ -1,13 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { pomodorosService } from '../lib/pomodorosService'
+import type { DataSource } from '../lib/dataSource'
+import { buildMockDataSource, DATA_SOURCE_MODES, mockUseDataSource } from '../test/dataSourceMocks'
 import type { PomodoroSession } from '../types/api'
 import { JardimPage } from './JardimPage'
-
-vi.mock('../lib/pomodorosService', () => ({
-  pomodorosService: { list: vi.fn() },
-}))
 
 function buildSession(overrides: Partial<PomodoroSession>): PomodoroSession {
   return {
@@ -22,17 +19,21 @@ function buildSession(overrides: Partial<PomodoroSession>): PomodoroSession {
   }
 }
 
-describe('JardimPage', () => {
+describe.each(DATA_SOURCE_MODES)('JardimPage (mode: %s)', (mode) => {
+  let dataSource: DataSource
+
+  beforeEach(() => {
+    dataSource = buildMockDataSource()
+    vi.mocked(dataSource.listSessions).mockResolvedValue({ items: [], totalCount: 0, limit: 10, offset: 0 })
+    mockUseDataSource(dataSource, mode)
+  })
+
   afterEach(() => {
     vi.restoreAllMocks()
   })
 
-  beforeEach(() => {
-    vi.mocked(pomodorosService.list).mockResolvedValue({ items: [], totalCount: 0, limit: 10, offset: 0 })
-  })
-
-  it('exibe o histórico vindo da API', async () => {
-    vi.mocked(pomodorosService.list).mockResolvedValue({
+  it('exibe o histórico vindo do dataSource', async () => {
+    vi.mocked(dataSource.listSessions).mockResolvedValue({
       items: [buildSession({ id: 1 })],
       totalCount: 1,
       limit: 10,
@@ -52,7 +53,7 @@ describe('JardimPage', () => {
   })
 
   it('monta a coleção a partir dos focos concluídos', async () => {
-    vi.mocked(pomodorosService.list).mockResolvedValue({
+    vi.mocked(dataSource.listSessions).mockResolvedValue({
       items: [
         buildSession({ id: 2, completedAt: '2026-01-01T11:00:00Z' }),
         buildSession({ id: 1, completedAt: '2026-01-01T10:00:00Z' }),
@@ -69,7 +70,7 @@ describe('JardimPage', () => {
   })
 
   it('"Ver mais" carrega a próxima página sem duplicar', async () => {
-    vi.mocked(pomodorosService.list).mockResolvedValueOnce({
+    vi.mocked(dataSource.listSessions).mockResolvedValueOnce({
       items: [buildSession({ id: 1 })],
       totalCount: 2,
       limit: 1,
@@ -78,7 +79,7 @@ describe('JardimPage', () => {
     render(<JardimPage />)
     await screen.findByText('Concluído')
 
-    vi.mocked(pomodorosService.list).mockResolvedValueOnce({
+    vi.mocked(dataSource.listSessions).mockResolvedValueOnce({
       items: [buildSession({ id: 2, completedAt: '2026-01-01T09:00:00Z' })],
       totalCount: 2,
       limit: 1,

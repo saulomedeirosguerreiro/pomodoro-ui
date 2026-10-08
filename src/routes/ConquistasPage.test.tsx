@@ -1,12 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { achievementsService } from '../lib/achievementsService'
+import type { DataSource } from '../lib/dataSource'
+import { buildMockDataSource, DATA_SOURCE_MODES, mockUseDataSource } from '../test/dataSourceMocks'
 import type { Achievement } from '../types/api'
 import { ConquistasPage } from './ConquistasPage'
-
-vi.mock('../lib/achievementsService', () => ({
-  achievementsService: { list: vi.fn() },
-}))
 
 function buildAchievement(overrides: Partial<Achievement> = {}): Achievement {
   return {
@@ -20,13 +17,17 @@ function buildAchievement(overrides: Partial<Achievement> = {}): Achievement {
   }
 }
 
-describe('ConquistasPage', () => {
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
+describe.each(DATA_SOURCE_MODES)('ConquistasPage (mode: %s)', (mode) => {
+  let dataSource: DataSource
 
   beforeEach(() => {
-    vi.mocked(achievementsService.list).mockResolvedValue([])
+    dataSource = buildMockDataSource()
+    vi.mocked(dataSource.listAchievements).mockResolvedValue([])
+    mockUseDataSource(dataSource, mode)
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('mostra mensagens de estado vazio quando não há conquistas desbloqueadas ou bloqueadas', async () => {
@@ -37,7 +38,7 @@ describe('ConquistasPage', () => {
   })
 
   it('exibe conquistas desbloqueadas com a data e sem tom de cobrança nas bloqueadas', async () => {
-    vi.mocked(achievementsService.list).mockResolvedValue([
+    vi.mocked(dataSource.listAchievements).mockResolvedValue([
       buildAchievement({ code: 'primeira_semente', unlockedAt: '2026-01-01T10:00:00Z' }),
       buildAchievement({
         code: 'cem_tomates',
@@ -57,7 +58,7 @@ describe('ConquistasPage', () => {
   })
 
   it('mostra erro quando a busca falha', async () => {
-    vi.mocked(achievementsService.list).mockRejectedValue(new Error('network'))
+    vi.mocked(dataSource.listAchievements).mockRejectedValue(new Error('network'))
 
     render(<ConquistasPage />)
 

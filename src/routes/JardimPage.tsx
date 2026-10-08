@@ -1,28 +1,33 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Button } from '../components/common/Button'
 import { HistoryList } from '../components/History/HistoryList'
+import { useDataSource } from '../context/DataSourceContext'
 import { speciesForIndex } from '../lib/gardenSpecies'
-import { pomodorosService } from '../lib/pomodorosService'
 import type { PomodoroSession } from '../types/api'
 import styles from './JardimPage.module.css'
 
 const PAGE_SIZE = 10
 
 export function JardimPage() {
+  const { dataSource } = useDataSource()
   const [items, setItems] = useState<PomodoroSession[] | null>(null)
   const [totalCount, setTotalCount] = useState(0)
   const [error, setError] = useState<string | null>(null)
 
-  const load = useCallback(async (offset: number, append: boolean) => {
-    setError(null)
-    try {
-      const page = await pomodorosService.list(PAGE_SIZE, offset)
-      setTotalCount(page.totalCount)
-      setItems((prev) => (append && prev ? [...prev, ...page.items] : page.items))
-    } catch {
-      setError('Não foi possível carregar o histórico.')
-    }
-  }, [])
+  const load = useCallback(
+    async (offset: number, append: boolean) => {
+      if (!dataSource) return
+      setError(null)
+      try {
+        const page = await dataSource.listSessions(PAGE_SIZE, offset)
+        setTotalCount(page.totalCount)
+        setItems((prev) => (append && prev ? [...prev, ...page.items] : page.items))
+      } catch {
+        setError('Não foi possível carregar o histórico.')
+      }
+    },
+    [dataSource],
+  )
 
   useEffect(() => {
     load(0, false)

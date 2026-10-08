@@ -3,8 +3,9 @@ import { Badge } from '../components/common/Badge'
 import { Button } from '../components/common/Button'
 import { SegmentedControl } from '../components/common/SegmentedControl'
 import { TaskForm } from '../components/Tasks/TaskForm'
+import { useDataSource } from '../context/DataSourceContext'
 import { useTimerContext } from '../context/TimerContext'
-import { tasksService, type TaskPayload } from '../lib/tasksService'
+import type { TaskPayload } from '../lib/tasksService'
 import type { TaskItem, TaskItemStatus } from '../types/api'
 import styles from './TarefasPage.module.css'
 
@@ -29,6 +30,7 @@ const FILTER_OPTIONS: { value: 'todas' | TaskItemStatus; label: string }[] = [
 
 export function TarefasPage() {
   const timer = useTimerContext()
+  const { dataSource } = useDataSource()
 
   const [filter, setFilter] = useState<'todas' | TaskItemStatus>('todas')
   const [tasks, setTasks] = useState<TaskItem[] | null>(null)
@@ -36,34 +38,41 @@ export function TarefasPage() {
   const [isCreating, setIsCreating] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
 
-  const load = useCallback(async (status: 'todas' | TaskItemStatus) => {
-    try {
-      const items = await tasksService.list(status === 'todas' ? undefined : status)
-      setError(null)
-      setTasks(items)
-    } catch {
-      setError('Não foi possível carregar as tarefas.')
-    }
-  }, [])
+  const load = useCallback(
+    async (status: 'todas' | TaskItemStatus) => {
+      if (!dataSource) return
+      try {
+        const items = await dataSource.listTasks(status === 'todas' ? undefined : status)
+        setError(null)
+        setTasks(items)
+      } catch {
+        setError('Não foi possível carregar as tarefas.')
+      }
+    },
+    [dataSource],
+  )
 
   useEffect(() => {
     load(filter)
   }, [filter, load])
 
   async function handleCreate(payload: TaskPayload) {
-    await tasksService.create(payload)
+    if (!dataSource) return
+    await dataSource.createTask(payload)
     setIsCreating(false)
     await load(filter)
   }
 
   async function handleUpdate(id: number, payload: TaskPayload) {
-    await tasksService.update(id, payload)
+    if (!dataSource) return
+    await dataSource.updateTask(id, payload)
     setEditingId(null)
     await load(filter)
   }
 
   async function handleSetStatus(task: TaskItem, status: TaskItemStatus) {
-    await tasksService.setStatus(task.id, status)
+    if (!dataSource) return
+    await dataSource.setTaskStatus(task.id, status)
     await load(filter)
     if (status === 'em_curso' || task.status === 'em_curso') {
       timer.refreshFocusedTask()
@@ -71,7 +80,8 @@ export function TarefasPage() {
   }
 
   async function handleDelete(task: TaskItem) {
-    await tasksService.remove(task.id)
+    if (!dataSource) return
+    await dataSource.removeTask(task.id)
     await load(filter)
     if (task.status === 'em_curso') {
       timer.refreshFocusedTask()

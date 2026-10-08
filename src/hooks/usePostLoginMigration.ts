@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { useGuest } from '../context/GuestContext'
-import { hasAnyLocalGuestData, wipeAllLocalGuestData } from '../lib/localDataWipe'
+import { hasAnyLocalGuestData } from '../lib/localDataWipe'
 import { buildImportRequestFromLocalData, migrationService, type ImportGuestDataResponse } from '../lib/migrationService'
 
 type MigrationState =
@@ -27,7 +27,7 @@ interface UsePostLoginMigrationResult {
  * diálogo/relatório que este hook pede, sem lógica de decisão própria.
  */
 export function usePostLoginMigration(onFinished: () => void): UsePostLoginMigrationResult {
-  const { guest } = useGuest()
+  const { guest, clearGuestData } = useGuest()
   const [state, setState] = useState<MigrationState>({ phase: 'idle' })
 
   const offerIfNeeded = useCallback(() => {
@@ -43,7 +43,7 @@ export function usePostLoginMigration(onFinished: () => void): UsePostLoginMigra
     try {
       const request = buildImportRequestFromLocalData(guest?.id ?? '')
       const result = await migrationService.importLocalData(request)
-      wipeAllLocalGuestData()
+      clearGuestData()
 
       if (result.skipped.length > 0) {
         setState({ phase: 'report', result })
@@ -57,13 +57,13 @@ export function usePostLoginMigration(onFinished: () => void): UsePostLoginMigra
         message: 'Não foi possível importar seus dados agora. Tente novamente mais tarde.',
       })
     }
-  }, [guest, onFinished])
+  }, [guest, clearGuestData, onFinished])
 
   const chooseDiscard = useCallback(() => {
-    wipeAllLocalGuestData()
+    clearGuestData()
     setState({ phase: 'idle' })
     onFinished()
-  }, [onFinished])
+  }, [clearGuestData, onFinished])
 
   const chooseLater = useCallback(() => {
     setState({ phase: 'idle' })

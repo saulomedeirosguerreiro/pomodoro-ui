@@ -1,14 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTimer, type SessionRegistration } from '../components/Timer/useTimer'
-import { achievementsService } from '../lib/achievementsService'
 import { showSessionNotification } from '../lib/notifications'
-import { pomodorosService } from '../lib/pomodorosService'
-import { progressService } from '../lib/progressService'
 import { playSessionEndSound } from '../lib/sound'
-import { tasksService } from '../lib/tasksService'
 import { SESSION_LABELS } from '../lib/timerLogic'
 import type { Achievement, PomodoroSession, ProgressSummary, TaskItem } from '../types/api'
-import { useAuth } from './AuthContext'
+import { useDataSource } from './DataSourceContext'
 import { useSettings } from './SettingsContext'
 
 export interface RewardToast {
@@ -44,7 +40,7 @@ interface TimerContextValue extends ReturnType<typeof useTimer> {
 const TimerContext = createContext<TimerContextValue | undefined>(undefined)
 
 export function TimerProvider({ children }: { children: ReactNode }) {
-  const { user, refreshProfile } = useAuth()
+  const { dataSource } = useDataSource()
   const { settings } = useSettings()
 
   const [lastRegisteredSession, setLastRegisteredSession] = useState<PomodoroSession | null>(null)
@@ -55,6 +51,7 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   const [focusedTask, setFocusedTask] = useState<TaskItem | null>(null)
   const [achievementToast, setAchievementToast] = useState<Achievement | null>(null)
   const [events, setEvents] = useState<AppEvent[]>([])
+  const [totalFociCompleted, setTotalFociCompleted] = useState(0)
   const progressRef = useRef<ProgressSummary | null>(null)
   const focusedTaskRef = useRef<TaskItem | null>(null)
   const unlockedAchievementCodesRef = useRef<Set<string> | null>(null)
@@ -74,16 +71,18 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const refreshProgress = useCallback(async () => {
-    const updated = await progressService.getMyProgress()
+    if (!dataSource) return { updated: null, previous: progressRef.current }
+    const updated = await dataSource.getProgress()
     const previous = progressRef.current
     progressRef.current = updated
     setProgress(updated)
     return { updated, previous }
-  }, [])
+  }, [dataSource])
 
   const refreshFocusedTask = useCallback(() => {
-    tasksService
-      .list('em_curso')
+    if (!dataSource) return
+    dataSource
+      .listTasks('em_curso')
       .then((items) => {
         const next = items[0] ?? null
         focusedTaskRef.current = next
@@ -92,15 +91,27 @@ export function TimerProvider({ children }: { children: ReactNode }) {
       .catch(() => {
         /* checklist de foco mostra seu próprio estado de erro; o vínculo fica inativo até a próxima tentativa */
       })
-  }, [])
+  }, [dataSource])
+
+  /** Substitui `user.completedSessions` (US-12 RN-02) — funciona igual em modo conta e modo guest. */
+  const refreshTotalFociCompleted = useCallback(async () => {
+    if (!dataSource) return
+    try {
+      const total = await dataSource.getTotalCompletedFocusCount()
+      setTotalFociCompleted(total)
+    } catch {
+      /* usado só para sugerir o próximo tipo de sessão; falha ao buscar mantém o último valor conhecido */
+    }
+  }, [dataSource])
 
   /**
    * Busca as conquistas e, se já havia uma linha de base (chamadas após a primeira), mostra um
    * toast para cada conquista nova desbloqueada desde então (US-55).
    */
   const refreshAchievements = useCallback(async () => {
+    if (!dataSource) return
     try {
-      const items = await achievementsService.list()
+      const items = await dataSource.listAchievements()
       const unlockedCodes = new Set(items.filter((a) => a.unlockedAt).map((a) => a.code))
       const previous = unlockedAchievementCodesRef.current
       unlockedAchievementCodesRef.current = unlockedCodes
@@ -119,24 +130,26 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     } catch {
       /* conquistas são um bônus; falha ao buscar não deve interromper o registro da sessão */
     }
-  }, [pushEvent])
+  }, [dataSource, pushEvent])
 
   useEffect(() => {
-    if (user) {
+    if (dataSource) {
       refreshProgress().catch(() => {
         /* card/pills de progresso mostram seu próprio estado de erro discreto (US-42 CA-002) */
       })
       refreshFocusedTask()
       refreshAchievements()
+      refreshTotalFociCompleted()
     }
-  }, [user, refreshProgress, refreshFocusedTask, refreshAchievements])
+  }, [dataSource, refreshProgress, refreshFocusedTask, refreshAchievements, refreshTotalFociCompleted])
 
   const registerSession = useCallback(
     async (registration: SessionRegistration) => {
+      if (!dataSource) return
       setRegistrationError(null)
       try {
         const taskId = registration.type === 'foco' ? (focusedTaskRef.current?.id ?? undefined) : undefined
-        const created = await pomodorosService.create({ ...registration, taskId })
+        const created = await dataSource.createSession({ ...registration, taskId })
         setLastRegisteredSession(created)
         setPendingRegistration(null)
 
@@ -152,9 +165,9 @@ export function TimerProvider({ children }: { children: ReactNode }) {
         }
 
         if (registration.type === 'foco' && registration.status === 'concluido') {
-          await refreshProfile()
+          await refreshTotalFociCompleted()
           const { updated, previous } = await refreshProgress()
-          if (previous) {
+          if (updated && previous) {
             const leveledUp = updated.level > previous.level
             setRewardToast({
               xp: updated.totalXp - previous.totalXp,
@@ -173,11 +186,11 @@ export function TimerProvider({ children }: { children: ReactNode }) {
         setRegistrationError('Não foi possível registrar a sessão. Seus dados não foram perdidos.')
       }
     },
-    [refreshProfile, refreshProgress, refreshAchievements, pushEvent, settings],
+    [dataSource, refreshTotalFociCompleted, refreshProgress, refreshAchievements, pushEvent, settings],
   )
 
   const timer = useTimer({
-    totalFociCompleted: user?.completedSessions ?? 0,
+    totalFociCompleted,
     onSessionReady: registerSession,
   })
 

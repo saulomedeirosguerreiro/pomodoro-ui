@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as GuestContext from '../context/GuestContext'
-import { hasAnyLocalGuestData, wipeAllLocalGuestData } from '../lib/localDataWipe'
+import { hasAnyLocalGuestData } from '../lib/localDataWipe'
 import { migrationService } from '../lib/migrationService'
 import type { ImportGuestDataResponse } from '../lib/migrationService'
 import { usePostLoginMigration } from './usePostLoginMigration'
@@ -16,12 +16,15 @@ vi.mock('../lib/migrationService', () => ({
   buildImportRequestFromLocalData: vi.fn(() => ({ guestId: 'guest-1', tasks: [], sessions: [] })),
 }))
 
+let clearGuestData: ReturnType<typeof vi.fn<() => void>>
+
 function mockGuest() {
+  clearGuestData = vi.fn()
   vi.spyOn(GuestContext, 'useGuest').mockReturnValue({
     guest: { id: 'guest-1', name: 'Visitante', createdAt: '2026-01-01T00:00:00Z' },
     isLoading: false,
     startGuest: vi.fn(),
-    clearGuestData: vi.fn(),
+    clearGuestData,
   })
 }
 
@@ -73,7 +76,7 @@ describe('usePostLoginMigration', () => {
     await act(() => result.current.chooseImport())
 
     expect(migrationService.importLocalData).toHaveBeenCalledWith({ guestId: 'guest-1', tasks: [], sessions: [] })
-    expect(wipeAllLocalGuestData).toHaveBeenCalledTimes(1)
+    expect(clearGuestData).toHaveBeenCalledTimes(1)
     expect(onFinished).toHaveBeenCalledTimes(1)
     expect(result.current.state).toEqual({ phase: 'idle' })
   })
@@ -86,7 +89,7 @@ describe('usePostLoginMigration', () => {
 
     await act(() => result.current.chooseImport())
 
-    expect(wipeAllLocalGuestData).toHaveBeenCalledTimes(1)
+    expect(clearGuestData).toHaveBeenCalledTimes(1)
     expect(onFinished).not.toHaveBeenCalled()
     expect(result.current.state).toEqual({ phase: 'report', result: response })
   })
@@ -99,7 +102,7 @@ describe('usePostLoginMigration', () => {
     await act(() => result.current.chooseImport())
 
     await waitFor(() => expect(result.current.state.phase).toBe('error'))
-    expect(wipeAllLocalGuestData).not.toHaveBeenCalled()
+    expect(clearGuestData).not.toHaveBeenCalled()
     expect(onFinished).not.toHaveBeenCalled()
   })
 
@@ -109,7 +112,7 @@ describe('usePostLoginMigration', () => {
 
     act(() => result.current.chooseDiscard())
 
-    expect(wipeAllLocalGuestData).toHaveBeenCalledTimes(1)
+    expect(clearGuestData).toHaveBeenCalledTimes(1)
     expect(onFinished).toHaveBeenCalledTimes(1)
     expect(result.current.state).toEqual({ phase: 'idle' })
   })
@@ -120,7 +123,7 @@ describe('usePostLoginMigration', () => {
 
     act(() => result.current.chooseLater())
 
-    expect(wipeAllLocalGuestData).not.toHaveBeenCalled()
+    expect(clearGuestData).not.toHaveBeenCalled()
     expect(onFinished).toHaveBeenCalledTimes(1)
     expect(result.current.state).toEqual({ phase: 'idle' })
   })

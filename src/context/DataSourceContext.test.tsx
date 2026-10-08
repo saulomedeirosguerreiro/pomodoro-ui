@@ -28,9 +28,11 @@ function mockAuth(user: UserProfile | null) {
   vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
     user,
     isLoading: false,
+    sessionExpired: false,
     login: vi.fn(),
     logout: vi.fn(),
     refreshProfile: vi.fn(),
+    acknowledgeSessionExpired: vi.fn(),
   })
 }
 

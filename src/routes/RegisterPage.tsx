@@ -9,14 +9,14 @@ import { MigrationReport } from '../components/migration/MigrationReport'
 import { useAuth } from '../context/AuthContext'
 import { useGuest } from '../context/GuestContext'
 import { authService } from '../lib/authService'
-import { hasAnyLocalGuestData, wipeAllLocalGuestData } from '../lib/localDataWipe'
+import { hasAnyLocalGuestData } from '../lib/localDataWipe'
 import { buildImportRequestFromLocalData, migrationService, type ImportGuestDataResponse } from '../lib/migrationService'
 import { tokenStorage } from '../lib/tokenStorage'
 import { ApiError } from '../types/api'
 
 export function RegisterPage() {
   const navigate = useNavigate()
-  const { guest } = useGuest()
+  const { guest, clearGuestData } = useGuest()
   const { refreshProfile } = useAuth()
 
   const [name, setName] = useState(guest?.name ?? '')
@@ -74,7 +74,7 @@ export function RegisterPage() {
 
       const request = buildImportRequestFromLocalData(guest?.id ?? '')
       const result = await migrationService.importLocalData(request)
-      wipeAllLocalGuestData()
+      clearGuestData()
 
       if (result.skipped.length > 0) {
         setMigrationReport(result)

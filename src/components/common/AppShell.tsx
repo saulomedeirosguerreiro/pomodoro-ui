@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useGuest } from '../../context/GuestContext'
 import { useTimerContext } from '../../context/TimerContext'
 import { formatHoursAndMinutes } from '../../lib/format'
 import { formatMMSS, SESSION_LABELS } from '../../lib/timerLogic'
@@ -21,18 +22,24 @@ const NAV_ITEMS = [
 
 export function AppShell() {
   const { user, logout } = useAuth()
+  const { guest } = useGuest()
   const timer = useTimerContext()
   const { progress } = timer
   const navigate = useNavigate()
   const location = useLocation()
 
-  if (!user) {
+  // Conta tem precedência sobre um perfil guest residual (mesma regra de `DataSourceContext`) — evita
+  // mostrar o nome do guest antigo para quem já fez upgrade para conta.
+  const isAccount = Boolean(user)
+  const displayName = user?.name ?? guest?.name ?? null
+
+  if (!displayName) {
     return null
   }
 
   const isTimerRunning = timer.phase !== 'parado'
   const isOnTimerPage = location.pathname === '/timer'
-  const firstName = user.name.trim().split(/\s+/)[0] ?? user.name
+  const firstName = displayName.trim().split(/\s+/)[0] ?? displayName
 
   function handleLogout() {
     if (isTimerRunning) {
@@ -63,8 +70,8 @@ export function AppShell() {
         </div>
 
         <div className={styles.profileCard}>
-          <p className={styles.profileName}>{user.name}</p>
-          <p className={styles.profileEmail}>{user.email}</p>
+          <p className={styles.profileName}>{displayName}</p>
+          {isAccount && user && <p className={styles.profileEmail}>{user.email}</p>}
           {progress && (
             <>
               <p className={styles.profileLevel}>
@@ -78,9 +85,13 @@ export function AppShell() {
               </div>
             </>
           )}
-          <Button variant="ghost" fullWidth onClick={handleLogout}>
-            Sair
-          </Button>
+          {/* Guest não tem sessão de conta para encerrar — a saída deliberada (com confirmação) já
+              existe em Configurações ("Apagar meus dados deste dispositivo"), não no nav bar. */}
+          {isAccount && (
+            <Button variant="ghost" fullWidth onClick={handleLogout}>
+              Sair
+            </Button>
+          )}
         </div>
 
         <nav className={styles.links} aria-label="Navegação principal">
