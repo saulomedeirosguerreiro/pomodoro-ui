@@ -1,7 +1,11 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
-/** Usuário já autenticado em /login ou /cadastro vai direto para o Dashboard (L-16). */
+/**
+ * Usuário com CONTA já autenticada em /login, /cadastro ou /esqueci-minha-senha vai direto para o
+ * Dashboard (L-16). Ignora `guest` de propósito: quem está em modo sem conta PRECISA conseguir abrir
+ * estas telas para fazer upgrade (criar conta ou entrar numa conta já existente).
+ */
 export function PublicOnlyRoute() {
   const { user, isLoading } = useAuth()
 

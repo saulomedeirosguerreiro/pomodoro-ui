@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import * as AuthContext from '../../context/AuthContext'
+import * as GuestContext from '../../context/GuestContext'
 import { ProtectedRoute } from './ProtectedRoute'
 import { PublicOnlyRoute } from './PublicOnlyRoute'
 
@@ -9,7 +10,7 @@ function renderProtected(initialPath: string) {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
-        <Route path="/login" element={<p>Tela de login</p>} />
+        <Route path="/boas-vindas" element={<p>Tela de boas-vindas</p>} />
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<p>Tela do dashboard</p>} />
         </Route>
@@ -25,35 +26,54 @@ function renderPublicOnly(initialPath: string) {
         <Route path="/dashboard" element={<p>Tela do dashboard</p>} />
         <Route element={<PublicOnlyRoute />}>
           <Route path="/login" element={<p>Tela de login</p>} />
+          <Route path="/cadastro" element={<p>Tela de cadastro</p>} />
         </Route>
       </Routes>
     </MemoryRouter>,
   )
 }
 
+function mockAuth(user: { id: number; name: string; email: string; completedSessions: number } | null) {
+  vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
+    user,
+    isLoading: false,
+    login: vi.fn(),
+    logout: vi.fn(),
+    refreshProfile: vi.fn(),
+  })
+}
+
+function mockGuest(guest: { id: string; name: string; createdAt: string } | null) {
+  vi.spyOn(GuestContext, 'useGuest').mockReturnValue({
+    guest,
+    isLoading: false,
+    startGuest: vi.fn(),
+    clearGuestData: vi.fn(),
+  })
+}
+
 describe('ProtectedRoute', () => {
-  it('usuário não autenticado tentando abrir o dashboard é redirecionado ao login', () => {
-    vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
-      user: null,
-      isLoading: false,
-      login: vi.fn(),
-      logout: vi.fn(),
-      refreshProfile: vi.fn(),
-    })
+  it('sem identidade nenhuma (nem conta nem guest), tentando abrir o dashboard é redirecionado às boas-vindas', () => {
+    mockAuth(null)
+    mockGuest(null)
 
     renderProtected('/dashboard')
 
-    expect(screen.getByText('Tela de login')).toBeInTheDocument()
+    expect(screen.getByText('Tela de boas-vindas')).toBeInTheDocument()
   })
 
-  it('usuário autenticado consegue ver o dashboard', () => {
-    vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
-      user: { id: 1, name: 'João', email: 'joao@email.com', completedSessions: 0 },
-      isLoading: false,
-      login: vi.fn(),
-      logout: vi.fn(),
-      refreshProfile: vi.fn(),
-    })
+  it('usuário autenticado (conta) consegue ver o dashboard', () => {
+    mockAuth({ id: 1, name: 'João', email: 'joao@email.com', completedSessions: 0 })
+    mockGuest(null)
+
+    renderProtected('/dashboard')
+
+    expect(screen.getByText('Tela do dashboard')).toBeInTheDocument()
+  })
+
+  it('guest (sem conta) também consegue ver o dashboard', () => {
+    mockAuth(null)
+    mockGuest({ id: 'guest-1', name: 'Visitante', createdAt: '2026-01-01T00:00:00Z' })
 
     renderProtected('/dashboard')
 
@@ -63,16 +83,29 @@ describe('ProtectedRoute', () => {
 
 describe('PublicOnlyRoute', () => {
   it('usuário já autenticado em /login é redirecionado ao dashboard', () => {
-    vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
-      user: { id: 1, name: 'João', email: 'joao@email.com', completedSessions: 0 },
-      isLoading: false,
-      login: vi.fn(),
-      logout: vi.fn(),
-      refreshProfile: vi.fn(),
-    })
+    mockAuth({ id: 1, name: 'João', email: 'joao@email.com', completedSessions: 0 })
+    mockGuest(null)
 
     renderPublicOnly('/login')
 
     expect(screen.getByText('Tela do dashboard')).toBeInTheDocument()
+  })
+
+  it('guest acessando /login NÃO é redirecionado — precisa conseguir fazer upgrade para conta', () => {
+    mockAuth(null)
+    mockGuest({ id: 'guest-1', name: 'Visitante', createdAt: '2026-01-01T00:00:00Z' })
+
+    renderPublicOnly('/login')
+
+    expect(screen.getByText('Tela de login')).toBeInTheDocument()
+  })
+
+  it('guest acessando /cadastro NÃO é redirecionado — precisa conseguir fazer upgrade para conta', () => {
+    mockAuth(null)
+    mockGuest({ id: 'guest-1', name: 'Visitante', createdAt: '2026-01-01T00:00:00Z' })
+
+    renderPublicOnly('/cadastro')
+
+    expect(screen.getByText('Tela de cadastro')).toBeInTheDocument()
   })
 })

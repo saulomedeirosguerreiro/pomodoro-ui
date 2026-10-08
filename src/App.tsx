@@ -2,17 +2,22 @@ import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { AppShell } from './components/common/AppShell'
 import { ProtectedRoute } from './components/common/ProtectedRoute'
 import { PublicOnlyRoute } from './components/common/PublicOnlyRoute'
+import { WelcomeOnlyRoute } from './components/common/WelcomeOnlyRoute'
 import { AuthProvider } from './context/AuthContext'
+import { DataSourceProvider } from './context/DataSourceContext'
+import { GuestProvider } from './context/GuestContext'
 import { SettingsProvider } from './context/SettingsContext'
 import { TimerProvider } from './context/TimerContext'
 import { AjudaPage } from './routes/AjudaPage'
 import { ConfiguracoesPage } from './routes/ConfiguracoesPage'
 import { ConquistasPage } from './routes/ConquistasPage'
+import { ForgotPasswordPage } from './routes/ForgotPasswordPage'
 import { JardimPage } from './routes/JardimPage'
 import { LoginPage } from './routes/LoginPage'
 import { RegisterPage } from './routes/RegisterPage'
 import { TarefasPage } from './routes/TarefasPage'
 import { TimerPage } from './routes/TimerPage'
+import { WelcomePage } from './routes/WelcomePage'
 
 function TimerScope() {
   return (
@@ -26,29 +31,38 @@ export default function App() {
   return (
     <SettingsProvider>
       <AuthProvider>
-        <Routes>
-          <Route element={<PublicOnlyRoute />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/cadastro" element={<RegisterPage />} />
-          </Route>
-
-          <Route element={<ProtectedRoute />}>
-            <Route element={<TimerScope />}>
-              <Route element={<AppShell />}>
-                <Route path="/timer" element={<TimerPage />} />
-                <Route path="/tarefas" element={<TarefasPage />} />
-                <Route path="/jardim" element={<JardimPage />} />
-                <Route path="/conquistas" element={<ConquistasPage />} />
-                <Route path="/configuracoes" element={<ConfiguracoesPage />} />
-                <Route path="/ajuda" element={<AjudaPage />} />
+        <GuestProvider>
+          <DataSourceProvider>
+            <Routes>
+              <Route element={<WelcomeOnlyRoute />}>
+                <Route path="/boas-vindas" element={<WelcomePage />} />
               </Route>
-            </Route>
-          </Route>
 
-          <Route path="/dashboard" element={<Navigate to="/timer" replace />} />
-          <Route path="/" element={<Navigate to="/timer" replace />} />
-          <Route path="*" element={<Navigate to="/timer" replace />} />
-        </Routes>
+              <Route element={<PublicOnlyRoute />}>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/cadastro" element={<RegisterPage />} />
+                <Route path="/esqueci-minha-senha" element={<ForgotPasswordPage />} />
+              </Route>
+
+              <Route element={<ProtectedRoute />}>
+                <Route element={<TimerScope />}>
+                  <Route element={<AppShell />}>
+                    <Route path="/timer" element={<TimerPage />} />
+                    <Route path="/tarefas" element={<TarefasPage />} />
+                    <Route path="/jardim" element={<JardimPage />} />
+                    <Route path="/conquistas" element={<ConquistasPage />} />
+                    <Route path="/configuracoes" element={<ConfiguracoesPage />} />
+                    <Route path="/ajuda" element={<AjudaPage />} />
+                  </Route>
+                </Route>
+              </Route>
+
+              <Route path="/dashboard" element={<Navigate to="/timer" replace />} />
+              <Route path="/" element={<Navigate to="/timer" replace />} />
+              <Route path="*" element={<Navigate to="/timer" replace />} />
+            </Routes>
+          </DataSourceProvider>
+        </GuestProvider>
       </AuthProvider>
     </SettingsProvider>
   )

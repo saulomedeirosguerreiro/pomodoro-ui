@@ -5,7 +5,10 @@ import { AuthLayout } from '../components/common/AuthLayout'
 import { Banner } from '../components/common/Banner'
 import { Button } from '../components/common/Button'
 import { FormField } from '../components/common/FormField'
+import { MigrationDialog } from '../components/migration/MigrationDialog'
+import { MigrationReport } from '../components/migration/MigrationReport'
 import { useAuth } from '../context/AuthContext'
+import { usePostLoginMigration } from '../hooks/usePostLoginMigration'
 import { ApiError } from '../types/api'
 
 interface LocationState {
@@ -25,6 +28,10 @@ export function LoginPage() {
   const [successMessage] = useState(state?.message)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // US-85/D9: login em conta JÁ EXISTENTE com dados locais pendentes pergunta via diálogo de 3 opções
+  // antes de navegar (diferente do cadastro, que importa automático — ver RegisterPage).
+  const migration = usePostLoginMigration(() => navigate('/timer'))
+
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
     setError(null)
@@ -32,7 +39,7 @@ export function LoginPage() {
 
     try {
       await login(email, password)
-      navigate('/timer')
+      migration.offerIfNeeded()
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message)
@@ -48,6 +55,7 @@ export function LoginPage() {
     <AuthLayout title="Entrar">
       {successMessage && <Banner kind="success" message={successMessage} />}
       {error && <Banner kind="error" message={error} />}
+      {migration.state.phase === 'error' && <Banner kind="error" message={migration.state.message} />}
 
       <form onSubmit={handleSubmit} noValidate>
         <FormField
@@ -73,9 +81,25 @@ export function LoginPage() {
         </Button>
       </form>
 
+      <Link to="/esqueci-minha-senha" className={buttons.link}>
+        Esqueci minha senha
+      </Link>
       <Link to="/cadastro" className={buttons.link}>
         Criar conta
       </Link>
+
+      {(migration.state.phase === 'asking' || migration.state.phase === 'importing') && (
+        <MigrationDialog
+          isImporting={migration.state.phase === 'importing'}
+          onImport={migration.chooseImport}
+          onDiscard={migration.chooseDiscard}
+          onLater={migration.chooseLater}
+        />
+      )}
+
+      {migration.state.phase === 'report' && (
+        <MigrationReport result={migration.state.result} onDismiss={migration.dismissReport} />
+      )}
     </AuthLayout>
   )
 }

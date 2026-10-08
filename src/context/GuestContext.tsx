@@ -1,20 +1,57 @@
-import type { GuestProfile } from '../lib/guestProfile'
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
+import {
+  createGuestProfile,
+  loadGuestProfile,
+  saveGuestProfile,
+  type GuestProfile,
+} from '../lib/guestProfile'
+import { wipeAllLocalGuestData } from '../lib/localDataWipe'
 
-/**
- * ⚠️ STUB MÍNIMO E PROVISÓRIO — existe só para destravar a Frente 2 (storage local + `DataSourceContext`),
- * que depende da FORMA de `useGuest()` para decidir o modo (`'none' | 'guest' | 'account'`). A
- * implementação completa — hidratação do `localStorage` (`guestProfile.ts`), `startGuest`,
- * `clearGuestData`, `isLoading`, provider de verdade, tela de boas-vindas e guards de rota — é da
- * Frente 3 (fluxo de identidade e rotas) e NÃO foi construída aqui.
- *
- * Sem `GuestProvider` de propósito: `useGuest()` sempre retorna `{ guest: null }`, então qualquer
- * árvore que monte `DataSourceProvider` sem a Frente 3 cai em modo `'account'` (se houver `user`) ou
- * `'none'`, nunca `'guest'`, até a Frente 3 substituir este arquivo pela implementação real.
- */
-export interface GuestContextValue {
+interface GuestContextValue {
   guest: GuestProfile | null
+  /** Hidratação do `localStorage` no mount — sempre síncrona hoje (sem rede), mantido por simetria com
+   *  `AuthContextValue.isLoading` para os guards de rota não precisarem checar dois formatos de loading. */
+  isLoading: boolean
+  startGuest: (name: string) => void
+  /** `wipeAllLocalGuestData()` já limpa o perfil junto com tarefas/sessões/conquistas — usado por
+   *  "apagar dados deste dispositivo" (ConfiguracoesPage, Frente 4) e após uma migração concluída/descartada. */
+  clearGuestData: () => void
+}
+
+const GuestContext = createContext<GuestContextValue | undefined>(undefined)
+
+/** Identidade local (modo sem conta): `{id, name}` persistido em `localStorage` via `lib/guestProfile.ts`. */
+export function GuestProvider({ children }: { children: ReactNode }) {
+  const [guest, setGuest] = useState<GuestProfile | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    setGuest(loadGuestProfile())
+    setIsLoading(false)
+  }, [])
+
+  const startGuest = useCallback((name: string) => {
+    const profile = createGuestProfile(name)
+    saveGuestProfile(profile)
+    setGuest(profile)
+  }, [])
+
+  const clearGuestData = useCallback(() => {
+    wipeAllLocalGuestData()
+    setGuest(null)
+  }, [])
+
+  return (
+    <GuestContext.Provider value={{ guest, isLoading, startGuest, clearGuestData }}>
+      {children}
+    </GuestContext.Provider>
+  )
 }
 
 export function useGuest(): GuestContextValue {
-  return { guest: null }
+  const context = useContext(GuestContext)
+  if (!context) {
+    throw new Error('useGuest precisa ser usado dentro de um GuestProvider.')
+  }
+  return context
 }

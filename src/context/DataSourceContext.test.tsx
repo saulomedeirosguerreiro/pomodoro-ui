@@ -35,7 +35,12 @@ function mockAuth(user: UserProfile | null) {
 }
 
 function mockGuest(guest: GuestProfile | null) {
-  vi.spyOn(GuestContext, 'useGuest').mockReturnValue({ guest })
+  vi.spyOn(GuestContext, 'useGuest').mockReturnValue({
+    guest,
+    isLoading: false,
+    startGuest: vi.fn(),
+    clearGuestData: vi.fn(),
+  })
 }
 
 describe('DataSourceContext', () => {

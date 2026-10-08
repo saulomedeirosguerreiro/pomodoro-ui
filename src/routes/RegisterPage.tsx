@@ -5,13 +5,21 @@ import { AuthLayout } from '../components/common/AuthLayout'
 import { Banner } from '../components/common/Banner'
 import { Button } from '../components/common/Button'
 import { FormField } from '../components/common/FormField'
+import { MigrationReport } from '../components/migration/MigrationReport'
+import { useAuth } from '../context/AuthContext'
+import { useGuest } from '../context/GuestContext'
 import { authService } from '../lib/authService'
+import { hasAnyLocalGuestData, wipeAllLocalGuestData } from '../lib/localDataWipe'
+import { buildImportRequestFromLocalData, migrationService, type ImportGuestDataResponse } from '../lib/migrationService'
+import { tokenStorage } from '../lib/tokenStorage'
 import { ApiError } from '../types/api'
 
 export function RegisterPage() {
   const navigate = useNavigate()
+  const { guest } = useGuest()
+  const { refreshProfile } = useAuth()
 
-  const [name, setName] = useState('')
+  const [name, setName] = useState(guest?.name ?? '')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -19,6 +27,7 @@ export function RegisterPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [migrationReport, setMigrationReport] = useState<ImportGuestDataResponse | null>(null)
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -34,7 +43,6 @@ export function RegisterPage() {
 
     try {
       await authService.register({ name, email, password })
-      navigate('/login', { state: { email, message: 'Conta criada com sucesso! Faça login.' } })
     } catch (err) {
       if (err instanceof ApiError) {
         setFormError(err.message)
@@ -46,9 +54,52 @@ export function RegisterPage() {
       } else {
         setFormError('Não foi possível criar a conta. Tente novamente.')
       }
+      setIsSubmitting(false)
+      return
+    }
+
+    if (!hasAnyLocalGuestData()) {
+      navigate('/login', { state: { email, message: 'Conta criada com sucesso! Faça login.' } })
+      return
+    }
+
+    // D9/US-84: conta nova importa os dados locais automaticamente, sem diálogo (nada preexistente na
+    // conta nova para conflitar). A importação exige um token (`POST /api/migration/import` é
+    // autenticado) e `authService.register` não devolve um — por isso loga antes de importar, gravando
+    // o token diretamente (sem passar por `useAuth().login`, que já popularia `user` e levaria
+    // `PublicOnlyRoute` a navegar para fora desta página no meio da importação).
+    try {
+      const { token } = await authService.login({ email, password })
+      tokenStorage.set(token)
+
+      const request = buildImportRequestFromLocalData(guest?.id ?? '')
+      const result = await migrationService.importLocalData(request)
+      wipeAllLocalGuestData()
+
+      if (result.skipped.length > 0) {
+        setMigrationReport(result)
+      } else {
+        await refreshProfile()
+        navigate('/timer', { replace: true })
+      }
+    } catch {
+      tokenStorage.clear()
+      navigate('/login', {
+        state: {
+          email,
+          message: 'Conta criada, mas não foi possível importar seus dados locais agora. Entre para tentar novamente.',
+        },
+      })
+      return
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  async function handleDismissReport() {
+    setMigrationReport(null)
+    await refreshProfile()
+    navigate('/timer', { replace: true })
   }
 
   return (
@@ -103,6 +154,8 @@ export function RegisterPage() {
       <Link to="/login" className={buttons.link}>
         Já tenho conta
       </Link>
+
+      {migrationReport && <MigrationReport result={migrationReport} onDismiss={handleDismissReport} />}
     </AuthLayout>
   )
 }
