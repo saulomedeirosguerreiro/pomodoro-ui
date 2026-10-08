@@ -1,0 +1,69 @@
+.wrapper {
+  position: relative;
+}
+
+.bellButton {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  /* --primary-dark em vez de --primary: a contagem é texto pequeno (11px) e precisa de 4.5:1 (C-7). */
+  background: var(--primary-dark);
+  color: #fff;
+  border-radius: var(--radius-full);
+  min-width: 18px;
+  height: 18px;
+  font: var(--font-label-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 260px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-popover);
+  padding: var(--space-2);
+  z-index: 30;
+}
+
+.empty {
+  font: var(--font-body-sm);
+  color: var(--text-muted);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  font: var(--font-body-sm);
+  color: var(--text);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+}

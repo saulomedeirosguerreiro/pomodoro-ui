@@ -1,0 +1,32 @@
+import { afterEach, describe, expect, it } from 'vitest'
+import { DEFAULT_SETTINGS, loadSettings, saveSettings } from './settings'
+
+describe('settings', () => {
+  afterEach(() => {
+    localStorage.clear()
+  })
+
+  it('loadSettings sem nada salvo retorna os defaults', () => {
+    expect(loadSettings()).toEqual(DEFAULT_SETTINGS)
+  })
+
+  it('saveSettings seguido de loadSettings faz round-trip', () => {
+    const custom = { ...DEFAULT_SETTINGS, notificationsEnabled: true, ambientTrack: 'chuva' as const }
+
+    saveSettings(custom)
+
+    expect(loadSettings()).toEqual(custom)
+  })
+
+  it('loadSettings com dado corrompido no localStorage volta para os defaults', () => {
+    localStorage.setItem('pomogarden:settings', '{not valid json')
+
+    expect(loadSettings()).toEqual(DEFAULT_SETTINGS)
+  })
+
+  it('loadSettings preenche campos ausentes com o default (migração de versão antiga)', () => {
+    localStorage.setItem('pomogarden:settings', JSON.stringify({ notificationsEnabled: true }))
+
+    expect(loadSettings()).toEqual({ ...DEFAULT_SETTINGS, notificationsEnabled: true })
+  })
+})

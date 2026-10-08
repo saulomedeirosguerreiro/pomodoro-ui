@@ -1,0 +1,42 @@
+.track {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+}
+
+.option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font: var(--font-label-md);
+  padding: 10px var(--space-3);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+
+.option:hover {
+  color: var(--text-h);
+}
+
+.active {
+  background: var(--surface);
+  color: var(--primary);
+  font: var(--font-label-lg);
+  box-shadow: var(--shadow);
+}
+
+@media (max-width: 480px) {
+  .track {
+    width: 100%;
+    overflow-x: auto;
+  }
+}

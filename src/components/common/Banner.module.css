@@ -1,0 +1,16 @@
+.banner {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  font: var(--font-body-sm);
+  margin-bottom: var(--space-3);
+}
+
+.error {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.success {
+  background: var(--secondary-bg);
+  color: var(--secondary-dark);
+}

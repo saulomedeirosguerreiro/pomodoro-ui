@@ -1,0 +1,31 @@
+.page {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4) var(--space-3);
+  background: var(--bg-subtle);
+}
+
+.card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-4);
+  box-shadow: var(--shadow);
+}
+
+.title {
+  text-align: center;
+  font: var(--font-headline-xl);
+  color: var(--primary-dark);
+}
+
+.subtitle {
+  text-align: center;
+  font: var(--font-headline-sm);
+  color: var(--text-muted);
+  margin-bottom: var(--space-4);
+}

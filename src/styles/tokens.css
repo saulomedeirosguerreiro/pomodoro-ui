@@ -1,0 +1,77 @@
+/*
+ * Design tokens — "Playful Focus Garden" (PomoGarden).
+ * Fonte: plan/2026-10-08-pomogarden-redesign/produto-backlog.md
+ */
+:root {
+  /* Cores — superfícies */
+  --bg: #fffdf9; /* Warm Canvas Cream */
+  --bg-subtle: #f8f2ea; /* Porcelain Seedbed */
+  --surface: #ffffff;
+  --border: #eadfd3;
+
+  /* Cores — texto (nunca preto puro) */
+  --text: #2e243d; /* Midnight Fig */
+  --text-h: #2e243d;
+  --text-muted: #7a6f66;
+
+  /* Cores — marca */
+  --primary: #ff5e5b; /* Vine Tomato */
+  --primary-dark: #e04240; /* bevel/hover do botão primário */
+  --primary-bg: rgba(255, 94, 91, 0.12);
+  --primary-border: rgba(255, 94, 91, 0.5);
+
+  --secondary: #06d6a0; /* Garden Mint */
+  --secondary-dark: #04b384;
+  --secondary-bg: rgba(6, 214, 160, 0.12);
+
+  --tertiary: #ffa45b; /* Sun-Peach */
+  --tertiary-bg: rgba(255, 164, 91, 0.14);
+
+  --highlight: #ffd166; /* Honey Dew — estrelas, sementes, streak */
+  --highlight-bg: rgba(255, 209, 102, 0.2);
+
+  /* Cores — estado */
+  --accent: var(--primary);
+  --accent-bg: var(--primary-bg);
+  --accent-border: var(--primary-border);
+  --danger: #ba1a1a;
+  --danger-bg: #ffdad6;
+  --success: var(--secondary);
+
+  /* Tipografia */
+  --font-family: 'Plus Jakarta Sans', system-ui, 'Segoe UI', sans-serif;
+  --sans: var(--font-family);
+
+  --font-display-timer: 800 80px/88px var(--font-family);
+  --font-display-timer-mobile: 800 56px/64px var(--font-family);
+  --font-headline-xl: 800 36px/44px var(--font-family);
+  --font-headline-lg: 700 28px/36px var(--font-family);
+  --font-headline-md: 700 22px/30px var(--font-family);
+  --font-headline-sm: 700 18px/26px var(--font-family);
+  --font-body-lg: 500 18px/28px var(--font-family);
+  --font-body-md: 500 15px/22px var(--font-family);
+  --font-body-sm: 500 13px/18px var(--font-family);
+  --font-label-lg: 700 16px/20px var(--font-family);
+  --font-label-md: 700 13px/16px var(--font-family);
+  --font-label-sm: 700 11px/14px var(--font-family);
+
+  /* Raios */
+  --radius-sm: 8px;
+  --radius: 16px;
+  --radius-md: 24px;
+  --radius-lg: 32px;
+  --radius-full: 9999px;
+
+  /* Espaçamento */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 40px;
+
+  /* Sombras — "Puffy Tactile Elevation" */
+  --shadow: 0 8px 24px -4px rgba(46, 36, 61, 0.06), 0 4px 0 0 rgba(235, 226, 215, 0.9);
+  --shadow-popover: 0 16px 32px -6px rgba(46, 36, 61, 0.12);
+  --bevel-primary: 0 4px 0 0 var(--primary-dark), 0 8px 16px -2px rgba(255, 94, 91, 0.4);
+  --bevel-secondary: 0 4px 0 0 var(--secondary-dark), 0 6px 14px -2px rgba(6, 214, 160, 0.3);
+}

@@ -1,0 +1,27 @@
+.bubble {
+  position: relative;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  box-shadow: var(--shadow);
+  max-width: 32rem;
+}
+
+.text {
+  font: var(--font-body-md);
+  color: var(--text);
+  text-align: center;
+}
+
+.arrow {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 16px;
+  height: 16px;
+  background: var(--surface);
+  border-right: 2px solid var(--border);
+  border-bottom: 2px solid var(--border);
+}
