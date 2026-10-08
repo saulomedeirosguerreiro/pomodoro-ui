@@ -25,3 +25,30 @@
   font: var(--font-body-sm);
   color: var(--text-muted);
 }
+
+.dangerZone {
+  border-color: var(--danger);
+}
+
+.dangerButton {
+  color: var(--danger);
+  border-color: var(--danger);
+  align-self: flex-start;
+}
+
+.deleteForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.deleteError {
+  font: var(--font-body-sm);
+  color: var(--danger);
+}
+
+.deleteActions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}

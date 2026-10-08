@@ -1,19 +1,46 @@
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/common/Button'
 import { Checkbox } from '../components/common/Checkbox'
+import { FormField } from '../components/common/FormField'
+import { useAuth } from '../context/AuthContext'
 import { useSettings } from '../context/SettingsContext'
 import { getNotificationPermission, requestNotificationPermission } from '../lib/notifications'
+import { usersService } from '../lib/usersService'
+import { ApiError } from '../types/api'
 import styles from './ConfiguracoesPage.module.css'
 
 export function ConfiguracoesPage() {
   const { settings, updateSettings } = useSettings()
+  const { logout } = useAuth()
+  const navigate = useNavigate()
   const [permission, setPermission] = useState(getNotificationPermission())
+
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   async function handleRequestPermission() {
     const result = await requestNotificationPermission()
     setPermission(result)
     if (result === 'granted') {
       updateSettings({ notificationsEnabled: true })
+    }
+  }
+
+  async function handleDeleteAccount(event: FormEvent) {
+    event.preventDefault()
+    setDeleteError(null)
+    setIsDeleting(true)
+    try {
+      await usersService.deleteAccount(deletePassword)
+      logout()
+      navigate('/login')
+    } catch (err) {
+      setDeleteError(err instanceof ApiError ? err.message : 'Não foi possível excluir a conta. Tente novamente.')
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -72,6 +99,53 @@ export function ConfiguracoesPage() {
         <p className={styles.hint}>
           Ainda sem arquivo de áudio nesta versão — a preferência já fica pronta para quando ele chegar.
         </p>
+      </section>
+
+      <section className={`${styles.card} ${styles.dangerZone}`}>
+        <h2>Excluir conta</h2>
+        <p className={styles.hint}>
+          Remove sua conta e todo o histórico (sessões, tarefas, conquistas) para sempre. Essa ação não pode
+          ser desfeita.
+        </p>
+
+        {!isConfirmingDelete ? (
+          <Button variant="ghost" className={styles.dangerButton} onClick={() => setIsConfirmingDelete(true)}>
+            Excluir minha conta
+          </Button>
+        ) : (
+          <form className={styles.deleteForm} onSubmit={handleDeleteAccount} noValidate>
+            {deleteError && (
+              <p className={styles.deleteError} role="alert">
+                {deleteError}
+              </p>
+            )}
+            <FormField
+              label="Confirme sua senha para excluir a conta"
+              name="deletePassword"
+              type="password"
+              autoComplete="current-password"
+              required
+              value={deletePassword}
+              onChange={(e) => setDeletePassword(e.target.value)}
+            />
+            <div className={styles.deleteActions}>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setIsConfirmingDelete(false)
+                  setDeletePassword('')
+                  setDeleteError(null)
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" className={styles.dangerButton} disabled={isDeleting}>
+                {isDeleting ? 'Excluindo…' : 'Excluir definitivamente'}
+              </Button>
+            </div>
+          </form>
+        )}
       </section>
     </div>
   )

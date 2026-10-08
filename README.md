@@ -53,7 +53,7 @@ npm run preview  # serve o build gerado em dist/, localmente
 
 ## Como executar os testes
 
-94 testes (Vitest + Testing Library).
+98 testes (Vitest + Testing Library).
 
 ```bash
 npm test
@@ -68,7 +68,7 @@ npm test
 /tarefas          CRUD de tarefas com filtro por status
 /jardim           coleção de plantas + histórico completo de sessões
 /conquistas       catálogo de conquistas (desbloqueadas com data, bloqueadas com progresso)
-/configuracoes    preferências locais (notificações, mascote, animações, som)
+/configuracoes    preferências locais (notificações, mascote, animações, som) e exclusão de conta
 /ajuda            explicação de Pomodoro/ciclo/XP/nível/sementes/streak/jardim
 ```
 
@@ -88,6 +88,9 @@ npm test
   (`Pomodoro.Domain.Services.ProgressRules`), só para exibição na página Ajuda — não há pacote
   compartilhado entre os dois repositórios nesta fase, então uma mudança nas fórmulas do backend precisa
   ser replicada aqui também.
+- **Exclusão de conta:** em Configurações, pede a senha atual (reautenticação) antes de chamar
+  `DELETE /api/users/me`. Em caso de sucesso, desloga localmente e redireciona para `/login` — é o backend
+  quem de fato apaga os dados, em cascata.
 
 ## Pendências conhecidas (débito documentado, não bug)
 
