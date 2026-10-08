@@ -99,6 +99,18 @@ describe('AppShell', () => {
     expect(screen.queryByRole('button', { name: 'Sair' })).not.toBeInTheDocument()
   })
 
+  it('sem identidade nenhuma: mostra um placeholder "Visitante" em vez de página em branco (fica por trás do modal de boas-vindas, renderizado por ProtectedRoute)', () => {
+    mockAuth(null)
+    mockGuest(null)
+    mockTimer()
+
+    renderShell()
+
+    expect(screen.getByText('Visitante')).toBeInTheDocument()
+    expect(screen.getByText('Conteúdo da página')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Sair' })).not.toBeInTheDocument()
+  })
+
   it('conta tem precedência sobre um perfil guest residual no localStorage', () => {
     mockAuth({ id: 1, name: 'João Silva', email: 'joao@email.com', completedSessions: 0 })
     mockGuest({ id: 'guest-orfao', name: 'Visitante antigo', createdAt: '2026-01-01T00:00:00Z' })

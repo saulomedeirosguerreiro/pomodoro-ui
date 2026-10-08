@@ -1,21 +1,22 @@
 import { useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import buttons from '../components/common/buttons.module.css'
-import { AuthLayout } from '../components/common/AuthLayout'
-import { Button } from '../components/common/Button'
-import { FormField } from '../components/common/FormField'
-import { useGuest } from '../context/GuestContext'
+import { Link } from 'react-router-dom'
+import buttons from '../common/buttons.module.css'
+import { Button } from '../common/Button'
+import { Dialog } from '../common/Dialog'
+import { FormField } from '../common/FormField'
+import { useGuest } from '../../context/GuestContext'
+import styles from './WelcomeModal.module.css'
 
 const NAME_MAX_LENGTH = 60
 
 /**
- * Primeiro contato de quem abre o app sem conta: só pede um nome (guardado localmente, sem cadastro)
- * e libera o app inteiro. Link secundário "Já tenho conta" cobre quem está num navegador novo e não
- * quer virar um guest novo.
+ * Primeiro contato de quem abre o app sem conta: um modal (não uma página própria) que só pede um
+ * nome, guardado localmente, e libera o app inteiro. Renderizado por `ProtectedRoute` por cima da
+ * rota pedida quando não há identidade nenhuma; some sozinho assim que `startGuest` popula o
+ * `GuestContext`, porque o guard passa a renderizar o `<Outlet/>` no próximo render.
  */
-export function WelcomePage() {
+export function WelcomeModal() {
   const { startGuest } = useGuest()
-  const navigate = useNavigate()
   const [name, setName] = useState('')
   const [error, setError] = useState<string | null>(null)
 
@@ -34,12 +35,13 @@ export function WelcomePage() {
 
     setError(null)
     startGuest(trimmedName)
-    navigate('/timer')
   }
 
   return (
-    <AuthLayout title="Boas-vindas">
-      <p>Use o PomoGarden sem precisar criar conta. Seus dados ficam só neste navegador.</p>
+    <Dialog titleText="Boas-vindas ao PomoGarden" dismissible={false}>
+      <p className={styles.description}>
+        Use o PomoGarden sem precisar criar conta. Seus dados ficam só neste navegador.
+      </p>
 
       <form onSubmit={handleSubmit} noValidate>
         <FormField
@@ -60,6 +62,6 @@ export function WelcomePage() {
       <Link to="/login" className={buttons.link}>
         Já tenho conta
       </Link>
-    </AuthLayout>
+    </Dialog>
   )
 }

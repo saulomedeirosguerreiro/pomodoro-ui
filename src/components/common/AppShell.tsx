@@ -31,11 +31,10 @@ export function AppShell() {
   // Conta tem precedência sobre um perfil guest residual (mesma regra de `DataSourceContext`) — evita
   // mostrar o nome do guest antigo para quem já fez upgrade para conta.
   const isAccount = Boolean(user)
-  const displayName = user?.name ?? guest?.name ?? null
-
-  if (!displayName) {
-    return null
-  }
+  // Sem identidade nenhuma (modal de boas-vindas pedindo o nome ainda aberto), mostra um placeholder:
+  // `ProtectedRoute` já renderiza o shell por trás do modal, de propósito, para a pessoa ver a tela de
+  // onde vai cair assim que informar o nome — não é um estado "quebrado" a esconder com `return null`.
+  const displayName = user?.name ?? guest?.name ?? 'Visitante'
 
   const isTimerRunning = timer.phase !== 'parado'
   const isOnTimerPage = location.pathname === '/timer'

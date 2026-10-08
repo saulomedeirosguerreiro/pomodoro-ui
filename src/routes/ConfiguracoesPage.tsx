@@ -49,10 +49,11 @@ export function ConfiguracoesPage() {
     }
   }
 
-  /** Guest não tem senha nem servidor para confirmar — só uma confirmação local antes de limpar o storage. */
+  /** Guest não tem senha nem servidor para confirmar — só uma confirmação local antes de limpar o
+   *  storage. Sem `guest`, `ProtectedRoute` mostra o modal de boas-vindas por cima de `/timer`. */
   function handleWipeGuestData() {
     clearGuestData()
-    navigate('/boas-vindas')
+    navigate('/timer')
   }
 
   return (

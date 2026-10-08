@@ -17,7 +17,6 @@ function renderProtected(initialPath: string) {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
-        <Route path="/boas-vindas" element={<p>Tela de boas-vindas</p>} />
         <Route path="/login" element={<LoginProbe />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<p>Tela do dashboard</p>} />
@@ -66,13 +65,14 @@ function mockGuest(guest: { id: string; name: string; createdAt: string } | null
 }
 
 describe('ProtectedRoute', () => {
-  it('sem identidade nenhuma (nem conta nem guest), tentando abrir o dashboard é redirecionado às boas-vindas', () => {
+  it('sem identidade nenhuma (nem conta nem guest), o modal de boas-vindas aparece por cima do dashboard, não em vez dele', () => {
     mockAuth(null)
     mockGuest(null)
 
     renderProtected('/dashboard')
 
-    expect(screen.getByText('Tela de boas-vindas')).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Boas-vindas ao PomoGarden' })).toBeInTheDocument()
+    expect(screen.getByText('Tela do dashboard')).toBeInTheDocument()
   })
 
   it('usuário autenticado (conta) consegue ver o dashboard', () => {
@@ -93,7 +93,7 @@ describe('ProtectedRoute', () => {
     expect(screen.getByText('Tela do dashboard')).toBeInTheDocument()
   })
 
-  it('sessão de conta expirada (401) redireciona para /login com aviso, não para /boas-vindas (US-82)', () => {
+  it('sessão de conta expirada (401) redireciona para /login com aviso, não mostra o modal de boas-vindas (US-82)', () => {
     mockAuth(null, true)
     mockGuest(null)
 

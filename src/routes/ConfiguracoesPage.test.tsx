@@ -41,8 +41,10 @@ function renderPage() {
   )
 }
 
-/** Única diferença de setup frente a `renderPage()`: expõe `/boas-vindas` para checar o redirect pós-apagamento. */
-function renderPageWithWelcomeRoute() {
+/** Única diferença de setup frente a `renderPage()`: expõe `/timer` para checar o redirect pós-apagamento
+ *  (sem `guest`, `ProtectedRoute` mostraria o modal de boas-vindas por cima dessa rota — aqui só
+ *  interessa confirmar o `navigate`, não o guard em si). */
+function renderPageWithTimerRoute() {
   return render(
     <MemoryRouter initialEntries={['/configuracoes']}>
       <Routes>
@@ -56,7 +58,7 @@ function renderPageWithWelcomeRoute() {
             </SettingsProvider>
           }
         />
-        <Route path="/boas-vindas" element={<p>Tela de boas-vindas</p>} />
+        <Route path="/timer" element={<p>Tela do timer</p>} />
       </Routes>
     </MemoryRouter>,
   )
@@ -180,16 +182,16 @@ describe('ConfiguracoesPage', () => {
       expect(screen.queryByLabelText(/confirme sua senha/i)).not.toBeInTheDocument()
     })
 
-    it('confirmar no diálogo chama clearGuestData e navega para /boas-vindas', async () => {
+    it('confirmar no diálogo chama clearGuestData e navega para /timer', async () => {
       const clearGuestData = mockGuest()
       vi.spyOn(notifications, 'getNotificationPermission').mockReturnValue('granted')
 
-      renderPageWithWelcomeRoute()
+      renderPageWithTimerRoute()
       await userEvent.click(screen.getByRole('button', { name: 'Apagar meus dados deste dispositivo' }))
       await userEvent.click(screen.getByRole('button', { name: 'Apagar definitivamente' }))
 
       expect(clearGuestData).toHaveBeenCalledTimes(1)
-      expect(await screen.findByText('Tela de boas-vindas')).toBeInTheDocument()
+      expect(await screen.findByText('Tela do timer')).toBeInTheDocument()
     })
 
     it('"Cancelar" no diálogo fecha sem apagar nada', async () => {

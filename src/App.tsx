@@ -2,7 +2,6 @@ import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { AppShell } from './components/common/AppShell'
 import { ProtectedRoute } from './components/common/ProtectedRoute'
 import { PublicOnlyRoute } from './components/common/PublicOnlyRoute'
-import { WelcomeOnlyRoute } from './components/common/WelcomeOnlyRoute'
 import { AuthProvider } from './context/AuthContext'
 import { DataSourceProvider } from './context/DataSourceContext'
 import { GuestProvider } from './context/GuestContext'
@@ -17,7 +16,6 @@ import { LoginPage } from './routes/LoginPage'
 import { RegisterPage } from './routes/RegisterPage'
 import { TarefasPage } from './routes/TarefasPage'
 import { TimerPage } from './routes/TimerPage'
-import { WelcomePage } from './routes/WelcomePage'
 
 function TimerScope() {
   return (
@@ -34,10 +32,6 @@ export default function App() {
         <GuestProvider>
           <DataSourceProvider>
             <Routes>
-              <Route element={<WelcomeOnlyRoute />}>
-                <Route path="/boas-vindas" element={<WelcomePage />} />
-              </Route>
-
               <Route element={<PublicOnlyRoute />}>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/cadastro" element={<RegisterPage />} />

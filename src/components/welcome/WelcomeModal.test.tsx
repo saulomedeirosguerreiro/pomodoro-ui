@@ -2,15 +2,14 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
-import * as GuestContext from '../context/GuestContext'
-import { WelcomePage } from './WelcomePage'
+import * as GuestContext from '../../context/GuestContext'
+import { WelcomeModal } from './WelcomeModal'
 
-function renderWelcomePage() {
+function renderWelcomeModal() {
   return render(
-    <MemoryRouter initialEntries={['/boas-vindas']}>
+    <MemoryRouter initialEntries={['/timer']}>
       <Routes>
-        <Route path="/boas-vindas" element={<WelcomePage />} />
-        <Route path="/timer" element={<p>Tela do timer</p>} />
+        <Route path="/timer" element={<WelcomeModal />} />
         <Route path="/login" element={<p>Tela de login</p>} />
       </Routes>
     </MemoryRouter>,
@@ -27,35 +26,41 @@ function mockGuest(startGuest = vi.fn()) {
   return startGuest
 }
 
-describe('WelcomePage', () => {
+describe('WelcomeModal', () => {
+  it('aparece como um diálogo modal, não como página própria', () => {
+    mockGuest()
+
+    renderWelcomeModal()
+
+    expect(screen.getByRole('dialog', { name: 'Boas-vindas ao PomoGarden' })).toBeInTheDocument()
+  })
+
   it('submit com nome vazio não avança: mostra erro e não chama startGuest', async () => {
     const startGuest = mockGuest()
 
-    renderWelcomePage()
+    renderWelcomeModal()
 
     await userEvent.click(screen.getByRole('button', { name: 'Começar' }))
 
     expect(screen.getByText('Conte pra gente como podemos te chamar.')).toBeInTheDocument()
     expect(startGuest).not.toHaveBeenCalled()
-    expect(screen.queryByText('Tela do timer')).not.toBeInTheDocument()
   })
 
-  it('submit com nome chama startGuest e navega para /timer', async () => {
+  it('submit com nome chama startGuest', async () => {
     const startGuest = mockGuest()
 
-    renderWelcomePage()
+    renderWelcomeModal()
 
     await userEvent.type(screen.getByLabelText('Como podemos te chamar?'), 'Maria')
     await userEvent.click(screen.getByRole('button', { name: 'Começar' }))
 
     expect(startGuest).toHaveBeenCalledWith('Maria')
-    expect(await screen.findByText('Tela do timer')).toBeInTheDocument()
   })
 
   it('link "Já tenho conta" leva para /login', async () => {
     mockGuest()
 
-    renderWelcomePage()
+    renderWelcomeModal()
 
     await userEvent.click(screen.getByRole('link', { name: 'Já tenho conta' }))
 

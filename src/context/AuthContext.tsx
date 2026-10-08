@@ -11,8 +11,8 @@ interface AuthContextValue {
   /**
    * US-82: true quando a sessão caiu por 401 (token expirado/inválido), não por `logout()` explícito.
    * Distingue "a pessoa tinha conta e foi derrubada" de "a pessoa nunca se identificou" — o guard de
-   * rota usa isso para mandar para `/login` com aviso, em vez de `/boas-vindas` (que pareceria que ela
-   * nunca teve conta).
+   * rota usa isso para mandar para `/login` com aviso, em vez do modal de boas-vindas (que pareceria
+   * que ela nunca teve conta).
    */
   sessionExpired: boolean
   login: (email: string, password: string) => Promise<void>
