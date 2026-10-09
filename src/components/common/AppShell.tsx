@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useGuest } from '../../context/GuestContext'
+import { useSettings } from '../../context/SettingsContext'
 import { useTimerContext } from '../../context/TimerContext'
 import { formatHoursAndMinutes } from '../../lib/format'
 import { formatMMSS, SESSION_LABELS } from '../../lib/timerLogic'
@@ -12,6 +13,8 @@ import { Badge } from './Badge'
 import { Button } from './Button'
 import { EventsBell } from './EventsBell'
 import { ProgressBar } from './ProgressBar'
+import { PromoBar } from './PromoBar'
+import { PromoCard } from './PromoCard'
 import { RewardToastView } from './RewardToastView'
 import { ThemeToggle } from './ThemeToggle'
 
@@ -36,6 +39,9 @@ interface SidebarContentProps {
   onStartSession: () => void
   /** Fecha o menu hambúrguer ao navegar — `undefined` na sidebar desktop, que não tem o que fechar. */
   onNavigate?: () => void
+  /** Card de divulgação, logo acima de Configurações — só a sidebar desktop passa; o menu hambúrguer
+      do mobile não, porque o mobile já tem a própria `PromoBar` fixa no rodapé (evita duplicar). */
+  promoSlot?: ReactNode
 }
 
 /**
@@ -53,6 +59,7 @@ function SidebarContent({
   onLogout,
   onStartSession,
   onNavigate,
+  promoSlot,
 }: SidebarContentProps) {
   return (
     <>
@@ -115,7 +122,9 @@ function SidebarContent({
         🌱 Plantar Foco
       </Button>
 
-      <div className="mt-auto flex flex-col gap-1 border-t border-border pt-3">
+      {promoSlot && <div className="mt-auto">{promoSlot}</div>}
+
+      <div className={`flex flex-col gap-1 border-t border-border pt-3 ${promoSlot ? '' : 'mt-auto'}`}>
         <NavLink
           to="/configuracoes"
           onClick={onNavigate}
@@ -164,9 +173,14 @@ export function AppShell() {
   const { guest } = useGuest()
   const timer = useTimerContext()
   const { progress } = timer
+  const { settings } = useSettings()
   const navigate = useNavigate()
   const location = useLocation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  // "Foco ativo" (Tweaks) força a prévia do esmaecimento; uma sessão de foco de verdade já em
+  // andamento esmaece sozinha, sem precisar do toggle manual.
+  const isPromoDimmed = (timer.type === 'foco' && timer.phase === 'rodando') || settings.promoFocusPreview
 
   // Conta tem precedência sobre um perfil guest residual (mesma regra de `DataSourceContext`) — evita
   // mostrar o nome do guest antigo para quem já fez upgrade para conta.
@@ -227,6 +241,7 @@ export function AppShell() {
           isTimerRunning={isTimerRunning}
           onLogout={handleLogout}
           onStartSession={handleStartSession}
+          promoSlot={<PromoCard secondsPerAd={settings.promoSecondsPerAd} isDimmed={isPromoDimmed} />}
         />
       </aside>
 
@@ -270,7 +285,7 @@ export function AppShell() {
         </div>
       )}
 
-      <div className="flex min-w-0 flex-1 flex-col pb-[72px] lg:pb-0">
+      <div className="flex min-w-0 flex-1 flex-col pb-[172px] lg:pb-0">
         <header className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-border bg-surface px-4 py-3 lg:px-6 lg:py-4">
           <div className="flex min-w-0 items-center gap-3">
             <button
@@ -331,6 +346,8 @@ export function AppShell() {
           <Outlet />
         </main>
       </div>
+
+      <PromoBar secondsPerAd={settings.promoSecondsPerAd} isDimmed={isPromoDimmed} />
 
       <div className="fixed inset-x-0 bottom-0 z-20 flex justify-center border-t border-border bg-surface p-2 lg:hidden">
         <LofiMiniPlayer />

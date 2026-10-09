@@ -9,6 +9,8 @@ export interface Settings {
   focusMinutes: number
   shortBreakMinutes: number
   longBreakMinutes: number
+  promoSecondsPerAd: number
+  promoFocusPreview: boolean
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -21,6 +23,8 @@ export const DEFAULT_SETTINGS: Settings = {
   focusMinutes: DEFAULT_SESSION_DURATIONS_SECONDS.foco / 60,
   shortBreakMinutes: DEFAULT_SESSION_DURATIONS_SECONDS.descanso_curto / 60,
   longBreakMinutes: DEFAULT_SESSION_DURATIONS_SECONDS.descanso_longo / 60,
+  promoSecondsPerAd: 8,
+  promoFocusPreview: false,
 }
 
 const STORAGE_KEY = 'pomogarden:settings'

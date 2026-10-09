@@ -22,6 +22,7 @@ import { RegisterPage } from './routes/RegisterPage'
 import { TarefasPage } from './routes/TarefasPage'
 import { TermosDeUsoPage } from './routes/TermosDeUsoPage'
 import { TimerPage } from './routes/TimerPage'
+import { TweaksPage } from './routes/TweaksPage'
 
 function TimerScope() {
   return (
@@ -59,6 +60,7 @@ export default function App() {
                       <Route path="/jardim" element={<JardimPage />} />
                       <Route path="/conquistas" element={<ConquistasPage />} />
                       <Route path="/configuracoes" element={<ConfiguracoesPage />} />
+                      <Route path="/tweaks" element={<TweaksPage />} />
                       <Route path="/ajuda" element={<AjudaPage />} />
                     </Route>
                   </Route>
