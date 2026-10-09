@@ -1,9 +1,11 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import * as AuthContext from '../../context/AuthContext'
 import * as GuestContext from '../../context/GuestContext'
 import * as TimerContextModule from '../../context/TimerContext'
+import { LofiPlayerProvider } from '../../context/LofiPlayerContext'
 import { SettingsProvider } from '../../context/SettingsContext'
 import { ThemeProvider } from '../../context/ThemeContext'
 import { AppShell } from './AppShell'
@@ -63,11 +65,34 @@ function renderShell() {
     <MemoryRouter initialEntries={['/timer']}>
       <ThemeProvider>
         <SettingsProvider>
-          <Routes>
-            <Route element={<AppShell />}>
-              <Route path="/timer" element={<p>Conteúdo da página</p>} />
-            </Route>
-          </Routes>
+          <LofiPlayerProvider>
+            <Routes>
+              <Route element={<AppShell />}>
+                <Route path="/timer" element={<p>Conteúdo da página</p>} />
+              </Route>
+            </Routes>
+          </LofiPlayerProvider>
+        </SettingsProvider>
+      </ThemeProvider>
+    </MemoryRouter>,
+  )
+}
+
+/** Só pra testar o fechamento do menu ao navegar — precisa de uma 2ª rota de verdade pra não
+ *  desmontar o `AppShell` inteiro (rota sem correspondência faria o `Routes` não renderizar nada). */
+function renderShellWithAjudaRoute() {
+  return render(
+    <MemoryRouter initialEntries={['/timer']}>
+      <ThemeProvider>
+        <SettingsProvider>
+          <LofiPlayerProvider>
+            <Routes>
+              <Route element={<AppShell />}>
+                <Route path="/timer" element={<p>Conteúdo da página</p>} />
+                <Route path="/ajuda" element={<p>Conteúdo da ajuda</p>} />
+              </Route>
+            </Routes>
+          </LofiPlayerProvider>
         </SettingsProvider>
       </ThemeProvider>
     </MemoryRouter>,
@@ -124,5 +149,81 @@ describe('AppShell', () => {
 
     expect(screen.getByText('João Silva')).toBeInTheDocument()
     expect(screen.queryByText('Visitante antigo')).not.toBeInTheDocument()
+  })
+
+  describe('menu hambúrguer (mobile)', () => {
+    it('começa fechado e abre ao clicar no botão "Abrir menu"', async () => {
+      mockAuth({ id: 1, name: 'João Silva', email: 'joao@email.com', completedSessions: 0 })
+      mockGuest(null)
+      mockTimer()
+      const user = userEvent.setup()
+
+      renderShell()
+
+      expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: 'Abrir menu' }))
+
+      expect(screen.getByRole('dialog', { name: 'Menu' })).toBeInTheDocument()
+    })
+
+    it('o menu traz o mesmo conteúdo da sidebar desktop: perfil, navegação e links secundários', async () => {
+      mockAuth({ id: 1, name: 'João Silva', email: 'joao@email.com', completedSessions: 0 })
+      mockGuest(null)
+      mockTimer()
+      const user = userEvent.setup()
+
+      renderShell()
+      await user.click(screen.getByRole('button', { name: 'Abrir menu' }))
+
+      const dialog = within(screen.getByRole('dialog', { name: 'Menu' }))
+      expect(dialog.getByText('joao@email.com')).toBeInTheDocument()
+      expect(dialog.getByRole('link', { name: /Timer/ })).toBeInTheDocument()
+      expect(dialog.getByRole('link', { name: 'Configurações' })).toBeInTheDocument()
+      expect(dialog.getByRole('link', { name: 'Ajuda' })).toBeInTheDocument()
+      expect(dialog.getByText('© 2026 Guardião Pomodoro — Saulo Guerreiro')).toBeInTheDocument()
+      expect(dialog.getByRole('button', { name: 'Sair' })).toBeInTheDocument()
+    })
+
+    it('fecha ao clicar no botão "Fechar menu"', async () => {
+      mockAuth(null)
+      mockGuest({ id: 'guest-1', name: 'Visitante', createdAt: '2026-01-01T00:00:00Z' })
+      mockTimer()
+      const user = userEvent.setup()
+
+      renderShell()
+      await user.click(screen.getByRole('button', { name: 'Abrir menu' }))
+      await user.click(screen.getByRole('button', { name: 'Fechar menu' }))
+
+      expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument()
+    })
+
+    it('fecha ao clicar no backdrop', async () => {
+      mockAuth(null)
+      mockGuest({ id: 'guest-1', name: 'Visitante', createdAt: '2026-01-01T00:00:00Z' })
+      mockTimer()
+      const user = userEvent.setup()
+
+      renderShell()
+      await user.click(screen.getByRole('button', { name: 'Abrir menu' }))
+      await user.click(screen.getByTestId('menu-backdrop'))
+
+      expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument()
+    })
+
+    it('fecha ao navegar por um link de dentro do menu', async () => {
+      mockAuth(null)
+      mockGuest({ id: 'guest-1', name: 'Visitante', createdAt: '2026-01-01T00:00:00Z' })
+      mockTimer()
+      const user = userEvent.setup()
+
+      renderShellWithAjudaRoute()
+      await user.click(screen.getByRole('button', { name: 'Abrir menu' }))
+      const dialog = within(screen.getByRole('dialog', { name: 'Menu' }))
+      await user.click(dialog.getByRole('link', { name: 'Ajuda' }))
+
+      expect(await screen.findByText('Conteúdo da ajuda')).toBeInTheDocument()
+      expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument()
+    })
   })
 })

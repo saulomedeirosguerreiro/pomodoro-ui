@@ -83,7 +83,7 @@ export function TaskForm({ initial, onSubmit, onCancel }: TaskFormProps) {
         value={estimatedPomodoros}
         onChange={(e) => setEstimatedPomodoros(Number(e.target.value))}
       />
-      <div className="flex justify-end gap-2">
+      <div className="flex flex-wrap justify-end gap-2">
         <Button type="button" variant="ghost" onClick={onCancel}>
           Cancelar
         </Button>

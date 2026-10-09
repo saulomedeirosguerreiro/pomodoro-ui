@@ -120,7 +120,7 @@ export function TarefasPage() {
               className="flex flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card"
             >
               <div className="flex items-center justify-between gap-2">
-                <h3 className="text-style-label-md text-text-h">{task.title}</h3>
+                <h3 className="min-w-0 break-words text-style-label-md text-text-h">{task.title}</h3>
                 <Badge variant={task.status === 'em_curso' ? 'tertiary' : 'neutral'}>
                   {STATUS_LABEL[task.status]}
                 </Badge>

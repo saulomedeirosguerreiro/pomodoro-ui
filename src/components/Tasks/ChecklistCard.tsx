@@ -33,7 +33,7 @@ export function ChecklistCard({ tasks, error, onCreate, onMarkDone, onFocus }: C
 
   return (
     <section className="flex w-full flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-style-headline-sm">✅ Checklist de Foco</h2>
         {!isCreating && (
           <Button variant="ghost" onClick={() => setIsCreating(true)}>
@@ -56,7 +56,7 @@ export function ChecklistCard({ tasks, error, onCreate, onMarkDone, onFocus }: C
               className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-bg-subtle p-2"
             >
               <Checkbox checked={false} onChange={() => onMarkDone(task)} label={task.title} />
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="neutral">{PRIORITY_LABEL[task.priority]}</Badge>
                 <span className="text-style-label-sm text-text-muted">
                   {task.completedPomodoros}/{task.estimatedPomodoros} 🍅
