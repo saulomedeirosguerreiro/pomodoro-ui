@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext'
 import { DataSourceProvider } from './context/DataSourceContext'
 import { FlexibleTimerProvider } from './context/FlexibleTimerContext'
 import { GuestProvider } from './context/GuestContext'
+import { LofiPlayerProvider } from './context/LofiPlayerContext'
 import { SessionRegistrationProvider } from './context/SessionRegistrationContext'
 import { SettingsProvider } from './context/SettingsContext'
 import { ThemeProvider } from './context/ThemeContext'
@@ -13,7 +14,6 @@ import { TimerProvider } from './context/TimerContext'
 import { AjudaPage } from './routes/AjudaPage'
 import { ConfiguracoesPage } from './routes/ConfiguracoesPage'
 import { ConquistasPage } from './routes/ConquistasPage'
-import { CopyrightPage } from './routes/CopyrightPage'
 import { ForgotPasswordPage } from './routes/ForgotPasswordPage'
 import { JardimPage } from './routes/JardimPage'
 import { LoginPage } from './routes/LoginPage'
@@ -28,7 +28,9 @@ function TimerScope() {
     <SessionRegistrationProvider>
       <TimerProvider>
         <FlexibleTimerProvider>
-          <Outlet />
+          <LofiPlayerProvider>
+            <Outlet />
+          </LofiPlayerProvider>
         </FlexibleTimerProvider>
       </TimerProvider>
     </SessionRegistrationProvider>
@@ -64,7 +66,6 @@ export default function App() {
 
                 <Route path="/termos-de-uso" element={<TermosDeUsoPage />} />
                 <Route path="/privacidade" element={<PoliticaDePrivacidadePage />} />
-                <Route path="/copyright" element={<CopyrightPage />} />
 
                 <Route path="/dashboard" element={<Navigate to="/timer" replace />} />
                 <Route path="/" element={<Navigate to="/timer" replace />} />

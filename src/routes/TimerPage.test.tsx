@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import * as FlexibleTimerContextModule from '../context/FlexibleTimerContext'
 import * as TimerContextModule from '../context/TimerContext'
+import { LofiPlayerProvider } from '../context/LofiPlayerContext'
 import { SettingsProvider } from '../context/SettingsContext'
 import { buildMockDataSource, DATA_SOURCE_MODES, mockUseDataSource } from '../test/dataSourceMocks'
 import type { DataSource } from '../lib/dataSource'
@@ -12,7 +13,9 @@ import { TimerPage } from './TimerPage'
 function renderTimerPage() {
   return render(
     <SettingsProvider>
-      <TimerPage />
+      <LofiPlayerProvider>
+        <TimerPage />
+      </LofiPlayerProvider>
     </SettingsProvider>,
   )
 }

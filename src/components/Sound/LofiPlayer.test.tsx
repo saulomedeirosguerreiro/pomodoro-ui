@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { LofiPlayerProvider } from '../../context/LofiPlayerContext'
 import { SettingsProvider } from '../../context/SettingsContext'
 import { LOFI_TRACKS } from '../../lib/soundCatalog'
 import { LofiPlayer } from './LofiPlayer'
@@ -8,7 +9,9 @@ import { LofiPlayer } from './LofiPlayer'
 function renderPlayer() {
   return render(
     <SettingsProvider>
-      <LofiPlayer />
+      <LofiPlayerProvider>
+        <LofiPlayer />
+      </LofiPlayerProvider>
     </SettingsProvider>,
   )
 }

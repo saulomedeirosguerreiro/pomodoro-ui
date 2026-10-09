@@ -1,14 +1,10 @@
 import { DEFAULT_SESSION_DURATIONS_SECONDS } from './timerLogic'
 
-export type AmbientTrackId = 'chuva' | 'cafeteria' | 'passaros'
-
 export interface Settings {
   notificationsEnabled: boolean
   mascotSpeechEnabled: boolean
   reduceAnimations: boolean
   sessionEndSoundEnabled: boolean
-  ambientTrack: AmbientTrackId | null
-  ambientVolume: number
   lofiVolume: number
   focusMinutes: number
   shortBreakMinutes: number
@@ -21,8 +17,6 @@ export const DEFAULT_SETTINGS: Settings = {
   reduceAnimations: false,
   // G-Q15/US-64 (resolvido): playSessionEndSound() agora sintetiza um som de verdade, então o aviso já vem ligado.
   sessionEndSoundEnabled: true,
-  ambientTrack: null,
-  ambientVolume: 0.6,
   lofiVolume: 0.6,
   focusMinutes: DEFAULT_SESSION_DURATIONS_SECONDS.foco / 60,
   shortBreakMinutes: DEFAULT_SESSION_DURATIONS_SECONDS.descanso_curto / 60,

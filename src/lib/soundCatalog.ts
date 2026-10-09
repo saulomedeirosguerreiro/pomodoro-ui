@@ -1,17 +1,3 @@
-import type { AmbientTrackId } from './settings'
-
-export interface AmbientTrackMeta {
-  id: AmbientTrackId
-  label: string
-}
-
-/** G-Q15: 3 ambientes previstos — sem arquivo real ainda (débito documentado no README, US-64). */
-export const AMBIENT_TRACKS: readonly AmbientTrackMeta[] = [
-  { id: 'chuva', label: 'Chuva suave' },
-  { id: 'cafeteria', label: 'Cafeteria' },
-  { id: 'passaros', label: 'Pássaros' },
-]
-
 export interface LofiTrackMeta {
   title: string
   /** Caminho público do arquivo (servido de `public/audio/lofi/`, ver vite.config.ts). */

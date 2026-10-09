@@ -11,7 +11,7 @@ describe('settings', () => {
   })
 
   it('saveSettings seguido de loadSettings faz round-trip', () => {
-    const custom = { ...DEFAULT_SETTINGS, notificationsEnabled: true, ambientTrack: 'chuva' as const }
+    const custom = { ...DEFAULT_SETTINGS, notificationsEnabled: true, lofiVolume: 0.3 }
 
     saveSettings(custom)
 
