@@ -98,8 +98,12 @@ npm test
   estado (ocioso/focado/quase lá/descansando/pausado/comemorando/acolhendo) muda só a animação e a fala,
   nunca o desenho. Se/quando chegar uma arte licenciada com estados próprios, trocar
   `src/components/Mascot/TomatoArt.tsx`.
-- **Sons (ambiente e lo-fi):** a interface completa existe (seleção, play/pause, próxima faixa, volume,
-  preferências persistidas), mas **não há nenhum arquivo de áudio real** — clicar em "play" sempre mostra
-  um aviso honesto de indisponibilidade em vez de fingir tocar algo. Quando os arquivos (licença livre,
-  CC0/royalty-free) chegarem, o catálogo fica em `src/lib/soundCatalog.ts` e o ponto de disparo do som de
-  fim de sessão em `src/lib/sound.ts`.
+- **Lo-Fi (resolvido):** o player dentro do Checklist (`src/components/Sound/LofiPlayer.tsx`) toca de
+  verdade — 19 faixas reais (licença Pixabay Content License, uso livre) em `public/audio/lofi/`,
+  catalogadas com título e crédito em `src/lib/soundCatalog.ts`. Se algum arquivo faltar ou falhar ao
+  carregar, cai no mesmo aviso honesto de indisponibilidade em vez de quebrar.
+- **Som ambiente:** a interface completa existe (seleção, play/pause, volume, preferência persistida),
+  mas **não há nenhum arquivo de áudio real** — clicar em "play" sempre mostra o aviso honesto de
+  indisponibilidade. Quando os arquivos (licença livre, CC0/royalty-free) chegarem, o catálogo fica em
+  `src/lib/soundCatalog.ts` (`AMBIENT_TRACKS`). O som de fim de sessão (`src/lib/sound.ts`) é separado
+  disso — já funciona de verdade, só que sintetizado via Web Audio API, sem arquivo.
