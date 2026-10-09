@@ -12,7 +12,6 @@ import { useTimerContext } from '../context/TimerContext'
 import type { TaskPayload } from '../lib/tasksService'
 import { computeCycleCount } from '../lib/timerLogic'
 import type { PomodoroSession, TaskItem } from '../types/api'
-import styles from './TimerPage.module.css'
 
 export function TimerPage() {
   const timer = useTimerContext()
@@ -89,7 +88,7 @@ export function TimerPage() {
   }
 
   return (
-    <div className={styles.page}>
+    <div className="mx-auto flex w-full max-w-[640px] flex-col items-center gap-4">
       <Mascot />
 
       <ModeSwitcher type={timer.type} phase={timer.phase} onSelectType={timer.selectType} />
@@ -109,7 +108,7 @@ export function TimerPage() {
       />
 
       {timer.registrationError && (
-        <div className={styles.registrationError}>
+        <div className="flex w-full flex-col items-center gap-2 rounded-lg bg-danger-bg p-4 text-center text-danger">
           <p>{timer.registrationError}</p>
           <Button variant="ghost" onClick={timer.retryRegistration}>
             Tentar novamente

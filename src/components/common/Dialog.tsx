@@ -1,5 +1,4 @@
 import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode } from 'react'
-import styles from './Dialog.module.css'
 
 interface DialogProps {
   titleText: string
@@ -41,9 +40,18 @@ export function Dialog({ titleText, children, onDismiss, dismissible = true }: D
   }
 
   return (
-    <div className={styles.overlay} onKeyDown={handleKeyDown}>
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} className={styles.dialog}>
-        <h2 id={titleId} className={styles.title}>
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-[rgba(46,36,61,0.45)] p-4"
+      onKeyDown={handleKeyDown}
+    >
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="w-full max-w-[420px] rounded-4xl border border-border bg-surface p-6 shadow-popover"
+      >
+        <h2 id={titleId} className="mb-4 text-style-headline-sm text-text-h">
           {titleText}
         </h2>
         {children}

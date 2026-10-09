@@ -3,7 +3,8 @@ import { ProgressBar } from '../components/common/ProgressBar'
 import { useDataSource } from '../context/DataSourceContext'
 import { formatDateTime } from '../lib/format'
 import type { Achievement } from '../types/api'
-import styles from './ConquistasPage.module.css'
+
+const CARD_CLASSES = 'flex flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card'
 
 export function ConquistasPage() {
   const { dataSource } = useDataSource()
@@ -29,26 +30,31 @@ export function ConquistasPage() {
   const locked = (achievements ?? []).filter((a) => !a.unlockedAt)
 
   return (
-    <div className={styles.page}>
+    <div className="mx-auto flex max-w-[720px] flex-col gap-4">
       <h1>Conquistas</h1>
 
-      {error && <p className={styles.error}>{error}</p>}
+      {error && <p className="text-style-body-sm text-danger">{error}</p>}
 
-      <section className={styles.card}>
-        <h2>Desbloqueadas</h2>
+      <section className={CARD_CLASSES}>
+        <h2 className="text-style-headline-sm">Desbloqueadas</h2>
         {unlocked.length === 0 ? (
-          <p className={styles.empty}>Continue focando — sua primeira conquista está logo ali.</p>
+          <p className="text-style-body-sm text-text-muted">Continue focando — sua primeira conquista está logo ali.</p>
         ) : (
-          <ul className={styles.list}>
+          <ul className="flex list-none flex-col gap-2 m-0 p-0">
             {unlocked.map((achievement) => (
-              <li key={achievement.code} className={`${styles.item} ${styles.unlocked}`}>
-                <span className={styles.icon} aria-hidden="true">
+              <li
+                key={achievement.code}
+                className="flex gap-2 rounded-lg border border-tertiary bg-bg-subtle p-2"
+              >
+                <span className="shrink-0 text-[28px]" aria-hidden="true">
                   🏆
                 </span>
-                <div className={styles.itemBody}>
-                  <p className={styles.name}>{achievement.name}</p>
-                  <p className={styles.description}>{achievement.description}</p>
-                  <p className={styles.date}>Desbloqueada em {formatDateTime(achievement.unlockedAt!)}</p>
+                <div className="flex flex-1 flex-col gap-0.5">
+                  <p className="text-style-label-md text-text-h">{achievement.name}</p>
+                  <p className="text-style-body-sm text-text-muted">{achievement.description}</p>
+                  <p className="text-style-label-sm text-secondary-dark">
+                    Desbloqueada em {formatDateTime(achievement.unlockedAt!)}
+                  </p>
                 </div>
               </li>
             ))}
@@ -56,24 +62,24 @@ export function ConquistasPage() {
         )}
       </section>
 
-      <section className={styles.card}>
-        <h2>Em progresso</h2>
+      <section className={CARD_CLASSES}>
+        <h2 className="text-style-headline-sm">Em progresso</h2>
         {locked.length === 0 ? (
-          <p className={styles.empty}>Você desbloqueou todas as conquistas disponíveis!</p>
+          <p className="text-style-body-sm text-text-muted">Você desbloqueou todas as conquistas disponíveis!</p>
         ) : (
-          <ul className={styles.list}>
+          <ul className="flex list-none flex-col gap-2 m-0 p-0">
             {locked.map((achievement) => (
-              <li key={achievement.code} className={styles.item}>
-                <span className={styles.icon} aria-hidden="true">
+              <li key={achievement.code} className="flex gap-2 rounded-lg border border-border bg-bg-subtle p-2">
+                <span className="shrink-0 text-[28px]" aria-hidden="true">
                   🔒
                 </span>
-                <div className={styles.itemBody}>
-                  <p className={styles.name}>{achievement.name}</p>
-                  <p className={styles.description}>{achievement.description}</p>
+                <div className="flex flex-1 flex-col gap-0.5">
+                  <p className="text-style-label-md text-text-h">{achievement.name}</p>
+                  <p className="text-style-body-sm text-text-muted">{achievement.description}</p>
                   {achievement.progressCurrent !== null && achievement.progressTarget !== null && (
                     <>
                       <ProgressBar value={achievement.progressCurrent} max={achievement.progressTarget} />
-                      <p className={styles.progressLabel}>
+                      <p className="text-style-label-sm text-text-muted">
                         {achievement.progressCurrent}/{achievement.progressTarget}
                       </p>
                     </>

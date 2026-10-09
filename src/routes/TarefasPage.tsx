@@ -7,7 +7,6 @@ import { useDataSource } from '../context/DataSourceContext'
 import { useTimerContext } from '../context/TimerContext'
 import type { TaskPayload } from '../lib/tasksService'
 import type { TaskItem, TaskItemStatus } from '../types/api'
-import styles from './TarefasPage.module.css'
 
 const PRIORITY_LABEL: Record<TaskItem['priority'], string> = {
   baixa: 'Baixa',
@@ -89,23 +88,23 @@ export function TarefasPage() {
   }
 
   return (
-    <div className={styles.page}>
+    <div className="mx-auto flex max-w-[720px] flex-col gap-4">
       <h1>Tarefas</h1>
 
-      <div className={styles.toolbar}>
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <SegmentedControl ariaLabel="Filtrar por status" options={FILTER_OPTIONS} value={filter} onChange={setFilter} />
         {!isCreating && <Button onClick={() => setIsCreating(true)}>+ Nova Tarefa</Button>}
       </div>
 
-      {error && <p className={styles.error}>{error}</p>}
+      {error && <p className="text-style-body-sm text-danger">{error}</p>}
 
       {isCreating && <TaskForm onSubmit={handleCreate} onCancel={() => setIsCreating(false)} />}
 
       {tasks !== null && tasks.length === 0 && !isCreating && (
-        <p className={styles.empty}>Nenhuma tarefa encontrada.</p>
+        <p className="text-style-body-sm text-text-muted">Nenhuma tarefa encontrada.</p>
       )}
 
-      <ul className={styles.list}>
+      <ul className="flex list-none flex-col gap-2 m-0 p-0">
         {(tasks ?? []).map((task) =>
           editingId === task.id ? (
             <li key={task.id}>
@@ -116,21 +115,24 @@ export function TarefasPage() {
               />
             </li>
           ) : (
-            <li key={task.id} className={styles.item}>
-              <div className={styles.itemHeader}>
-                <h3>{task.title}</h3>
+            <li
+              key={task.id}
+              className="flex flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-style-label-md text-text-h">{task.title}</h3>
                 <Badge variant={task.status === 'em_curso' ? 'tertiary' : 'neutral'}>
                   {STATUS_LABEL[task.status]}
                 </Badge>
               </div>
-              {task.description && <p className={styles.description}>{task.description}</p>}
-              <div className={styles.meta}>
+              {task.description && <p className="text-style-body-sm text-text-muted">{task.description}</p>}
+              <div className="flex items-center gap-2">
                 <Badge variant="neutral">{PRIORITY_LABEL[task.priority]}</Badge>
-                <span className={styles.count}>
+                <span className="text-style-label-sm text-text-muted">
                   {task.completedPomodoros}/{task.estimatedPomodoros} 🍅
                 </span>
               </div>
-              <div className={styles.actions}>
+              <div className="flex flex-wrap gap-2">
                 {task.status !== 'em_curso' && task.status !== 'feito' && (
                   <Button variant="ghost" onClick={() => handleSetStatus(task, 'em_curso')}>
                     Focar nesta

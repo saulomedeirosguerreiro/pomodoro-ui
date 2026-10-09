@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext'
 import { DataSourceProvider } from './context/DataSourceContext'
 import { GuestProvider } from './context/GuestContext'
 import { SettingsProvider } from './context/SettingsContext'
+import { ThemeProvider } from './context/ThemeContext'
 import { TimerProvider } from './context/TimerContext'
 import { AjudaPage } from './routes/AjudaPage'
 import { ConfiguracoesPage } from './routes/ConfiguracoesPage'
@@ -27,37 +28,39 @@ function TimerScope() {
 
 export default function App() {
   return (
-    <SettingsProvider>
-      <AuthProvider>
-        <GuestProvider>
-          <DataSourceProvider>
-            <Routes>
-              <Route element={<PublicOnlyRoute />}>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/cadastro" element={<RegisterPage />} />
-                <Route path="/esqueci-minha-senha" element={<ForgotPasswordPage />} />
-              </Route>
+    <ThemeProvider>
+      <SettingsProvider>
+        <AuthProvider>
+          <GuestProvider>
+            <DataSourceProvider>
+              <Routes>
+                <Route element={<PublicOnlyRoute />}>
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/cadastro" element={<RegisterPage />} />
+                  <Route path="/esqueci-minha-senha" element={<ForgotPasswordPage />} />
+                </Route>
 
-              <Route element={<ProtectedRoute />}>
-                <Route element={<TimerScope />}>
-                  <Route element={<AppShell />}>
-                    <Route path="/timer" element={<TimerPage />} />
-                    <Route path="/tarefas" element={<TarefasPage />} />
-                    <Route path="/jardim" element={<JardimPage />} />
-                    <Route path="/conquistas" element={<ConquistasPage />} />
-                    <Route path="/configuracoes" element={<ConfiguracoesPage />} />
-                    <Route path="/ajuda" element={<AjudaPage />} />
+                <Route element={<ProtectedRoute />}>
+                  <Route element={<TimerScope />}>
+                    <Route element={<AppShell />}>
+                      <Route path="/timer" element={<TimerPage />} />
+                      <Route path="/tarefas" element={<TarefasPage />} />
+                      <Route path="/jardim" element={<JardimPage />} />
+                      <Route path="/conquistas" element={<ConquistasPage />} />
+                      <Route path="/configuracoes" element={<ConfiguracoesPage />} />
+                      <Route path="/ajuda" element={<AjudaPage />} />
+                    </Route>
                   </Route>
                 </Route>
-              </Route>
 
-              <Route path="/dashboard" element={<Navigate to="/timer" replace />} />
-              <Route path="/" element={<Navigate to="/timer" replace />} />
-              <Route path="*" element={<Navigate to="/timer" replace />} />
-            </Routes>
-          </DataSourceProvider>
-        </GuestProvider>
-      </AuthProvider>
-    </SettingsProvider>
+                <Route path="/dashboard" element={<Navigate to="/timer" replace />} />
+                <Route path="/" element={<Navigate to="/timer" replace />} />
+                <Route path="*" element={<Navigate to="/timer" replace />} />
+              </Routes>
+            </DataSourceProvider>
+          </GuestProvider>
+        </AuthProvider>
+      </SettingsProvider>
+    </ThemeProvider>
   )
 }

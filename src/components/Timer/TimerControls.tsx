@@ -1,7 +1,9 @@
 import { Button } from '../common/Button'
 import type { SessionType } from '../../types/api'
 import type { TimerPhase } from './useTimer'
-import styles from './TimerControls.module.css'
+
+const ICON_BUTTON_CLASSES =
+  'flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border-2 border-border bg-surface text-[22px] text-text-muted transition-[background-color,transform] duration-150 ease-out hover:bg-bg-subtle active:scale-95'
 
 interface TimerControlsProps {
   type: SessionType
@@ -50,10 +52,10 @@ export function TimerControls({
   }
 
   return (
-    <div className={styles.controls}>
+    <div className="flex flex-wrap items-center justify-center gap-4 pb-6">
       <button
         type="button"
-        className={styles.iconButton}
+        className={ICON_BUTTON_CLASSES}
         onClick={onRestart}
         title="Reiniciar sessão"
         aria-label="Reiniciar sessão"
@@ -71,7 +73,7 @@ export function TimerControls({
 
       <button
         type="button"
-        className={styles.iconButton}
+        className={ICON_BUTTON_CLASSES}
         onClick={handleSkip}
         title="Pular período"
         aria-label="Pular período"

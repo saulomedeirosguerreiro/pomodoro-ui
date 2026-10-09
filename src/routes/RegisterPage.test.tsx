@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import * as AuthContext from '../context/AuthContext'
 import * as GuestContext from '../context/GuestContext'
+import * as ThemeContext from '../context/ThemeContext'
 import { authService } from '../lib/authService'
 import { hasAnyLocalGuestData } from '../lib/localDataWipe'
 import { migrationService } from '../lib/migrationService'
@@ -81,6 +82,11 @@ function buildResponse(skipped: ImportGuestDataResponse['skipped'] = []): Import
 }
 
 describe('RegisterPage', () => {
+  beforeEach(() => {
+    // AuthLayout renderiza o ThemeToggle, que depende do ThemeProvider real (montado só em App.tsx).
+    vi.spyOn(ThemeContext, 'useTheme').mockReturnValue({ theme: 'light', toggleTheme: vi.fn() })
+  })
+
   afterEach(() => {
     localStorage.clear()
   })

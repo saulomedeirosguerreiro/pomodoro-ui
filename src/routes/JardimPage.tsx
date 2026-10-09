@@ -4,9 +4,9 @@ import { HistoryList } from '../components/History/HistoryList'
 import { useDataSource } from '../context/DataSourceContext'
 import { speciesForIndex } from '../lib/gardenSpecies'
 import type { PomodoroSession } from '../types/api'
-import styles from './JardimPage.module.css'
 
 const PAGE_SIZE = 10
+const CARD_CLASSES = 'flex flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card'
 
 export function JardimPage() {
   const { dataSource } = useDataSource()
@@ -53,30 +53,33 @@ export function JardimPage() {
   const hasMore = (items?.length ?? 0) < totalCount
 
   return (
-    <div className={styles.page}>
+    <div className="mx-auto flex max-w-[720px] flex-col gap-4">
       <h1>Jardim de Foco</h1>
 
-      <section className={styles.card}>
-        <h2>Minha coleção</h2>
+      <section className={CARD_CLASSES}>
+        <h2 className="text-style-headline-sm">Minha coleção</h2>
         {collection.length === 0 ? (
-          <p className={styles.empty}>Nenhuma planta colhida ainda. Conclua um foco para começar.</p>
+          <p className="text-style-body-sm text-text-muted">Nenhuma planta colhida ainda. Conclua um foco para começar.</p>
         ) : (
-          <div className={styles.grid}>
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2">
             {collection.map((species) => (
-              <div key={species.name} className={styles.species}>
-                <span className={styles.speciesEmoji} aria-hidden="true">
+              <div
+                key={species.name}
+                className="flex flex-col items-center gap-0.5 rounded-lg border border-border bg-bg-subtle p-2 text-center"
+              >
+                <span className="text-[32px]" aria-hidden="true">
                   {species.emoji}
                 </span>
-                <span className={styles.speciesName}>{species.name}</span>
-                <span className={styles.speciesCount}>×{species.count}</span>
+                <span className="text-style-label-sm text-text-h">{species.name}</span>
+                <span className="text-style-label-md text-secondary-dark">×{species.count}</span>
               </div>
             ))}
           </div>
         )}
       </section>
 
-      <section className={styles.card}>
-        <h2>Histórico completo</h2>
+      <section className={CARD_CLASSES}>
+        <h2 className="text-style-headline-sm">Histórico completo</h2>
         <HistoryList items={items} error={error} onRetry={() => load(0, false)} />
         {hasMore && !error && (
           <Button variant="ghost" fullWidth onClick={handleLoadMore}>

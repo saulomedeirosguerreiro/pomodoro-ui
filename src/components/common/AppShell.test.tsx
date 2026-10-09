@@ -5,6 +5,7 @@ import * as AuthContext from '../../context/AuthContext'
 import * as GuestContext from '../../context/GuestContext'
 import * as TimerContextModule from '../../context/TimerContext'
 import { SettingsProvider } from '../../context/SettingsContext'
+import { ThemeProvider } from '../../context/ThemeContext'
 import { AppShell } from './AppShell'
 
 function mockAuth(user: { id: number; name: string; email: string; completedSessions: number } | null) {
@@ -59,13 +60,15 @@ function mockTimer() {
 function renderShell() {
   return render(
     <MemoryRouter initialEntries={['/timer']}>
-      <SettingsProvider>
-        <Routes>
-          <Route element={<AppShell />}>
-            <Route path="/timer" element={<p>Conteúdo da página</p>} />
-          </Route>
-        </Routes>
-      </SettingsProvider>
+      <ThemeProvider>
+        <SettingsProvider>
+          <Routes>
+            <Route element={<AppShell />}>
+              <Route path="/timer" element={<p>Conteúdo da página</p>} />
+            </Route>
+          </Routes>
+        </SettingsProvider>
+      </ThemeProvider>
     </MemoryRouter>,
   )
 }

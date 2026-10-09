@@ -6,6 +6,7 @@ import { AuthProvider } from '../context/AuthContext'
 import * as DataSourceContextModule from '../context/DataSourceContext'
 import * as GuestContextModule from '../context/GuestContext'
 import { SettingsProvider } from '../context/SettingsContext'
+import { ThemeProvider } from '../context/ThemeContext'
 import * as notifications from '../lib/notifications'
 import { usersService } from '../lib/usersService'
 import { ApiError } from '../types/api'
@@ -32,11 +33,13 @@ function mockGuest(clearGuestData = vi.fn()) {
 function renderPage() {
   return render(
     <MemoryRouter>
-      <SettingsProvider>
-        <AuthProvider>
-          <ConfiguracoesPage />
-        </AuthProvider>
-      </SettingsProvider>
+      <ThemeProvider>
+        <SettingsProvider>
+          <AuthProvider>
+            <ConfiguracoesPage />
+          </AuthProvider>
+        </SettingsProvider>
+      </ThemeProvider>
     </MemoryRouter>,
   )
 }
@@ -51,11 +54,13 @@ function renderPageWithTimerRoute() {
         <Route
           path="/configuracoes"
           element={
-            <SettingsProvider>
-              <AuthProvider>
-                <ConfiguracoesPage />
-              </AuthProvider>
-            </SettingsProvider>
+            <ThemeProvider>
+              <SettingsProvider>
+                <AuthProvider>
+                  <ConfiguracoesPage />
+                </AuthProvider>
+              </SettingsProvider>
+            </ThemeProvider>
           }
         />
         <Route path="/timer" element={<p>Tela do timer</p>} />

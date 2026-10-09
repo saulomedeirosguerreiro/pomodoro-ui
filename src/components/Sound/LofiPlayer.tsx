@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useSettings } from '../../context/SettingsContext'
 import { LOFI_TRACKS } from '../../lib/soundCatalog'
-import styles from './LofiPlayer.module.css'
 
 /** US-57: player lo-fi dentro do Checklist. Sem arquivo real ainda — mesmo aviso do ambiente (G-Q15). */
 export function LofiPlayer() {
@@ -27,16 +26,26 @@ export function LofiPlayer() {
   }
 
   return (
-    <section className={styles.player}>
-      <h3 className={styles.heading}>🎧 Lo-Fi para focar</h3>
-      <p className={styles.trackTitle}>{track.title}</p>
-      <p className={styles.credit}>Crédito: a definir quando o áudio chegar</p>
+    <section className="flex flex-col gap-0.5 border-t border-dashed border-border pt-2">
+      <h3 className="text-style-label-md text-text-h">🎧 Lo-Fi para focar</h3>
+      <p className="text-style-body-sm text-text">{track.title}</p>
+      <p className="text-style-label-sm text-text-muted">Crédito: a definir quando o áudio chegar</p>
 
-      <div className={styles.controls}>
-        <button type="button" onClick={handlePlayPause} aria-label={isPlaying ? 'Pausar lo-fi' : 'Tocar lo-fi'}>
+      <div className="mt-1 flex items-center gap-2">
+        <button
+          type="button"
+          className="h-8 w-8 rounded-full border border-border bg-surface"
+          onClick={handlePlayPause}
+          aria-label={isPlaying ? 'Pausar lo-fi' : 'Tocar lo-fi'}
+        >
           {isPlaying ? '⏸' : '▶'}
         </button>
-        <button type="button" onClick={handleNext} aria-label="Próxima faixa">
+        <button
+          type="button"
+          className="h-8 w-8 rounded-full border border-border bg-surface"
+          onClick={handleNext}
+          aria-label="Próxima faixa"
+        >
           ⏭
         </button>
         <input
@@ -50,7 +59,7 @@ export function LofiPlayer() {
         />
       </div>
 
-      {message && <p className={styles.message}>{message}</p>}
+      {message && <p className="text-style-label-sm text-text-muted">{message}</p>}
     </section>
   )
 }

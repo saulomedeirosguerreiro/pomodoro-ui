@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
+import { ThemeProvider } from '../context/ThemeContext'
 import { authService } from '../lib/authService'
 import { ApiError } from '../types/api'
 import { ForgotPasswordPage } from './ForgotPasswordPage'
@@ -13,10 +14,12 @@ vi.mock('../lib/authService', () => ({
 function renderForgotPasswordPage() {
   return render(
     <MemoryRouter initialEntries={['/esqueci-minha-senha']}>
-      <Routes>
-        <Route path="/esqueci-minha-senha" element={<ForgotPasswordPage />} />
-        <Route path="/login" element={<p>Tela de login</p>} />
-      </Routes>
+      <ThemeProvider>
+        <Routes>
+          <Route path="/esqueci-minha-senha" element={<ForgotPasswordPage />} />
+          <Route path="/login" element={<p>Tela de login</p>} />
+        </Routes>
+      </ThemeProvider>
     </MemoryRouter>,
   )
 }

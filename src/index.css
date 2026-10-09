@@ -1,77 +1,82 @@
-/* Tokens de cor/tipografia/espaçamento vêm de ./styles/tokens.css (importado antes deste arquivo em main.tsx). */
+/* Tokens de cor/tipografia/sombra vêm de ./styles/tokens.css (importado antes deste arquivo em main.tsx). */
 
-:root {
-  font: var(--font-body-md);
-  /* Dark mode ainda não tem paleta aprovada (G-Q17, COULD) — força claro de propósito. */
-  color-scheme: light;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@layer base {
+  :root {
+    font: var(--text-style-body-md);
+    color-scheme: light;
+    color: var(--color-text);
+    background: var(--color-bg);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+  [data-theme='dark'] {
+    color-scheme: dark;
+  }
 
-body {
-  margin: 0;
-  min-height: 100svh;
-  background: var(--bg);
-}
-
-#root {
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-}
-
-h1,
-h2,
-h3 {
-  font-family: var(--font-family);
-  font-weight: 700;
-  color: var(--text-h);
-  margin: 0 0 var(--space-2);
-}
-
-p {
-  margin: 0;
-}
-
-button {
-  font: inherit;
-}
-
-input {
-  font: inherit;
-}
-
-a {
-  color: var(--primary);
-}
-
-@media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100svh;
+    background: var(--color-bg);
+  }
+
+  #root {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    color: var(--color-text-h);
+    margin: 0 0 8px;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  button {
+    font: inherit;
+  }
+
+  input {
+    font: inherit;
+  }
+
+  a {
+    color: var(--color-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* US-61 CA-001: preferência "reduzir animações" em Configurações, equivalente a RNF-14. */
+  [data-reduce-motion='true'] *,
+  [data-reduce-motion='true'] *::before,
+  [data-reduce-motion='true'] *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-/* US-61 CA-001: preferência "reduzir animações" em Configurações, equivalente a RNF-14. */
-[data-reduce-motion='true'] *,
-[data-reduce-motion='true'] *::before,
-[data-reduce-motion='true'] *::after {
-  animation-duration: 0.001ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: 0.001ms !important;
-  scroll-behavior: auto !important;
 }

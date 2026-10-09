@@ -4,6 +4,7 @@ import { Button } from '../components/common/Button'
 import { Checkbox } from '../components/common/Checkbox'
 import { Dialog } from '../components/common/Dialog'
 import { FormField } from '../components/common/FormField'
+import { ThemeToggle } from '../components/common/ThemeToggle'
 import { useAuth } from '../context/AuthContext'
 import { useDataSource } from '../context/DataSourceContext'
 import { useGuest } from '../context/GuestContext'
@@ -11,7 +12,10 @@ import { useSettings } from '../context/SettingsContext'
 import { getNotificationPermission, requestNotificationPermission } from '../lib/notifications'
 import { usersService } from '../lib/usersService'
 import { ApiError } from '../types/api'
-import styles from './ConfiguracoesPage.module.css'
+
+const CARD_CLASSES = 'flex flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card'
+const DANGER_CARD_CLASSES = `${CARD_CLASSES} border-danger`
+const DANGER_BUTTON_CLASSES = 'self-start border-danger! text-danger!'
 
 export function ConfiguracoesPage() {
   const { settings, updateSettings } = useSettings()
@@ -57,19 +61,21 @@ export function ConfiguracoesPage() {
   }
 
   return (
-    <div className={styles.page}>
+    <div className="mx-auto flex max-w-[640px] flex-col gap-4">
       <h1>Configurações</h1>
 
-      <section className={styles.card}>
-        <h2>Notificações</h2>
-        {permission === 'unsupported' && <p className={styles.hint}>Seu navegador não suporta notificações.</p>}
+      <section className={CARD_CLASSES}>
+        <h2 className="text-style-headline-sm">Notificações</h2>
+        {permission === 'unsupported' && (
+          <p className="text-style-body-sm text-text-muted">Seu navegador não suporta notificações.</p>
+        )}
         {permission === 'default' && (
           <Button variant="secondary" onClick={handleRequestPermission}>
             Ativar notificações do navegador
           </Button>
         )}
         {permission === 'denied' && (
-          <p className={styles.hint}>
+          <p className="text-style-body-sm text-text-muted">
             As notificações foram bloqueadas nas configurações do navegador. Para ativar, permita-as manualmente nas
             permissões do site.
           </p>
@@ -83,8 +89,8 @@ export function ConfiguracoesPage() {
         )}
       </section>
 
-      <section className={styles.card}>
-        <h2>Mascote</h2>
+      <section className={CARD_CLASSES}>
+        <h2 className="text-style-headline-sm">Mascote</h2>
         <Checkbox
           checked={settings.mascotSpeechEnabled}
           onChange={(checked) => updateSettings({ mascotSpeechEnabled: checked })}
@@ -92,8 +98,8 @@ export function ConfiguracoesPage() {
         />
       </section>
 
-      <section className={styles.card}>
-        <h2>Acessibilidade</h2>
+      <section className={CARD_CLASSES}>
+        <h2 className="text-style-headline-sm">Acessibilidade</h2>
         <Checkbox
           checked={settings.reduceAnimations}
           onChange={(checked) => updateSettings({ reduceAnimations: checked })}
@@ -101,41 +107,47 @@ export function ConfiguracoesPage() {
         />
       </section>
 
-      <section className={styles.card}>
-        <h2>Som</h2>
+      <section className={CARD_CLASSES}>
+        <h2 className="text-style-headline-sm">Aparência</h2>
+        <p className="text-style-body-sm text-text-muted">Escolha entre o tema claro e escuro.</p>
+        <ThemeToggle />
+      </section>
+
+      <section className={CARD_CLASSES}>
+        <h2 className="text-style-headline-sm">Som</h2>
         <Checkbox
           checked={settings.sessionEndSoundEnabled}
           onChange={(checked) => updateSettings({ sessionEndSoundEnabled: checked })}
           label="Som ao final da sessão"
         />
-        <p className={styles.hint}>
+        <p className="text-style-body-sm text-text-muted">
           Ainda sem arquivo de áudio nesta versão — a preferência já fica pronta para quando ele chegar.
         </p>
       </section>
 
       {mode === 'guest' ? (
-        <section className={`${styles.card} ${styles.dangerZone}`}>
-          <h2>Apagar meus dados deste dispositivo</h2>
-          <p className={styles.hint}>
+        <section className={DANGER_CARD_CLASSES}>
+          <h2 className="text-style-headline-sm">Apagar meus dados deste dispositivo</h2>
+          <p className="text-style-body-sm text-text-muted">
             Você está usando o PomoGarden sem conta: tarefas, sessões e conquistas ficam salvas só neste navegador.
             Apagar os dados deste dispositivo os remove para sempre — não há como recuperá-los depois.
           </p>
 
-          <Button variant="ghost" className={styles.dangerButton} onClick={() => setIsConfirmingDelete(true)}>
+          <Button variant="ghost" className={DANGER_BUTTON_CLASSES} onClick={() => setIsConfirmingDelete(true)}>
             Apagar meus dados deste dispositivo
           </Button>
 
           {isConfirmingDelete && (
             <Dialog titleText="Apagar todos os dados deste dispositivo?" onDismiss={() => setIsConfirmingDelete(false)}>
-              <p className={styles.hint}>
+              <p className="text-style-body-sm text-text-muted">
                 Essa ação não pode ser desfeita. Tarefas, sessões e conquistas salvas neste navegador serão apagadas
                 permanentemente.
               </p>
-              <div className={styles.deleteActions}>
+              <div className="flex justify-end gap-2">
                 <Button variant="ghost" onClick={() => setIsConfirmingDelete(false)}>
                   Cancelar
                 </Button>
-                <Button className={styles.dangerButton} onClick={handleWipeGuestData}>
+                <Button className={DANGER_BUTTON_CLASSES} onClick={handleWipeGuestData}>
                   Apagar definitivamente
                 </Button>
               </div>
@@ -143,21 +155,21 @@ export function ConfiguracoesPage() {
           )}
         </section>
       ) : (
-        <section className={`${styles.card} ${styles.dangerZone}`}>
-          <h2>Excluir conta</h2>
-          <p className={styles.hint}>
+        <section className={DANGER_CARD_CLASSES}>
+          <h2 className="text-style-headline-sm">Excluir conta</h2>
+          <p className="text-style-body-sm text-text-muted">
             Remove sua conta e todo o histórico (sessões, tarefas, conquistas) para sempre. Essa ação não pode
             ser desfeita.
           </p>
 
           {!isConfirmingDelete ? (
-            <Button variant="ghost" className={styles.dangerButton} onClick={() => setIsConfirmingDelete(true)}>
+            <Button variant="ghost" className={DANGER_BUTTON_CLASSES} onClick={() => setIsConfirmingDelete(true)}>
               Excluir minha conta
             </Button>
           ) : (
-            <form className={styles.deleteForm} onSubmit={handleDeleteAccount} noValidate>
+            <form className="flex flex-col gap-2" onSubmit={handleDeleteAccount} noValidate>
               {deleteError && (
-                <p className={styles.deleteError} role="alert">
+                <p className="text-style-body-sm text-danger" role="alert">
                   {deleteError}
                 </p>
               )}
@@ -170,7 +182,7 @@ export function ConfiguracoesPage() {
                 value={deletePassword}
                 onChange={(e) => setDeletePassword(e.target.value)}
               />
-              <div className={styles.deleteActions}>
+              <div className="flex justify-end gap-2">
                 <Button
                   type="button"
                   variant="ghost"
@@ -182,7 +194,7 @@ export function ConfiguracoesPage() {
                 >
                   Cancelar
                 </Button>
-                <Button type="submit" className={styles.dangerButton} disabled={isDeleting}>
+                <Button type="submit" className={DANGER_BUTTON_CLASSES} disabled={isDeleting}>
                   {isDeleting ? 'Excluindo…' : 'Excluir definitivamente'}
                 </Button>
               </div>

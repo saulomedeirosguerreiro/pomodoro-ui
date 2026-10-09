@@ -1,77 +1,204 @@
 /*
- * Design tokens — "Playful Focus Garden" (PomoGarden).
- * Fonte: plan/2026-10-08-pomogarden-redesign/produto-backlog.md
+ * Design tokens — "Playful Focus Garden" (light) / "Nocturnal Focus Greenhouse" (dark).
+ * Fonte light: plan/2026-10-08-pomogarden-redesign/produto-backlog.md
+ * Fonte dark: DESIGN.md (guia de tema dark fornecido pelo usuário)
  */
-:root {
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+@theme {
   /* Cores — superfícies */
-  --bg: #fffdf9; /* Warm Canvas Cream */
-  --bg-subtle: #f8f2ea; /* Porcelain Seedbed */
-  --surface: #ffffff;
-  --border: #eadfd3;
+  --color-bg: #fffdf9;
+  --color-bg-subtle: #f8f2ea;
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-border: #eadfd3;
 
   /* Cores — texto (nunca preto puro) */
-  --text: #2e243d; /* Midnight Fig */
-  --text-h: #2e243d;
-  --text-muted: #7a6f66;
+  --color-text: #2e243d;
+  --color-text-h: #2e243d;
+  --color-text-muted: #7a6f66;
 
   /* Cores — marca */
-  --primary: #ff5e5b; /* Vine Tomato */
-  --primary-dark: #e04240; /* bevel/hover do botão primário */
-  --primary-bg: rgba(255, 94, 91, 0.12);
-  --primary-border: rgba(255, 94, 91, 0.5);
+  --color-primary: #ff5e5b;
+  --color-primary-dark: #e04240;
+  --color-primary-bg: rgba(255, 94, 91, 0.12);
+  --color-primary-border: rgba(255, 94, 91, 0.5);
 
-  --secondary: #06d6a0; /* Garden Mint */
-  --secondary-dark: #04b384;
-  --secondary-bg: rgba(6, 214, 160, 0.12);
+  --color-secondary: #06d6a0;
+  --color-secondary-dark: #04b384;
+  --color-secondary-bg: rgba(6, 214, 160, 0.12);
 
-  --tertiary: #ffa45b; /* Sun-Peach */
-  --tertiary-bg: rgba(255, 164, 91, 0.14);
+  --color-tertiary: #ffa45b;
+  --color-tertiary-bg: rgba(255, 164, 91, 0.14);
 
-  --highlight: #ffd166; /* Honey Dew — estrelas, sementes, streak */
-  --highlight-bg: rgba(255, 209, 102, 0.2);
+  --color-highlight: #ffd166;
+  --color-highlight-bg: rgba(255, 209, 102, 0.2);
 
   /* Cores — estado */
-  --accent: var(--primary);
-  --accent-bg: var(--primary-bg);
-  --accent-border: var(--primary-border);
-  --danger: #ba1a1a;
-  --danger-bg: #ffdad6;
-  --success: var(--secondary);
+  --color-accent: var(--color-primary);
+  --color-accent-bg: var(--color-primary-bg);
+  --color-accent-border: var(--color-primary-border);
+  --color-danger: #ba1a1a;
+  --color-danger-bg: #ffdad6;
+  --color-success: var(--color-secondary);
 
-  /* Tipografia */
-  --font-family: 'Plus Jakarta Sans', system-ui, 'Segoe UI', sans-serif;
-  --sans: var(--font-family);
+  /* Texto sobre superfícies de cor sólida/tinta (substitui hex soltos usados antes por contraste) */
+  --color-on-primary: #ffffff;
+  --color-on-secondary: #ffffff;
+  --color-on-tertiary-chip: #924c04;
+  --color-on-highlight-chip: #7a5b00;
 
-  --font-display-timer: 800 80px/88px var(--font-family);
-  --font-display-timer-mobile: 800 56px/64px var(--font-family);
-  --font-headline-xl: 800 36px/44px var(--font-family);
-  --font-headline-lg: 700 28px/36px var(--font-family);
-  --font-headline-md: 700 22px/30px var(--font-family);
-  --font-headline-sm: 700 18px/26px var(--font-family);
-  --font-body-lg: 500 18px/28px var(--font-family);
-  --font-body-md: 500 15px/22px var(--font-family);
-  --font-body-sm: 500 13px/18px var(--font-family);
-  --font-label-lg: 700 16px/20px var(--font-family);
-  --font-label-md: 700 13px/16px var(--font-family);
-  --font-label-sm: 700 11px/14px var(--font-family);
+  --color-input-bg: var(--color-surface);
+  --color-placeholder: var(--color-text-muted);
 
-  /* Raios */
+  /*
+   * Raios — mapeados pra nomenclatura padrão do Tailwind (sem slot "DEFAULT" sem sufixo em v4):
+   * 8px → rounded-sm · 16px (base) → rounded-lg · 24px → rounded-2xl · 32px → rounded-4xl · rounded-full já é nativo.
+   */
   --radius-sm: 8px;
-  --radius: 16px;
-  --radius-md: 24px;
-  --radius-lg: 32px;
-  --radius-full: 9999px;
+  --radius-lg: 16px;
+  --radius-2xl: 24px;
+  --radius-4xl: 32px;
 
-  /* Espaçamento */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 16px;
-  --space-4: 24px;
-  --space-5: 40px;
+  /* Tipografia — famílias */
+  --font-sans: 'Plus Jakarta Sans', system-ui, 'Segoe UI', sans-serif;
+  --font-display: 'Space Grotesk', 'Plus Jakarta Sans', system-ui, sans-serif;
 
-  /* Sombras — "Puffy Tactile Elevation" */
-  --shadow: 0 8px 24px -4px rgba(46, 36, 61, 0.06), 0 4px 0 0 rgba(235, 226, 215, 0.9);
+  /* Sombras — "Puffy Tactile Elevation" (light) / glows + bordas-fantasma (dark) */
+  --shadow-card: 0 8px 24px -4px rgba(46, 36, 61, 0.06), 0 4px 0 0 rgba(235, 226, 215, 0.9);
   --shadow-popover: 0 16px 32px -6px rgba(46, 36, 61, 0.12);
-  --bevel-primary: 0 4px 0 0 var(--primary-dark), 0 8px 16px -2px rgba(255, 94, 91, 0.4);
-  --bevel-secondary: 0 4px 0 0 var(--secondary-dark), 0 6px 14px -2px rgba(6, 214, 160, 0.3);
+  --shadow-bevel-primary: 0 4px 0 0 var(--color-primary-dark), 0 8px 16px -2px rgba(255, 94, 91, 0.4);
+  --shadow-bevel-secondary: 0 4px 0 0 var(--color-secondary-dark), 0 6px 14px -2px rgba(6, 214, 160, 0.3);
+  --shadow-focus-ring: 0 0 0 2px var(--color-primary-border);
+}
+
+[data-theme='dark'] {
+  --color-bg: #131218;
+  --color-bg-subtle: #1a1822;
+  --color-surface: #1f1d27;
+  /* Surface Layer 4 do DESIGN.md (#353142): "hover states, chip fills, and subtle segment controls" —
+     usado como o tom "aceso" do segmento ativo em SegmentedControl, acima da trilha recolhida (bg-subtle). */
+  --color-surface-raised: #353142;
+  --color-border: #2d293a;
+
+  --color-text: #f5f3f7;
+  --color-text-h: #f5f3f7;
+  --color-text-muted: #a69fb0;
+
+  --color-primary: #ff5e5b;
+  --color-primary-dark: #ff7b78;
+  --color-primary-bg: rgba(255, 94, 91, 0.15);
+  --color-primary-border: rgba(255, 94, 91, 0.5);
+
+  --color-secondary: #34d399;
+  --color-secondary-dark: #4ade80;
+  --color-secondary-bg: rgba(52, 211, 153, 0.15);
+
+  --color-tertiary: #f59e0b;
+  --color-tertiary-bg: rgba(245, 158, 11, 0.15);
+
+  --color-highlight: #f59e0b;
+  --color-highlight-bg: rgba(245, 158, 11, 0.15);
+
+  --color-danger: #ffb4ab;
+  --color-danger-bg: #93000a;
+
+  --color-on-primary: #131218;
+  --color-on-secondary: #131218;
+  --color-on-tertiary-chip: var(--color-tertiary);
+  --color-on-highlight-chip: var(--color-highlight);
+
+  --color-input-bg: var(--color-surface);
+  --color-placeholder: #8a8396;
+
+  --shadow-card: none;
+  --shadow-popover: 0 16px 40px -8px rgba(9, 8, 13, 0.75);
+  --shadow-bevel-primary: 0 8px 32px -4px rgba(255, 94, 91, 0.28), 0 2px 8px 0 rgba(255, 94, 91, 0.16);
+  --shadow-bevel-secondary: 0 8px 32px -4px rgba(52, 211, 153, 0.22), 0 2px 8px 0 rgba(52, 211, 153, 0.12);
+  --shadow-focus-ring: 0 0 0 2px #ff5e5b, 0 0 8px 2px rgba(255, 94, 91, 0.35);
+}
+
+/*
+ * Tokens tipográficos compostos (shorthand `font:` com peso+tamanho+altura de linha+tracking).
+ * Não entram no @theme porque o Tailwind v4 decompõe `--font-*` (família), `--text-*` (tamanho)
+ * e `--font-weight-*` em namespaces separados — aqui usamos `@utility` pra expor como classes.
+ * Mesmos valores nos dois temas (só a paleta de cor muda por tema, não a escala tipográfica).
+ */
+:root {
+  --text-style-display-timer: 700 80px/88px var(--font-display);
+  --text-style-display-timer-mobile: 700 56px/64px var(--font-display);
+  --text-style-headline-xl: 800 36px/44px var(--font-sans);
+  --text-style-headline-sm: 700 18px/26px var(--font-sans);
+  --text-style-body-md: 500 15px/22px var(--font-sans);
+  --text-style-body-sm: 500 13px/18px var(--font-sans);
+  --text-style-label-lg: 700 16px/20px var(--font-sans);
+  --text-style-label-md: 700 13px/16px var(--font-sans);
+  --text-style-label-sm: 700 11px/14px var(--font-sans);
+}
+
+@utility text-style-display-timer {
+  font: var(--text-style-display-timer);
+  font-variant-numeric: tabular-nums;
+}
+@utility text-style-display-timer-mobile {
+  font: var(--text-style-display-timer-mobile);
+  font-variant-numeric: tabular-nums;
+}
+@utility text-style-headline-xl {
+  font: var(--text-style-headline-xl);
+}
+@utility text-style-headline-sm {
+  font: var(--text-style-headline-sm);
+}
+@utility text-style-body-md {
+  font: var(--text-style-body-md);
+}
+@utility text-style-body-sm {
+  font: var(--text-style-body-sm);
+}
+@utility text-style-label-lg {
+  font: var(--text-style-label-lg);
+}
+@utility text-style-label-md {
+  font: var(--text-style-label-md);
+}
+@utility text-style-label-sm {
+  font: var(--text-style-label-sm);
+}
+
+/* Keyframes do mascote (Mascot.tsx) — soltas fora do @theme, sempre incluídas no build do Tailwind v4. */
+@keyframes mascotFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes mascotBounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.05);
+  }
+}
+
+@keyframes particleRise {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
 }

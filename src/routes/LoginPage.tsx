@@ -1,6 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import buttons from '../components/common/buttons.module.css'
 import { AuthLayout } from '../components/common/AuthLayout'
 import { Banner } from '../components/common/Banner'
 import { Button } from '../components/common/Button'
@@ -87,10 +86,13 @@ export function LoginPage() {
         </Button>
       </form>
 
-      <Link to="/esqueci-minha-senha" className={buttons.link}>
+      <Link
+        to="/esqueci-minha-senha"
+        className="mt-4 block text-center [font:700_13px/18px_var(--font-sans)] text-primary-dark"
+      >
         Esqueci minha senha
       </Link>
-      <Link to="/cadastro" className={buttons.link}>
+      <Link to="/cadastro" className="mt-4 block text-center [font:700_13px/18px_var(--font-sans)] text-primary-dark">
         Criar conta
       </Link>
 

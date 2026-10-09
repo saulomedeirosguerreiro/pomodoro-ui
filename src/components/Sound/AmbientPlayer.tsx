@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useSettings } from '../../context/SettingsContext'
 import { AMBIENT_TRACKS } from '../../lib/soundCatalog'
 import type { AmbientTrackId } from '../../lib/settings'
-import styles from './AmbientPlayer.module.css'
 
 /** US-56: mini player de som ambiente. Sem arquivo real ainda — "play" mostra um aviso amigável (CA-002). */
 export function AmbientPlayer() {
@@ -31,9 +30,9 @@ export function AmbientPlayer() {
   }
 
   return (
-    <div className={styles.player}>
+    <div className="relative flex items-center gap-1">
       <select
-        className={styles.select}
+        className="max-w-[120px] rounded-full border border-border bg-surface px-2 py-1 text-style-label-sm text-text"
         value={settings.ambientTrack ?? ''}
         onChange={(e) => handleSelect(e.target.value as AmbientTrackId)}
         aria-label="Som ambiente"
@@ -50,7 +49,7 @@ export function AmbientPlayer() {
 
       <button
         type="button"
-        className={styles.playButton}
+        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface"
         onClick={handlePlayPause}
         aria-label={isPlaying ? 'Pausar ambiente' : 'Tocar ambiente'}
       >
@@ -59,7 +58,7 @@ export function AmbientPlayer() {
 
       <input
         type="range"
-        className={styles.volume}
+        className="w-[72px]"
         min={0}
         max={1}
         step={0.05}
@@ -68,7 +67,11 @@ export function AmbientPlayer() {
         aria-label="Volume do ambiente"
       />
 
-      {message && <span className={styles.message}>{message}</span>}
+      {message && (
+        <span className="absolute right-0 top-full z-10 mt-1 whitespace-nowrap rounded-lg border border-border bg-surface px-2 py-1 text-style-label-sm text-text-muted shadow-card">
+          {message}
+        </span>
+      )}
     </div>
   )
 }

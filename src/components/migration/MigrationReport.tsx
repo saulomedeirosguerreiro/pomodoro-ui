@@ -1,7 +1,6 @@
 import { Button } from '../common/Button'
 import { Dialog } from '../common/Dialog'
 import type { ImportGuestDataResponse } from '../../lib/migrationService'
-import styles from './MigrationReport.module.css'
 
 interface MigrationReportProps {
   result: ImportGuestDataResponse
@@ -14,9 +13,9 @@ export function MigrationReport({ result, onDismiss }: MigrationReportProps) {
 
   return (
     <Dialog titleText="Importação concluída" onDismiss={onDismiss}>
-      <p className={styles.summary}>{importedCount} itens importados.</p>
-      <p className={styles.summary}>{result.skipped.length} itens não puderam ser importados:</p>
-      <ul className={styles.list}>
+      <p className="mb-2 text-style-body-md text-text">{importedCount} itens importados.</p>
+      <p className="mb-2 text-style-body-md text-text">{result.skipped.length} itens não puderam ser importados:</p>
+      <ul className="m-0 mb-4 pl-4 text-style-body-sm text-text-muted">
         {result.skipped.map((item) => (
           <li key={`${item.itemType}-${item.localId}`}>
             {item.itemType === 'task' ? 'Tarefa' : 'Sessão'} — {item.reason}

@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as AuthContext from '../context/AuthContext'
 import * as GuestContext from '../context/GuestContext'
+import * as ThemeContext from '../context/ThemeContext'
 import { hasAnyLocalGuestData } from '../lib/localDataWipe'
 import { ApiError } from '../types/api'
 import { LoginPage } from './LoginPage'
@@ -59,6 +60,11 @@ async function submitLogin() {
 }
 
 describe('LoginPage', () => {
+  beforeEach(() => {
+    // AuthLayout renderiza o ThemeToggle, que depende do ThemeProvider real (montado só em App.tsx).
+    vi.spyOn(ThemeContext, 'useTheme').mockReturnValue({ theme: 'light', toggleTheme: vi.fn() })
+  })
+
   it('mostra mensagem genérica de erro quando o login falha', async () => {
     mockGuest()
     vi.mocked(hasAnyLocalGuestData).mockReturnValue(false)

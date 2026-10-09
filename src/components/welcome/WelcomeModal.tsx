@@ -1,11 +1,9 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import buttons from '../common/buttons.module.css'
 import { Button } from '../common/Button'
 import { Dialog } from '../common/Dialog'
 import { FormField } from '../common/FormField'
 import { useGuest } from '../../context/GuestContext'
-import styles from './WelcomeModal.module.css'
 
 const NAME_MAX_LENGTH = 60
 
@@ -39,7 +37,7 @@ export function WelcomeModal() {
 
   return (
     <Dialog titleText="Boas-vindas ao PomoGarden" dismissible={false}>
-      <p className={styles.description}>
+      <p className="mb-4 text-style-body-md text-text">
         Use o PomoGarden sem precisar criar conta. Seus dados ficam só neste navegador.
       </p>
 
@@ -59,7 +57,7 @@ export function WelcomeModal() {
         </Button>
       </form>
 
-      <Link to="/login" className={buttons.link}>
+      <Link to="/login" className="mt-4 block text-center [font:700_13px/18px_var(--font-sans)] text-primary-dark">
         Já tenho conta
       </Link>
     </Dialog>

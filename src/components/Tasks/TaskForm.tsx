@@ -4,7 +4,6 @@ import { FormField } from '../common/FormField'
 import { SegmentedControl } from '../common/SegmentedControl'
 import type { TaskPayload } from '../../lib/tasksService'
 import type { TaskItem, TaskPriority } from '../../types/api'
-import styles from './TaskForm.module.css'
 
 const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = [
   { value: 'baixa', label: 'Baixa' },
@@ -45,9 +44,13 @@ export function TaskForm({ initial, onSubmit, onCancel }: TaskFormProps) {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit} noValidate>
+    <form
+      className="flex flex-col gap-2 rounded-lg border border-border bg-bg-subtle p-4"
+      onSubmit={handleSubmit}
+      noValidate
+    >
       {error && (
-        <p className={styles.error} role="alert">
+        <p className="text-style-body-sm text-danger" role="alert">
           {error}
         </p>
       )}
@@ -67,7 +70,7 @@ export function TaskForm({ initial, onSubmit, onCancel }: TaskFormProps) {
         onChange={(e) => setDescription(e.target.value)}
       />
       <div>
-        <span className={styles.label}>Prioridade</span>
+        <span className="mb-1 block text-style-label-sm text-text-muted">Prioridade</span>
         <SegmentedControl ariaLabel="Prioridade" options={PRIORITY_OPTIONS} value={priority} onChange={setPriority} />
       </div>
       <FormField
@@ -80,7 +83,7 @@ export function TaskForm({ initial, onSubmit, onCancel }: TaskFormProps) {
         value={estimatedPomodoros}
         onChange={(e) => setEstimatedPomodoros(Number(e.target.value))}
       />
-      <div className={styles.actions}>
+      <div className="flex justify-end gap-2">
         <Button type="button" variant="ghost" onClick={onCancel}>
           Cancelar
         </Button>

@@ -1,6 +1,5 @@
 import { Button } from '../common/Button'
 import { Dialog } from '../common/Dialog'
-import styles from './MigrationDialog.module.css'
 
 interface MigrationDialogProps {
   onImport: () => void
@@ -17,10 +16,10 @@ interface MigrationDialogProps {
 export function MigrationDialog({ onImport, onDiscard, onLater, isImporting }: MigrationDialogProps) {
   return (
     <Dialog titleText="Você tem dados salvos neste navegador" dismissible={!isImporting} onDismiss={onLater}>
-      <p className={styles.description}>
+      <p className="mb-4 text-style-body-md text-text">
         Encontramos tarefas e sessões registradas sem conta. O que você quer fazer com elas?
       </p>
-      <div className={styles.actions}>
+      <div className="flex flex-col gap-2">
         <Button onClick={onImport} disabled={isImporting} fullWidth>
           {isImporting ? 'Levando para a conta…' : 'Levar para minha conta'}
         </Button>

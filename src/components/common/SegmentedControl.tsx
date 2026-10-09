@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react'
-import styles from './SegmentedControl.module.css'
 
 export interface SegmentedOption<T extends string> {
   value: T
@@ -16,7 +15,11 @@ interface SegmentedControlProps<T extends string> {
 
 export function SegmentedControl<T extends string>({ options, value, onChange, ariaLabel }: SegmentedControlProps<T>) {
   return (
-    <div className={styles.track} role="tablist" aria-label={ariaLabel}>
+    <div
+      className="inline-flex items-center gap-1 rounded-full border border-border bg-bg-subtle p-1.5 max-[480px]:w-full max-[480px]:overflow-x-auto"
+      role="tablist"
+      aria-label={ariaLabel}
+    >
       {options.map((option) => {
         const isActive = option.value === value
         return (
@@ -25,7 +28,9 @@ export function SegmentedControl<T extends string>({ options, value, onChange, a
             type="button"
             role="tab"
             aria-selected={isActive}
-            className={`${styles.option} ${isActive ? styles.active : ''}`}
+            className={`inline-flex cursor-pointer items-center gap-1 whitespace-nowrap rounded-full px-4 py-2.5 text-style-label-md text-text-muted transition-colors hover:text-text-h ${
+              isActive ? 'bg-surface-raised text-style-label-lg text-primary-dark' : 'bg-transparent'
+            }`}
             onClick={() => onChange(option.value)}
           >
             {option.icon}

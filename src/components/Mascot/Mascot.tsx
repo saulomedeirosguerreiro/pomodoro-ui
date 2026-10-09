@@ -5,10 +5,19 @@ import { MASCOT_LABELS, pickPhrase } from '../../lib/mascotPhrases'
 import { resolveMascotState, type MascotState } from '../../lib/mascotState'
 import { SpeechBubble } from '../common/SpeechBubble'
 import { TomatoArt } from './TomatoArt'
-import styles from './Mascot.module.css'
 
 /** Janela de exibição dos estados transitórios (US-38 RN-01/CA-002). */
 const RESULT_WINDOW_MS = 5000
+
+const CHARACTER_STATE_CLASSES: Record<MascotState, string> = {
+  ocioso: 'animate-[mascotFloat_3.2s_ease-in-out_infinite]',
+  focado: 'animate-[mascotFloat_3.2s_ease-in-out_infinite]',
+  quase_la: 'animate-[mascotFloat_3.2s_ease-in-out_infinite]',
+  descansando: 'animate-[mascotFloat_3.2s_ease-in-out_infinite]',
+  acolhendo: 'animate-[mascotFloat_3.2s_ease-in-out_infinite]',
+  pausado: 'opacity-75',
+  comemorando: 'animate-[mascotBounce_0.6s_ease-in-out_infinite]',
+}
 
 export function Mascot() {
   const timer = useTimerContext()
@@ -53,21 +62,27 @@ export function Mascot() {
   }, [state])
 
   return (
-    <div className={styles.wrapper}>
+    <div className="flex flex-col items-center gap-2">
       {settings.mascotSpeechEnabled && phrase && <SpeechBubble>{phrase}</SpeechBubble>}
 
-      <div className={`${styles.character} ${styles[state]}`}>
+      <div className={`relative inline-flex ${CHARACTER_STATE_CLASSES[state]}`}>
         <TomatoArt />
         {state === 'comemorando' && (
-          <span className={styles.particles} aria-hidden="true">
-            <span>✨</span>
-            <span>✨</span>
-            <span>✨</span>
+          <span className="pointer-events-none absolute -inset-3" aria-hidden="true">
+            <span className="absolute left-0 animate-[particleRise_1.4s_ease-out_infinite] text-lg [animation-delay:0s]">
+              ✨
+            </span>
+            <span className="absolute left-1/2 animate-[particleRise_1.4s_ease-out_infinite] text-lg [animation-delay:0.3s]">
+              ✨
+            </span>
+            <span className="absolute right-0 animate-[particleRise_1.4s_ease-out_infinite] text-lg [animation-delay:0.6s]">
+              ✨
+            </span>
           </span>
         )}
       </div>
 
-      <p className={styles.status} role="status">
+      <p className="text-style-label-sm text-text-muted" role="status">
         {MASCOT_LABELS[state]}
       </p>
     </div>

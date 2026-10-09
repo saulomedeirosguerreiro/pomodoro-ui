@@ -1,5 +1,3 @@
-import styles from './ProgressBar.module.css'
-
 interface ProgressBarProps {
   value: number
   max: number
@@ -15,7 +13,7 @@ export function ProgressBar({ value, max, variant = 'linear', label }: ProgressB
     const segments = Array.from({ length: safeMax }, (_, i) => i < value)
     return (
       <div
-        className={styles.segmentedTrack}
+        className="flex items-center gap-2"
         role="progressbar"
         aria-valuenow={value}
         aria-valuemin={0}
@@ -23,7 +21,10 @@ export function ProgressBar({ value, max, variant = 'linear', label }: ProgressB
         aria-label={label}
       >
         {segments.map((filled, i) => (
-          <span key={i} className={filled ? styles.segmentFilled : styles.segmentEmpty} />
+          <span
+            key={i}
+            className={`h-3 flex-1 rounded-full ${filled ? 'bg-primary' : 'border border-border bg-bg-subtle'}`}
+          />
         ))}
       </div>
     )
@@ -31,14 +32,17 @@ export function ProgressBar({ value, max, variant = 'linear', label }: ProgressB
 
   return (
     <div
-      className={styles.track}
+      className="h-2 w-full overflow-hidden rounded-full bg-bg-subtle"
       role="progressbar"
       aria-valuenow={value}
       aria-valuemin={0}
       aria-valuemax={safeMax}
       aria-label={label}
     >
-      <div className={styles.fill} style={{ width: `${percent}%` }} />
+      <div
+        className="h-full rounded-full bg-gradient-to-r from-primary to-tertiary transition-[width] duration-300 ease-out"
+        style={{ width: `${percent}%` }}
+      />
     </div>
   )
 }
