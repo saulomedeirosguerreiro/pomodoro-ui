@@ -35,6 +35,7 @@ describe.each(DATA_SOURCE_MODES)('TarefasPage (mode: %s)', (mode) => {
       type: 'foco',
       phase: 'parado',
       remainingSeconds: 1500,
+      totalSeconds: 1500,
       canFinalize: false,
       start: vi.fn(),
       pause: vi.fn(),

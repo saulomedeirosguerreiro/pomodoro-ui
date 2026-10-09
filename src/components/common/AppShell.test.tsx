@@ -34,6 +34,7 @@ function mockTimer() {
     type: 'foco',
     phase: 'parado',
     remainingSeconds: 1500,
+    totalSeconds: 1500,
     canFinalize: false,
     start: vi.fn(),
     pause: vi.fn(),

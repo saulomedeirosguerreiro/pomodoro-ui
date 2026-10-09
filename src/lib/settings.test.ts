@@ -29,4 +29,16 @@ describe('settings', () => {
 
     expect(loadSettings()).toEqual({ ...DEFAULT_SETTINGS, notificationsEnabled: true })
   })
+
+  it('durações de sessão têm 25/5/15 minutos como padrão de fábrica', () => {
+    expect(DEFAULT_SETTINGS.focusMinutes).toBe(25)
+    expect(DEFAULT_SETTINGS.shortBreakMinutes).toBe(5)
+    expect(DEFAULT_SETTINGS.longBreakMinutes).toBe(15)
+  })
+
+  it('loadSettings preenche as durações ausentes com o default (migração de versão antiga sem os 3 campos novos)', () => {
+    localStorage.setItem('pomogarden:settings', JSON.stringify({ focusMinutes: 40 }))
+
+    expect(loadSettings()).toEqual({ ...DEFAULT_SETTINGS, focusMinutes: 40 })
+  })
 })

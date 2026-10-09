@@ -75,6 +75,61 @@ describe('ConfiguracoesPage', () => {
     localStorage.clear()
   })
 
+  describe('seção Tempos', () => {
+    beforeEach(() => {
+      mockDataSourceMode('account')
+      mockGuest()
+    })
+
+    it('carrega os padrões de fábrica (25/5/15) sem nada salvo', () => {
+      renderPage()
+
+      expect(screen.getByLabelText('Foco (minutos)')).toHaveValue(25)
+      expect(screen.getByLabelText('Pausa curta (minutos)')).toHaveValue(5)
+      expect(screen.getByLabelText('Pausa longa (minutos)')).toHaveValue(15)
+    })
+
+    it('editar e sair do campo (blur) persiste a nova duração', async () => {
+      renderPage()
+
+      const focusInput = screen.getByLabelText('Foco (minutos)')
+      await userEvent.clear(focusInput)
+      await userEvent.type(focusInput, '40')
+      await userEvent.tab()
+
+      expect(focusInput).toHaveValue(40)
+      expect(JSON.parse(localStorage.getItem('pomogarden:settings') ?? '{}').focusMinutes).toBe(40)
+    })
+
+    it('valor fora da faixa é clampado ao sair do campo', async () => {
+      renderPage()
+
+      const shortBreakInput = screen.getByLabelText('Pausa curta (minutos)')
+      await userEvent.clear(shortBreakInput)
+      await userEvent.type(shortBreakInput, '999')
+      await userEvent.tab()
+
+      expect(shortBreakInput).toHaveValue(30)
+    })
+
+    it('"Restaurar padrões" volta os 3 campos a 25/5/15 e persiste', async () => {
+      renderPage()
+
+      const focusInput = screen.getByLabelText('Foco (minutos)')
+      await userEvent.clear(focusInput)
+      await userEvent.type(focusInput, '40')
+      await userEvent.tab()
+
+      await userEvent.click(screen.getByRole('button', { name: 'Restaurar padrões' }))
+
+      expect(focusInput).toHaveValue(25)
+      const stored = JSON.parse(localStorage.getItem('pomogarden:settings') ?? '{}')
+      expect(stored.focusMinutes).toBe(25)
+      expect(stored.shortBreakMinutes).toBe(5)
+      expect(stored.longBreakMinutes).toBe(15)
+    })
+  })
+
   describe('mode: account', () => {
     beforeEach(() => {
       mockDataSourceMode('account')
@@ -116,12 +171,16 @@ describe('ConfiguracoesPage', () => {
       expect(document.documentElement.dataset.reduceMotion).toBe('true')
     })
 
-    it('mostra aviso de que o som de fim de sessão ainda não tem áudio real', () => {
+    it('alterna o som de fim de sessão e persiste a preferência', async () => {
       vi.spyOn(notifications, 'getNotificationPermission').mockReturnValue('granted')
 
       renderPage()
+      const checkbox = screen.getByLabelText('Som ao final da sessão')
+      expect(checkbox).toBeChecked()
 
-      expect(screen.getByText(/ainda sem arquivo de áudio nesta versão/i)).toBeInTheDocument()
+      await userEvent.click(checkbox)
+
+      expect(checkbox).not.toBeChecked()
     })
 
     it('"Excluir minha conta" revela o formulário de confirmação de senha', async () => {

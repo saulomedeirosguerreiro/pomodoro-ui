@@ -9,6 +9,7 @@ import { useAuth } from '../context/AuthContext'
 import { useDataSource } from '../context/DataSourceContext'
 import { useGuest } from '../context/GuestContext'
 import { useSettings } from '../context/SettingsContext'
+import { DEFAULT_SETTINGS, type Settings } from '../lib/settings'
 import { getNotificationPermission, requestNotificationPermission } from '../lib/notifications'
 import { usersService } from '../lib/usersService'
 import { ApiError } from '../types/api'
@@ -16,6 +17,27 @@ import { ApiError } from '../types/api'
 const CARD_CLASSES = 'flex flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card'
 const DANGER_CARD_CLASSES = `${CARD_CLASSES} border-danger`
 const DANGER_BUTTON_CLASSES = 'self-start border-danger! text-danger!'
+
+interface DurationFieldConfig {
+  key: 'focusMinutes' | 'shortBreakMinutes' | 'longBreakMinutes'
+  label: string
+  min: number
+  max: number
+}
+
+const DURATION_FIELDS: DurationFieldConfig[] = [
+  { key: 'focusMinutes', label: 'Foco (minutos)', min: 5, max: 120 },
+  { key: 'shortBreakMinutes', label: 'Pausa curta (minutos)', min: 1, max: 30 },
+  { key: 'longBreakMinutes', label: 'Pausa longa (minutos)', min: 5, max: 60 },
+]
+
+function clampDuration(raw: string, fallback: number, min: number, max: number): number {
+  const parsed = Number.parseInt(raw, 10)
+  if (!Number.isFinite(parsed)) {
+    return fallback
+  }
+  return Math.min(max, Math.max(min, parsed))
+}
 
 export function ConfiguracoesPage() {
   const { settings, updateSettings } = useSettings()
@@ -29,6 +51,32 @@ export function ConfiguracoesPage() {
   const [deletePassword, setDeletePassword] = useState('')
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+
+  const [durationInputs, setDurationInputs] = useState<Record<DurationFieldConfig['key'], string>>({
+    focusMinutes: String(settings.focusMinutes),
+    shortBreakMinutes: String(settings.shortBreakMinutes),
+    longBreakMinutes: String(settings.longBreakMinutes),
+  })
+
+  function handleDurationBlur(field: DurationFieldConfig) {
+    const clamped = clampDuration(durationInputs[field.key], settings[field.key], field.min, field.max)
+    setDurationInputs((prev) => ({ ...prev, [field.key]: String(clamped) }))
+    updateSettings({ [field.key]: clamped } as Partial<Settings>)
+  }
+
+  function handleRestoreDefaults() {
+    const defaults = {
+      focusMinutes: DEFAULT_SETTINGS.focusMinutes,
+      shortBreakMinutes: DEFAULT_SETTINGS.shortBreakMinutes,
+      longBreakMinutes: DEFAULT_SETTINGS.longBreakMinutes,
+    }
+    setDurationInputs({
+      focusMinutes: String(defaults.focusMinutes),
+      shortBreakMinutes: String(defaults.shortBreakMinutes),
+      longBreakMinutes: String(defaults.longBreakMinutes),
+    })
+    updateSettings(defaults)
+  }
 
   async function handleRequestPermission() {
     const result = await requestNotificationPermission()
@@ -63,6 +111,27 @@ export function ConfiguracoesPage() {
   return (
     <div className="mx-auto flex max-w-[640px] flex-col gap-4">
       <h1>Configurações</h1>
+
+      <section className={CARD_CLASSES}>
+        <h2 className="text-style-headline-sm">Tempos</h2>
+        {DURATION_FIELDS.map((field) => (
+          <FormField
+            key={field.key}
+            label={field.label}
+            name={field.key}
+            type="number"
+            min={field.min}
+            max={field.max}
+            step={1}
+            value={durationInputs[field.key]}
+            onChange={(e) => setDurationInputs((prev) => ({ ...prev, [field.key]: e.target.value }))}
+            onBlur={() => handleDurationBlur(field)}
+          />
+        ))}
+        <Button variant="secondary" className="self-start" onClick={handleRestoreDefaults}>
+          Restaurar padrões
+        </Button>
+      </section>
 
       <section className={CARD_CLASSES}>
         <h2 className="text-style-headline-sm">Notificações</h2>
@@ -120,9 +189,6 @@ export function ConfiguracoesPage() {
           onChange={(checked) => updateSettings({ sessionEndSoundEnabled: checked })}
           label="Som ao final da sessão"
         />
-        <p className="text-style-body-sm text-text-muted">
-          Ainda sem arquivo de áudio nesta versão — a preferência já fica pronta para quando ele chegar.
-        </p>
       </section>
 
       {mode === 'guest' ? (

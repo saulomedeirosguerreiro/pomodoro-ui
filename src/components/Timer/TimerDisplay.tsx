@@ -1,4 +1,4 @@
-import { formatMMSS, SESSION_DURATIONS_SECONDS, SESSION_LABELS } from '../../lib/timerLogic'
+import { formatMMSS, SESSION_LABELS } from '../../lib/timerLogic'
 import type { SessionType } from '../../types/api'
 
 const RADIUS = 115
@@ -13,11 +13,11 @@ const TYPE_CLASSES: Record<SessionType, string> = {
 interface TimerDisplayProps {
   type: SessionType
   remainingSeconds: number
+  totalSeconds: number
   cycleCount: number
 }
 
-export function TimerDisplay({ type, remainingSeconds, cycleCount }: TimerDisplayProps) {
-  const totalSeconds = SESSION_DURATIONS_SECONDS[type]
+export function TimerDisplay({ type, remainingSeconds, totalSeconds, cycleCount }: TimerDisplayProps) {
   const fractionRemaining = totalSeconds > 0 ? Math.min(1, Math.max(0, remainingSeconds / totalSeconds)) : 0
   const dashOffset = CIRCUMFERENCE * (1 - fractionRemaining)
 

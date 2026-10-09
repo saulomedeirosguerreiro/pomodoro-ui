@@ -1,3 +1,5 @@
+import { DEFAULT_SESSION_DURATIONS_SECONDS } from './timerLogic'
+
 export type AmbientTrackId = 'chuva' | 'cafeteria' | 'passaros'
 
 export interface Settings {
@@ -8,16 +10,23 @@ export interface Settings {
   ambientTrack: AmbientTrackId | null
   ambientVolume: number
   lofiVolume: number
+  focusMinutes: number
+  shortBreakMinutes: number
+  longBreakMinutes: number
 }
 
 export const DEFAULT_SETTINGS: Settings = {
   notificationsEnabled: false,
   mascotSpeechEnabled: true,
   reduceAnimations: false,
-  sessionEndSoundEnabled: false,
+  // G-Q15/US-64 (resolvido): playSessionEndSound() agora sintetiza um som de verdade, então o aviso já vem ligado.
+  sessionEndSoundEnabled: true,
   ambientTrack: null,
   ambientVolume: 0.6,
   lofiVolume: 0.6,
+  focusMinutes: DEFAULT_SESSION_DURATIONS_SECONDS.foco / 60,
+  shortBreakMinutes: DEFAULT_SESSION_DURATIONS_SECONDS.descanso_curto / 60,
+  longBreakMinutes: DEFAULT_SESSION_DURATIONS_SECONDS.descanso_longo / 60,
 }
 
 const STORAGE_KEY = 'pomogarden:settings'

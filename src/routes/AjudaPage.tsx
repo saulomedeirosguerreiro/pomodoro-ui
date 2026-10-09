@@ -1,11 +1,19 @@
+import { useSettings } from '../context/SettingsContext'
 import { formatDurationMinutes } from '../lib/format'
 import { FOCUS_XP, REST_XP, SEEDS_PER_CYCLE_BONUS, SEEDS_PER_FOCUS, XP_PER_LEVEL_MULTIPLIER } from '../lib/gameConstants'
 import { GARDEN_SPECIES } from '../lib/gardenSpecies'
-import { FOCI_PER_LONG_BREAK, SESSION_DURATIONS_SECONDS } from '../lib/timerLogic'
+import { FOCI_PER_LONG_BREAK, sessionDurationsSecondsFrom } from '../lib/timerLogic'
 
 const CARD_CLASSES = 'flex flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card'
 
 export function AjudaPage() {
+  const { settings } = useSettings()
+  const durations = sessionDurationsSecondsFrom(
+    settings.focusMinutes,
+    settings.shortBreakMinutes,
+    settings.longBreakMinutes,
+  )
+
   return (
     <div className="mx-auto flex max-w-[640px] flex-col gap-4">
       <h1>Ajuda</h1>
@@ -13,10 +21,10 @@ export function AjudaPage() {
       <section className={CARD_CLASSES}>
         <h2 className="text-style-headline-sm">O Pomodoro</h2>
         <p className="text-style-body-md text-text">
-          Cada período de <strong>Foco</strong> dura {formatDurationMinutes(SESSION_DURATIONS_SECONDS.foco)}. Depois
-          de um foco, vem uma <strong>Pausa Curta</strong> de {formatDurationMinutes(SESSION_DURATIONS_SECONDS.descanso_curto)}
+          Cada período de <strong>Foco</strong> dura {formatDurationMinutes(durations.foco)}. Depois
+          de um foco, vem uma <strong>Pausa Curta</strong> de {formatDurationMinutes(durations.descanso_curto)}
           {' '}— exceto a cada {FOCI_PER_LONG_BREAK}º foco, quando vem uma{' '}
-          <strong>Pausa Longa</strong> de {formatDurationMinutes(SESSION_DURATIONS_SECONDS.descanso_longo)}.
+          <strong>Pausa Longa</strong> de {formatDurationMinutes(durations.descanso_longo)}.
         </p>
       </section>
 
