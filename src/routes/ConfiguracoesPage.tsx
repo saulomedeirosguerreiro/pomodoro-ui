@@ -110,10 +110,15 @@ export function ConfiguracoesPage() {
 
   return (
     <div className="mx-auto flex max-w-[640px] flex-col gap-4">
-      <h1>Configurações</h1>
+      <div>
+        <h1>Configurações</h1>
+        <p className="text-style-body-sm text-text-muted">Ajuste o Guardião Pomodoro do seu jeito.</p>
+      </div>
 
       <section className={CARD_CLASSES}>
-        <h2 className="text-style-headline-sm">Tempos</h2>
+        <h2 className="flex items-center gap-2 text-style-headline-sm">
+          <span aria-hidden="true">⏱️</span> Tempos
+        </h2>
         {DURATION_FIELDS.map((field) => (
           <FormField
             key={field.key}
@@ -133,67 +138,81 @@ export function ConfiguracoesPage() {
         </Button>
       </section>
 
-      <section className={CARD_CLASSES}>
-        <h2 className="text-style-headline-sm">Notificações</h2>
-        {permission === 'unsupported' && (
-          <p className="text-style-body-sm text-text-muted">Seu navegador não suporta notificações.</p>
-        )}
-        {permission === 'default' && (
-          <Button variant="secondary" onClick={handleRequestPermission}>
-            Ativar notificações do navegador
-          </Button>
-        )}
-        {permission === 'denied' && (
-          <p className="text-style-body-sm text-text-muted">
-            As notificações foram bloqueadas nas configurações do navegador. Para ativar, permita-as manualmente nas
-            permissões do site.
-          </p>
-        )}
-        {permission === 'granted' && (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <section className={CARD_CLASSES}>
+          <h2 className="flex items-center gap-2 text-style-headline-sm">
+            <span aria-hidden="true">🔔</span> Notificações
+          </h2>
+          {permission === 'unsupported' && (
+            <p className="text-style-body-sm text-text-muted">Seu navegador não suporta notificações.</p>
+          )}
+          {permission === 'default' && (
+            <Button variant="secondary" onClick={handleRequestPermission}>
+              Ativar notificações do navegador
+            </Button>
+          )}
+          {permission === 'denied' && (
+            <p className="text-style-body-sm text-text-muted">
+              As notificações foram bloqueadas nas configurações do navegador. Para ativar, permita-as manualmente nas
+              permissões do site.
+            </p>
+          )}
+          {permission === 'granted' && (
+            <Checkbox
+              checked={settings.notificationsEnabled}
+              onChange={(checked) => updateSettings({ notificationsEnabled: checked })}
+              label="Avisar quando uma sessão terminar (com a aba em segundo plano)"
+            />
+          )}
+        </section>
+
+        <section className={CARD_CLASSES}>
+          <h2 className="flex items-center gap-2 text-style-headline-sm">
+            <span aria-hidden="true">🍅</span> Mascote
+          </h2>
           <Checkbox
-            checked={settings.notificationsEnabled}
-            onChange={(checked) => updateSettings({ notificationsEnabled: checked })}
-            label="Avisar quando uma sessão terminar (com a aba em segundo plano)"
+            checked={settings.mascotSpeechEnabled}
+            onChange={(checked) => updateSettings({ mascotSpeechEnabled: checked })}
+            label="Falas do Tomatinho"
           />
-        )}
-      </section>
+        </section>
+
+        <section className={CARD_CLASSES}>
+          <h2 className="flex items-center gap-2 text-style-headline-sm">
+            <span aria-hidden="true">♿</span> Acessibilidade
+          </h2>
+          <Checkbox
+            checked={settings.reduceAnimations}
+            onChange={(checked) => updateSettings({ reduceAnimations: checked })}
+            label="Reduzir animações"
+          />
+        </section>
+
+        <section className={CARD_CLASSES}>
+          <h2 className="flex items-center gap-2 text-style-headline-sm">
+            <span aria-hidden="true">🎧</span> Som
+          </h2>
+          <Checkbox
+            checked={settings.sessionEndSoundEnabled}
+            onChange={(checked) => updateSettings({ sessionEndSoundEnabled: checked })}
+            label="Som ao final da sessão"
+          />
+        </section>
+      </div>
 
       <section className={CARD_CLASSES}>
-        <h2 className="text-style-headline-sm">Mascote</h2>
-        <Checkbox
-          checked={settings.mascotSpeechEnabled}
-          onChange={(checked) => updateSettings({ mascotSpeechEnabled: checked })}
-          label="Falas do Tomatinho"
-        />
-      </section>
-
-      <section className={CARD_CLASSES}>
-        <h2 className="text-style-headline-sm">Acessibilidade</h2>
-        <Checkbox
-          checked={settings.reduceAnimations}
-          onChange={(checked) => updateSettings({ reduceAnimations: checked })}
-          label="Reduzir animações"
-        />
-      </section>
-
-      <section className={CARD_CLASSES}>
-        <h2 className="text-style-headline-sm">Aparência</h2>
+        <h2 className="flex items-center gap-2 text-style-headline-sm">
+          <span aria-hidden="true">🎨</span> Aparência
+        </h2>
         <p className="text-style-body-sm text-text-muted">Escolha entre o tema claro e escuro.</p>
         <ThemeToggle />
       </section>
 
-      <section className={CARD_CLASSES}>
-        <h2 className="text-style-headline-sm">Som</h2>
-        <Checkbox
-          checked={settings.sessionEndSoundEnabled}
-          onChange={(checked) => updateSettings({ sessionEndSoundEnabled: checked })}
-          label="Som ao final da sessão"
-        />
-      </section>
-
       {mode === 'guest' ? (
         <section className={DANGER_CARD_CLASSES}>
-          <h2 className="text-style-headline-sm">Apagar meus dados deste dispositivo</h2>
+          <h2 className="flex items-center gap-2 text-style-headline-sm">
+            <span aria-hidden="true">⚠️</span> Apagar meus dados deste dispositivo
+          </h2>
           <p className="text-style-body-sm text-text-muted">
             Você está usando o Guardião Pomodoro sem conta: tarefas, sessões e conquistas ficam salvas só neste navegador.
             Apagar os dados deste dispositivo os remove para sempre — não há como recuperá-los depois.
@@ -222,7 +241,9 @@ export function ConfiguracoesPage() {
         </section>
       ) : (
         <section className={DANGER_CARD_CLASSES}>
-          <h2 className="text-style-headline-sm">Excluir conta</h2>
+          <h2 className="flex items-center gap-2 text-style-headline-sm">
+            <span aria-hidden="true">⚠️</span> Excluir conta
+          </h2>
           <p className="text-style-body-sm text-text-muted">
             Remove sua conta e todo o histórico (sessões, tarefas, conquistas) para sempre. Essa ação não pode
             ser desfeita.
