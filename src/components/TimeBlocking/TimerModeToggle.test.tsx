@@ -8,14 +8,14 @@ describe('TimerModeToggle', () => {
     render(<TimerModeToggle value="classico" onChange={vi.fn()} />)
 
     expect(screen.getByRole('tab', { name: 'Pomodoro Clássico', selected: true })).toBeInTheDocument()
-    expect(screen.getByRole('tab', { name: 'Time Blocking Flexível', selected: false })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Pomodoro Customizado', selected: false })).toBeInTheDocument()
   })
 
   it('clicar na outra opção chama onChange com o novo modo', async () => {
     const onChange = vi.fn()
     render(<TimerModeToggle value="classico" onChange={onChange} />)
 
-    await userEvent.click(screen.getByRole('tab', { name: 'Time Blocking Flexível' }))
+    await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
 
     expect(onChange).toHaveBeenCalledWith('flexivel')
   })

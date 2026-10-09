@@ -222,12 +222,12 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
       expect(screen.getByText('25:00')).toBeInTheDocument()
     })
 
-    it('alternar para "Time Blocking Flexível" troca para a FlexibleTimerView e some com a tela clássica', async () => {
+    it('alternar para "Pomodoro Customizado" troca para a FlexibleTimerView e some com a tela clássica', async () => {
       mockTimer()
       mockFlexibleTimer()
       renderTimerPage()
 
-      await userEvent.click(screen.getByRole('tab', { name: 'Time Blocking Flexível' }))
+      await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
 
       expect(screen.getByText('Quanto tempo você quer plantar?')).toBeInTheDocument()
       expect(screen.queryByText('25:00')).not.toBeInTheDocument()
@@ -238,7 +238,7 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
       mockFlexibleTimer()
       renderTimerPage()
 
-      await userEvent.click(screen.getByRole('tab', { name: 'Time Blocking Flexível' }))
+      await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
       await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Clássico' }))
 
       expect(screen.getByText('25:00')).toBeInTheDocument()

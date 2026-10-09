@@ -13,7 +13,7 @@ export function TimerModeToggle({ value, onChange }: TimerModeToggleProps) {
   const options = useMemo<SegmentedOption<TimerMode>[]>(
     () => [
       { value: 'classico', label: 'Pomodoro Clássico' },
-      { value: 'flexivel', label: 'Time Blocking Flexível' },
+      { value: 'flexivel', label: 'Pomodoro Customizado' },
     ],
     [],
   )
