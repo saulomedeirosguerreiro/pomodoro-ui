@@ -6,6 +6,7 @@ import { useSessionRegistrationContext } from './SessionRegistrationContext'
 interface FlexibleTimerContextValue extends ReturnType<typeof useFlexibleTimer> {
   registrationError: string | null
   retryRegistration: () => void
+  canRetryRegistration: boolean
   rewardToast: ReturnType<typeof useSessionRegistrationContext>['rewardToast']
   dismissRewardToast: () => void
   achievementToast: Achievement | null
@@ -31,6 +32,7 @@ export function FlexibleTimerProvider({ children }: { children: ReactNode }) {
     ...flexibleTimer,
     registrationError: sessionRegistration.registrationError,
     retryRegistration: sessionRegistration.retryRegistration,
+    canRetryRegistration: sessionRegistration.canRetryRegistration,
     rewardToast: sessionRegistration.rewardToast,
     dismissRewardToast: sessionRegistration.dismissRewardToast,
     achievementToast: sessionRegistration.achievementToast,

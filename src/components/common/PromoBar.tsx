@@ -7,14 +7,18 @@ interface PromoBarProps {
   isDimmed: boolean
 }
 
-/** Barra fixa de divulgação cruzada no rodapé mobile, empilhada acima da navegação. */
+/**
+ * Conteúdo da divulgação cruzada no mobile — sem posicionamento/fundo próprios: o `AppShell` a
+ * empilha, sem espaço, bem acima da barra do mini-player, as duas dentro do mesmo bloco fixo no
+ * rodapé (um `border-t` entre elas faz de divisor).
+ */
 export function PromoBar({ secondsPerAd, isDimmed }: PromoBarProps) {
   const { current, dots } = usePromoRotation(secondsPerAd, PROMOS)
 
   return (
     <section
       aria-label="Divulgação"
-      className="fixed inset-x-0 bottom-[72px] z-20 flex flex-col gap-2 rounded-t-2xl border-t border-border bg-surface p-3 pb-4 transition-opacity duration-300 lg:hidden"
+      className="flex flex-col gap-2 p-3 pb-2 transition-opacity duration-300"
       style={{ opacity: isDimmed ? 0.45 : 1 }}
     >
       <div className="flex items-center gap-3">

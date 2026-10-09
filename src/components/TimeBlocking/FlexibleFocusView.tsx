@@ -62,7 +62,7 @@ export function FlexibleFocusView() {
 
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
           <span
-            className={`text-[56px] ${isAboutToBloom && !settings.reduceAnimations ? 'animate-[mascotBounce_0.6s_ease-in-out_infinite]' : ''}`}
+            className={`-translate-y-2 text-[56px] ${isAboutToBloom && !settings.reduceAnimations ? 'animate-[mascotBounce_0.6s_ease-in-out_infinite]' : ''}`}
             aria-hidden="true"
           >
             {growthStageFor(fractionElapsed)}

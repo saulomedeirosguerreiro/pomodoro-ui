@@ -7,8 +7,13 @@ import { LofiPlayerProvider } from '../context/LofiPlayerContext'
 import { SettingsProvider } from '../context/SettingsContext'
 import { buildMockDataSource, DATA_SOURCE_MODES, mockUseDataSource } from '../test/dataSourceMocks'
 import type { DataSource } from '../lib/dataSource'
+import { trackEvent } from '../lib/analytics'
 import type { TaskItem } from '../types/api'
 import { TimerPage } from './TimerPage'
+
+vi.mock('../lib/analytics', () => ({
+  trackEvent: vi.fn(),
+}))
 
 function renderTimerPage() {
   return render(
@@ -52,6 +57,7 @@ function mockTimer(overrides?: Partial<ReturnType<typeof TimerContextModule.useT
     lastRegisteredSession: null,
     registrationError: null,
     retryRegistration: vi.fn(),
+    canRetryRegistration: true,
     progress: null,
     rewardToast: null,
     dismissRewardToast: vi.fn(),
@@ -92,6 +98,7 @@ function mockFlexibleTimer(overrides?: Partial<ReturnType<typeof FlexibleTimerCo
     startNewSession: vi.fn(),
     registrationError: null,
     retryRegistration: vi.fn(),
+    canRetryRegistration: true,
     rewardToast: null,
     dismissRewardToast: vi.fn(),
     achievementToast: null,
@@ -228,15 +235,16 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
       expect(screen.getByText('25:00')).toBeInTheDocument()
     })
 
-    it('alternar para "Pomodoro Customizado" troca para a FlexibleTimerView e some com a tela clássica', async () => {
+    it('alternar para "Customizado" troca para a FlexibleTimerView e some com a tela clássica', async () => {
       mockTimer()
       mockFlexibleTimer()
       renderTimerPage()
 
-      await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
+      await userEvent.click(screen.getByRole('tab', { name: 'Customizado' }))
 
       expect(screen.getByText('Quanto tempo você quer plantar?')).toBeInTheDocument()
       expect(screen.queryByText('25:00')).not.toBeInTheDocument()
+      expect(trackEvent).toHaveBeenCalledWith('mode_switch', { mode: 'flexivel' })
     })
 
     it('voltar para "Pomodoro Clássico" restaura a tela clássica', async () => {
@@ -244,7 +252,7 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
       mockFlexibleTimer()
       renderTimerPage()
 
-      await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
+      await userEvent.click(screen.getByRole('tab', { name: 'Customizado' }))
       await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Clássico' }))
 
       expect(screen.getByText('25:00')).toBeInTheDocument()
@@ -253,75 +261,79 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
   })
 
   describe('trava do seletor de modo durante sessão ativa', () => {
-    it('com o timer clássico rodando, a aba "Pomodoro Customizado" fica travada e não troca de tela', async () => {
+    it('com o timer clássico rodando, o card "Customizado" fica travado (aria-disabled, com tooltip) e não troca de tela', async () => {
       mockTimer({ phase: 'rodando', canFinalize: true })
       mockFlexibleTimer()
       renderTimerPage()
 
-      const flexivelTab = screen.getByRole('tab', { name: 'Pomodoro Customizado' })
-      expect(flexivelTab).toBeDisabled()
-      // O ModeSwitcher de 2º nível (Foco/Pausa Curta/Pausa Longa) também trava com o timer rodando —
-      // por isso o mesmo aviso aparece duas vezes na tela (um por seletor).
-      expect(screen.getAllByText('Modo bloqueado durante a sessão. Pause ou encerre para trocar.')).toHaveLength(2)
+      const flexivelTab = screen.getByRole('tab', { name: 'Customizado' })
+      expect(flexivelTab).toHaveAttribute('aria-disabled', 'true')
+      expect(flexivelTab).not.toBeDisabled()
 
       await userEvent.click(flexivelTab)
 
       expect(screen.getByText('25:00')).toBeInTheDocument()
     })
 
-    it('com o timer clássico pausado, trocar de modo abre confirmação; confirmar encerra a sessão e troca', async () => {
+    it('com o timer clássico pausado, o card "Customizado" continua travado — pausar não libera a troca', async () => {
       const finalize = vi.fn()
       mockTimer({ phase: 'pausado', canFinalize: true, finalize })
       mockFlexibleTimer()
       renderTimerPage()
 
-      await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
+      const flexivelTab = screen.getByRole('tab', { name: 'Customizado' })
+      expect(flexivelTab).toHaveAttribute('aria-disabled', 'true')
 
-      expect(screen.getByText('Trocar de modo vai encerrar a sessão atual. O tempo já focado será salvo.')).toBeInTheDocument()
-      expect(screen.getByText('25:00')).toBeInTheDocument()
-
-      await userEvent.click(screen.getByRole('button', { name: 'Trocar e encerrar' }))
-
-      expect(finalize).toHaveBeenCalledTimes(1)
-      expect(screen.getByText('Quanto tempo você quer plantar?')).toBeInTheDocument()
-    })
-
-    it('com o timer clássico pausado, cancelar a confirmação mantém a sessão e a tela clássica', async () => {
-      const finalize = vi.fn()
-      mockTimer({ phase: 'pausado', canFinalize: true, finalize })
-      mockFlexibleTimer()
-      renderTimerPage()
-
-      await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
-      await userEvent.click(screen.getByRole('button', { name: 'Continuar sessão' }))
+      await userEvent.click(flexivelTab)
 
       expect(finalize).not.toHaveBeenCalled()
       expect(screen.getByText('25:00')).toBeInTheDocument()
     })
 
-    it('com um foco flexível rodando, a aba "Pomodoro Clássico" fica travada', async () => {
+    it('com um foco flexível rodando, o card "Pomodoro Clássico" fica travado', async () => {
       mockTimer()
       mockFlexibleTimer({ phase: { kind: 'foco_rodando' } })
       renderTimerPage()
 
-      await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
+      await userEvent.click(screen.getByRole('tab', { name: 'Customizado' }))
 
       const classicoTab = screen.getByRole('tab', { name: 'Pomodoro Clássico' })
-      expect(classicoTab).toBeDisabled()
+      expect(classicoTab).toHaveAttribute('aria-disabled', 'true')
+
+      await userEvent.click(classicoTab)
+
+      // Continua na visão flexível (clique no card travado não fez nada) — "Foco flexível" é o
+      // selo de `FlexibleFocusView`, não existe na tela clássica.
+      expect(screen.getByText('Foco flexível')).toBeInTheDocument()
+      expect(screen.queryByText('25:00')).not.toBeInTheDocument()
     })
 
-    it('com um foco flexível pausado, confirmar a troca encerra o bloco atual antes de ir para o Clássico', async () => {
+    it('com um foco flexível pausado, o card "Pomodoro Clássico" continua travado — pausar não libera a troca', async () => {
       const endCurrentBlockNow = vi.fn()
       mockTimer()
       mockFlexibleTimer({ phase: { kind: 'foco_pausado' }, endCurrentBlockNow })
       renderTimerPage()
 
-      await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
-      await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Clássico' }))
-      await userEvent.click(screen.getByRole('button', { name: 'Trocar e encerrar' }))
+      await userEvent.click(screen.getByRole('tab', { name: 'Customizado' }))
+      const classicoTab = screen.getByRole('tab', { name: 'Pomodoro Clássico' })
+      expect(classicoTab).toHaveAttribute('aria-disabled', 'true')
 
-      expect(endCurrentBlockNow).toHaveBeenCalledTimes(1)
-      expect(screen.getByText('25:00')).toBeInTheDocument()
+      await userEvent.click(classicoTab)
+
+      expect(endCurrentBlockNow).not.toHaveBeenCalled()
+      // Ainda na visão flexível (não voltou pro clássico) — "Continuar" é o botão de retomar o foco
+      // pausado, só existe em `FlexibleFocusView`.
+      expect(screen.getByRole('button', { name: 'Continuar' })).toBeInTheDocument()
+      expect(screen.queryByText('25:00')).not.toBeInTheDocument()
+    })
+
+    it('sem sessão ativa em nenhum modo, nenhum card fica travado', () => {
+      mockTimer()
+      mockFlexibleTimer()
+      renderTimerPage()
+
+      expect(screen.getByRole('tab', { name: 'Pomodoro Clássico' })).not.toHaveAttribute('aria-disabled')
+      expect(screen.getByRole('tab', { name: 'Customizado' })).not.toHaveAttribute('aria-disabled')
     })
   })
 })

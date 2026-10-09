@@ -13,6 +13,7 @@ interface TimerContextValue extends ReturnType<typeof useTimer> {
   lastRegisteredSession: PomodoroSession | null
   registrationError: string | null
   retryRegistration: () => void
+  canRetryRegistration: boolean
   progress: ProgressSummary | null
   rewardToast: RewardToast | null
   dismissRewardToast: () => void
@@ -46,6 +47,7 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     lastRegisteredSession: sessionRegistration.lastRegisteredSession,
     registrationError: sessionRegistration.registrationError,
     retryRegistration: sessionRegistration.retryRegistration,
+    canRetryRegistration: sessionRegistration.canRetryRegistration,
     progress: sessionRegistration.progress,
     rewardToast: sessionRegistration.rewardToast,
     dismissRewardToast: sessionRegistration.dismissRewardToast,

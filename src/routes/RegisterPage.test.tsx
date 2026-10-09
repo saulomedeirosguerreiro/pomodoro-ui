@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import * as AuthContext from '../context/AuthContext'
 import * as GuestContext from '../context/GuestContext'
 import * as ThemeContext from '../context/ThemeContext'
+import { trackEvent } from '../lib/analytics'
 import { authService } from '../lib/authService'
 import { hasAnyLocalGuestData } from '../lib/localDataWipe'
 import { migrationService } from '../lib/migrationService'
@@ -23,6 +24,10 @@ vi.mock('../lib/localDataWipe', () => ({
 vi.mock('../lib/migrationService', () => ({
   migrationService: { importLocalData: vi.fn() },
   buildImportRequestFromLocalData: vi.fn(() => ({ guestId: 'guest-1', tasks: [], sessions: [] })),
+}))
+
+vi.mock('../lib/analytics', () => ({
+  trackEvent: vi.fn(),
 }))
 
 function renderRegisterPage() {
@@ -174,6 +179,7 @@ describe('RegisterPage', () => {
     expect(await screen.findByText('Tela de login')).toBeInTheDocument()
     expect(authService.login).not.toHaveBeenCalled()
     expect(migrationService.importLocalData).not.toHaveBeenCalled()
+    expect(trackEvent).toHaveBeenCalledWith('sign_up')
   })
 
   it('cadastro com dados locais pendentes importa automaticamente, sem diálogo, e navega para /timer quando nada foi pulado', async () => {

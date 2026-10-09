@@ -48,6 +48,7 @@ function mockTimer() {
     lastRegisteredSession: null,
     registrationError: null,
     retryRegistration: vi.fn(),
+    canRetryRegistration: true,
     progress: null,
     rewardToast: null,
     dismissRewardToast: vi.fn(),

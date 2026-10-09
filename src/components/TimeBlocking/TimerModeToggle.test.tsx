@@ -8,78 +8,46 @@ describe('TimerModeToggle', () => {
     render(<TimerModeToggle value="classico" onChange={vi.fn()} />)
 
     expect(screen.getByRole('tab', { name: 'Pomodoro Clássico', selected: true })).toBeInTheDocument()
-    expect(screen.getByRole('tab', { name: 'Pomodoro Customizado', selected: false })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Customizado', selected: false })).toBeInTheDocument()
   })
 
   it('clicar na outra opção chama onChange com o novo modo', async () => {
     const onChange = vi.fn()
     render(<TimerModeToggle value="classico" onChange={onChange} />)
 
-    await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
+    await userEvent.click(screen.getByRole('tab', { name: 'Customizado' }))
 
     expect(onChange).toHaveBeenCalledWith('flexivel')
   })
 
-  it('isLocked desabilita a outra opção e mostra o aviso role="status"', async () => {
+  it('isLocked marca a outra opção como aria-disabled, mostra o tooltip e ignora o clique', async () => {
     const onChange = vi.fn()
     render(<TimerModeToggle value="classico" onChange={onChange} isLocked />)
 
-    const flexivelTab = screen.getByRole('tab', { name: 'Pomodoro Customizado' })
-    expect(flexivelTab).toBeDisabled()
-    expect(screen.getByRole('status')).toHaveTextContent('Modo bloqueado durante a sessão. Pause ou encerre para trocar.')
+    const flexivelTab = screen.getByRole('tab', { name: 'Customizado' })
+    expect(flexivelTab).toHaveAttribute('aria-disabled', 'true')
+    // continua focável de propósito — travar não pode tirar o card da ordem de Tab, porque o
+    // tooltip também precisa aparecer chegando nele com teclado, não só no hover do mouse.
+    expect(flexivelTab).not.toBeDisabled()
+
+    expect(screen.getByRole('tooltip')).toHaveTextContent(
+      'Modo travado enquanto a sessão está rodando, no foco ou na pausa, para não perder seu ciclo. Encerre a sessão para trocar.',
+    )
 
     await userEvent.click(flexivelTab)
     expect(onChange).not.toHaveBeenCalled()
   })
 
-  it('isLocked não desabilita a opção já ativa', () => {
+  it('isLocked não trava a opção já ativa', () => {
     render(<TimerModeToggle value="classico" onChange={vi.fn()} isLocked />)
 
-    expect(screen.getByRole('tab', { name: 'Pomodoro Clássico' })).not.toBeDisabled()
+    const classicoTab = screen.getByRole('tab', { name: 'Pomodoro Clássico' })
+    expect(classicoTab).not.toHaveAttribute('aria-disabled')
   })
 
-  it('requiresConfirmation abre um diálogo em vez de trocar direto', async () => {
-    const onChange = vi.fn()
-    const onConfirmedChange = vi.fn()
-    render(<TimerModeToggle value="classico" onChange={onChange} requiresConfirmation onConfirmedChange={onConfirmedChange} />)
+  it('sem isLocked, não existe tooltip nenhum', () => {
+    render(<TimerModeToggle value="classico" onChange={vi.fn()} />)
 
-    await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
-
-    expect(screen.getByText('Trocar de modo vai encerrar a sessão atual. O tempo já focado será salvo.')).toBeInTheDocument()
-    expect(onChange).not.toHaveBeenCalled()
-    expect(onConfirmedChange).not.toHaveBeenCalled()
-  })
-
-  it('confirmar a troca chama onConfirmedChange com o modo pendente', async () => {
-    const onConfirmedChange = vi.fn()
-    render(<TimerModeToggle value="classico" onChange={vi.fn()} requiresConfirmation onConfirmedChange={onConfirmedChange} />)
-
-    await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
-    await userEvent.click(screen.getByRole('button', { name: 'Trocar e encerrar' }))
-
-    expect(onConfirmedChange).toHaveBeenCalledWith('flexivel')
-  })
-
-  it('cancelar a confirmação não chama onChange nem onConfirmedChange', async () => {
-    const onChange = vi.fn()
-    const onConfirmedChange = vi.fn()
-    render(<TimerModeToggle value="classico" onChange={onChange} requiresConfirmation onConfirmedChange={onConfirmedChange} />)
-
-    await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
-    await userEvent.click(screen.getByRole('button', { name: 'Continuar sessão' }))
-
-    expect(screen.queryByText('Trocar de modo vai encerrar a sessão atual. O tempo já focado será salvo.')).not.toBeInTheDocument()
-    expect(onChange).not.toHaveBeenCalled()
-    expect(onConfirmedChange).not.toHaveBeenCalled()
-  })
-
-  it('sem onConfirmedChange, confirmar cai em onChange diretamente', async () => {
-    const onChange = vi.fn()
-    render(<TimerModeToggle value="classico" onChange={onChange} requiresConfirmation />)
-
-    await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
-    await userEvent.click(screen.getByRole('button', { name: 'Trocar e encerrar' }))
-
-    expect(onChange).toHaveBeenCalledWith('flexivel')
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
   })
 })

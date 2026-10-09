@@ -50,11 +50,11 @@ export function ThemeToggle() {
       />
       <span
         aria-hidden="true"
-        className={`relative inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-surface text-primary shadow-card transition-transform duration-200 ${
-          isDark ? 'translate-x-6' : 'translate-x-0'
+        className={`relative inline-flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface text-primary shadow-card transition-transform duration-200 ${
+          isDark ? 'translate-x-[26px]' : 'translate-x-0'
         }`}
       >
-        {isDark ? <MoonIcon className="h-3.5 w-3.5" /> : <SunIcon className="h-3.5 w-3.5" />}
+        {isDark ? <MoonIcon className="h-3 w-3" /> : <SunIcon className="h-3 w-3" />}
       </span>
     </button>
   )

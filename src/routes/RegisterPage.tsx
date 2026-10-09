@@ -8,6 +8,7 @@ import { FormField } from '../components/common/FormField'
 import { MigrationReport } from '../components/migration/MigrationReport'
 import { useAuth } from '../context/AuthContext'
 import { useGuest } from '../context/GuestContext'
+import { trackEvent } from '../lib/analytics'
 import { authService } from '../lib/authService'
 import { hasAnyLocalGuestData } from '../lib/localDataWipe'
 import { buildImportRequestFromLocalData, migrationService, type ImportGuestDataResponse } from '../lib/migrationService'
@@ -64,6 +65,8 @@ export function RegisterPage() {
       setIsSubmitting(false)
       return
     }
+
+    trackEvent('sign_up')
 
     if (!hasAnyLocalGuestData()) {
       navigate('/login', { state: { email, message: 'Conta criada com sucesso! Faça login.' } })

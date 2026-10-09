@@ -11,6 +11,8 @@ export interface Settings {
   longBreakMinutes: number
   promoSecondsPerAd: number
   promoFocusPreview: boolean
+  /** Opt-out do Google Analytics (ligado por padrão — ver Política de Privacidade). */
+  analyticsEnabled: boolean
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -25,6 +27,7 @@ export const DEFAULT_SETTINGS: Settings = {
   longBreakMinutes: DEFAULT_SESSION_DURATIONS_SECONDS.descanso_longo / 60,
   promoSecondsPerAd: 8,
   promoFocusPreview: false,
+  analyticsEnabled: true,
 }
 
 const STORAGE_KEY = 'pomogarden:settings'

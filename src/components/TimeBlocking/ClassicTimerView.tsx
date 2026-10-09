@@ -94,37 +94,41 @@ export function ClassicTimerView() {
 
   return (
     <>
-      <Mascot />
+      <section className="flex w-full flex-col items-center gap-4 rounded-2xl border border-border bg-surface p-6 shadow-card">
+        <Mascot />
 
-      <ModeSwitcher type={timer.type} phase={timer.phase} onSelectType={timer.selectType} />
+        <ModeSwitcher type={timer.type} phase={timer.phase} onSelectType={timer.selectType} />
 
-      <TimerDisplay
-        type={timer.type}
-        remainingSeconds={timer.remainingSeconds}
-        totalSeconds={timer.totalSeconds}
-        cycleCount={cycleCount}
-      />
+        <TimerDisplay
+          type={timer.type}
+          remainingSeconds={timer.remainingSeconds}
+          totalSeconds={timer.totalSeconds}
+          cycleCount={cycleCount}
+        />
 
-      <TimerControls
-        type={timer.type}
-        phase={timer.phase}
-        canFinalize={timer.canFinalize}
-        onStart={timer.start}
-        onPause={timer.pause}
-        onResume={timer.resume}
-        onRestart={timer.restart}
-        onFinalize={timer.finalize}
-        onSkip={timer.skip}
-      />
+        <TimerControls
+          type={timer.type}
+          phase={timer.phase}
+          canFinalize={timer.canFinalize}
+          onStart={timer.start}
+          onPause={timer.pause}
+          onResume={timer.resume}
+          onRestart={timer.restart}
+          onFinalize={timer.finalize}
+          onSkip={timer.skip}
+        />
 
-      {timer.registrationError && (
-        <div className="flex w-full flex-col items-center gap-2 rounded-lg bg-danger-bg p-4 text-center text-danger">
-          <p>{timer.registrationError}</p>
-          <Button variant="ghost" onClick={timer.retryRegistration}>
-            Tentar novamente
-          </Button>
-        </div>
-      )}
+        {timer.registrationError && (
+          <div className="flex w-full flex-col items-center gap-2 rounded-lg bg-danger-bg p-4 text-center text-danger">
+            <p>{timer.registrationError}</p>
+            {timer.canRetryRegistration && (
+              <Button variant="ghost" onClick={timer.retryRegistration}>
+                Tentar novamente
+              </Button>
+            )}
+          </div>
+        )}
+      </section>
 
       <MissionCard task={focusedTask} />
 

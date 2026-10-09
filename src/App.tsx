@@ -1,4 +1,5 @@
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { AppShell } from './components/common/AppShell'
 import { ProtectedRoute } from './components/common/ProtectedRoute'
 import { PublicOnlyRoute } from './components/common/PublicOnlyRoute'
@@ -8,9 +9,10 @@ import { FlexibleTimerProvider } from './context/FlexibleTimerContext'
 import { GuestProvider } from './context/GuestContext'
 import { LofiPlayerProvider } from './context/LofiPlayerContext'
 import { SessionRegistrationProvider } from './context/SessionRegistrationContext'
-import { SettingsProvider } from './context/SettingsContext'
+import { SettingsProvider, useSettings } from './context/SettingsContext'
 import { ThemeProvider } from './context/ThemeContext'
 import { TimerProvider } from './context/TimerContext'
+import { setAnalyticsEnabled, trackPageView } from './lib/analytics'
 import { AjudaPage } from './routes/AjudaPage'
 import { ConfiguracoesPage } from './routes/ConfiguracoesPage'
 import { ConquistasPage } from './routes/ConquistasPage'
@@ -23,6 +25,27 @@ import { TarefasPage } from './routes/TarefasPage'
 import { TermosDeUsoPage } from './routes/TermosDeUsoPage'
 import { TimerPage } from './routes/TimerPage'
 import { TweaksPage } from './routes/TweaksPage'
+
+/**
+ * Liga/desliga o envio ao GA4 conforme a preferência (opt-out em Configurações, ligado por padrão —
+ * `src/lib/analytics.ts` só efetivamente carrega o script se `VITE_GA_MEASUREMENT_ID` existir) e
+ * dispara `page_view` manual a cada troca de rota — o `gtag.js` padrão só mede o carregamento
+ * inicial, não a navegação client-side de uma SPA.
+ */
+function AnalyticsBootstrap() {
+  const { settings } = useSettings()
+  const location = useLocation()
+
+  useEffect(() => {
+    setAnalyticsEnabled(settings.analyticsEnabled)
+  }, [settings.analyticsEnabled])
+
+  useEffect(() => {
+    trackPageView(location.pathname)
+  }, [location.pathname])
+
+  return null
+}
 
 function TimerScope() {
   return (
@@ -42,6 +65,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <SettingsProvider>
+        <AnalyticsBootstrap />
         <AuthProvider>
           <GuestProvider>
             <DataSourceProvider>

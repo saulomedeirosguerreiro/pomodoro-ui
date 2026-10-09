@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
 import { UNAUTHORIZED_EVENT } from '../lib/apiClient'
+import { trackEvent } from '../lib/analytics'
 import { authService } from '../lib/authService'
 import { tokenStorage } from '../lib/tokenStorage'
 import { usersService } from '../lib/usersService'
@@ -58,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { token } = await authService.login({ email, password })
     tokenStorage.set(token)
     await refreshProfile()
+    trackEvent('login')
   }, [refreshProfile])
 
   const logout = useCallback(() => {

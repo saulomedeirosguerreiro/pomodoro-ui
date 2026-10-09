@@ -47,6 +47,7 @@ describe.each(DATA_SOURCE_MODES)('TarefasPage (mode: %s)', (mode) => {
       lastRegisteredSession: null,
       registrationError: null,
       retryRegistration: vi.fn(),
+      canRetryRegistration: true,
       progress: null,
       rewardToast: null,
       dismissRewardToast: vi.fn(),

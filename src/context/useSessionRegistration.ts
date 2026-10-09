@@ -1,11 +1,49 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { SessionRegistration } from '../components/Timer/useTimer'
+import { trackEvent } from '../lib/analytics'
 import { getNotificationPermission, requestNotificationPermission, showSessionNotification } from '../lib/notifications'
 import { playSessionEndSound } from '../lib/sound'
-import { SESSION_LABELS } from '../lib/timerLogic'
+import { SESSION_DURATION_RANGE_MINUTES, SESSION_LABELS } from '../lib/timerLogic'
+import { ApiError } from '../types/api'
 import type { Achievement, PomodoroSession, ProgressSummary, TaskItem } from '../types/api'
 import { useDataSource } from './DataSourceContext'
 import { useSettings } from './SettingsContext'
+
+const GENERIC_REGISTRATION_ERROR = 'Não foi possível registrar a sessão. Seus dados não foram perdidos.'
+
+interface RegistrationErrorDescription {
+  message: string
+  /** `false` para o caso de duração fora da faixa: reenviar o mesmo payload falha sempre do mesmo jeito. */
+  retryable: boolean
+}
+
+/**
+ * Detecta o caso de duração fora da faixa permitida pro tipo (422 `validation_error` no campo
+ * `DurationSeconds`) — típico de "Encerrar agora"/"Voltar ao foco agora" num bloco com poucos
+ * segundos decorridos — e explica isso em vez do texto genérico, marcando como não reenviável
+ * (já que tentar de novo reenvia a mesma duração e falha do mesmo jeito).
+ */
+function describeRegistrationError(error: unknown, registration: SessionRegistration): RegistrationErrorDescription {
+  if (error instanceof ApiError && error.code === 'validation_error' && error.fieldMessage('DurationSeconds')) {
+    const range = SESSION_DURATION_RANGE_MINUTES[registration.type]
+    const label = SESSION_LABELS[registration.type].toLowerCase()
+
+    if (registration.durationSeconds < range.min * 60) {
+      return {
+        message: `Esse bloco de ${label} durou menos que o mínimo de ${range.min} min e por isso não entra no seu histórico. Não é um erro — pode seguir normalmente.`,
+        retryable: false,
+      }
+    }
+    if (registration.durationSeconds > range.max * 60) {
+      return {
+        message: `Esse bloco de ${label} passou do máximo de ${range.max} min e por isso não entra no seu histórico. Não é um erro — pode seguir normalmente.`,
+        retryable: false,
+      }
+    }
+  }
+
+  return { message: GENERIC_REGISTRATION_ERROR, retryable: true }
+}
 
 export interface RewardToast {
   xp: number
@@ -114,6 +152,7 @@ export function useSessionRegistration() {
             type: 'achievement',
             message: `Conquista desbloqueada: ${newlyUnlocked.name}`,
           })
+          trackEvent('achievement_unlocked', { achievement_code: newlyUnlocked.code })
         }
       }
     } catch {
@@ -161,6 +200,13 @@ export function useSessionRegistration() {
         setLastRegisteredSession(created)
         setPendingRegistration(null)
 
+        const isFocus = registration.type === 'foco'
+        const isCompleted = registration.status === 'concluido'
+        trackEvent(
+          isFocus ? (isCompleted ? 'focus_completed' : 'focus_interrupted') : (isCompleted ? 'break_completed' : 'break_interrupted'),
+          { duration_seconds: registration.durationSeconds },
+        )
+
         if (registration.status === 'concluido') {
           // US-59: só com a aba em segundo plano, e só se a permissão já foi concedida (CA-002).
           if (settings.notificationsEnabled && document.hidden) {
@@ -185,13 +231,15 @@ export function useSessionRegistration() {
             })
             if (leveledUp) {
               pushEvent({ id: `level-${updated.level}`, type: 'level', message: `Nível ${updated.level} alcançado!` })
+              trackEvent('level_up', { level: updated.level })
             }
           }
           refreshAchievements()
         }
-      } catch {
-        setPendingRegistration(registration)
-        setRegistrationError('Não foi possível registrar a sessão. Seus dados não foram perdidos.')
+      } catch (error) {
+        const { message, retryable } = describeRegistrationError(error, registration)
+        setPendingRegistration(retryable ? registration : null)
+        setRegistrationError(message)
       }
     },
     [dataSource, refreshTotalFociCompleted, refreshProgress, refreshAchievements, pushEvent, settings],
@@ -212,6 +260,7 @@ export function useSessionRegistration() {
     lastRegisteredSession,
     registrationError,
     retryRegistration,
+    canRetryRegistration: pendingRegistration !== null,
     progress,
     rewardToast,
     dismissRewardToast,

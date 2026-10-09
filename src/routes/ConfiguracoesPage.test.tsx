@@ -183,6 +183,19 @@ describe('ConfiguracoesPage', () => {
       expect(checkbox).not.toBeChecked()
     })
 
+    it('analytics vem ligado por padrão e pode ser desativado em Privacidade', async () => {
+      vi.spyOn(notifications, 'getNotificationPermission').mockReturnValue('granted')
+
+      renderPage()
+      const checkbox = screen.getByLabelText('Compartilhar dados de uso anônimos (Google Analytics)')
+      expect(checkbox).toBeChecked()
+
+      await userEvent.click(checkbox)
+
+      expect(checkbox).not.toBeChecked()
+      expect(JSON.parse(localStorage.getItem('pomogarden:settings') ?? '{}').analyticsEnabled).toBe(false)
+    })
+
     it('"Excluir minha conta" revela o formulário de confirmação de senha', async () => {
       vi.spyOn(notifications, 'getNotificationPermission').mockReturnValue('granted')
 

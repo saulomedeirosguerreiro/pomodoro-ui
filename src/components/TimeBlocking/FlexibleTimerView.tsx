@@ -40,7 +40,7 @@ function EndedSummary() {
  */
 export function FlexibleTimerView() {
   const flexible = useFlexibleTimerContext()
-  const { phase, progress, registrationError, retryRegistration } = flexible
+  const { phase, progress, registrationError, retryRegistration, canRetryRegistration } = flexible
 
   return (
     <>
@@ -83,9 +83,11 @@ export function FlexibleTimerView() {
       {registrationError && (
         <div className="flex w-full flex-col items-center gap-2 rounded-lg bg-danger-bg p-4 text-center text-danger">
           <p>{registrationError}</p>
-          <Button variant="ghost" onClick={retryRegistration}>
-            Tentar novamente
-          </Button>
+          {canRetryRegistration && (
+            <Button variant="ghost" onClick={retryRegistration}>
+              Tentar novamente
+            </Button>
+          )}
         </div>
       )}
 

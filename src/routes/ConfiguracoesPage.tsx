@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../components/common/Button'
 import { Checkbox } from '../components/common/Checkbox'
 import { Dialog } from '../components/common/Dialog'
@@ -206,6 +206,25 @@ export function ConfiguracoesPage() {
         </h2>
         <p className="text-style-body-sm text-text-muted">Escolha entre o tema claro e escuro.</p>
         <ThemeToggle />
+      </section>
+
+      <section className={CARD_CLASSES}>
+        <h2 className="flex items-center gap-2 text-style-headline-sm">
+          <span aria-hidden="true">🔒</span> Privacidade
+        </h2>
+        <Checkbox
+          checked={settings.analyticsEnabled}
+          onChange={(checked) => updateSettings({ analyticsEnabled: checked })}
+          label="Compartilhar dados de uso anônimos (Google Analytics)"
+        />
+        <p className="text-style-body-sm text-text-muted">
+          Ajuda a entender como o app é usado, pra melhorá-lo. Nunca inclui senha, e-mail ou conteúdo
+          de tarefas/sessões. Detalhes na{' '}
+          <Link to="/privacidade" target="_blank" rel="noopener noreferrer" className="text-primary-dark">
+            Política de Privacidade
+          </Link>
+          .
+        </p>
       </section>
 
       {mode === 'guest' ? (

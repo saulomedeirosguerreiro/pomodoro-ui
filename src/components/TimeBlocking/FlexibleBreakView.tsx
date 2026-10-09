@@ -46,7 +46,7 @@ export function FlexibleBreakView() {
         </svg>
 
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
-          <span className="text-[56px]" aria-hidden="true">
+          <span className="-translate-y-2 text-[56px]" aria-hidden="true">
             🪑
           </span>
           <span className="text-style-display-timer-mobile text-text-h">{formatMMSS(remainingSeconds)}</span>

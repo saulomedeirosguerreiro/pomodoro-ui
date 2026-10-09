@@ -36,6 +36,7 @@ interface SidebarContentProps {
   progress: ProgressSummary | null
   isTimerRunning: boolean
   onLogout: () => void
+  onAccessAccount: () => void
   onStartSession: () => void
   /** Fecha o menu hambúrguer ao navegar — `undefined` na sidebar desktop, que não tem o que fechar. */
   onNavigate?: () => void
@@ -57,6 +58,7 @@ function SidebarContent({
   progress,
   isTimerRunning,
   onLogout,
+  onAccessAccount,
   onStartSession,
   onNavigate,
   promoSlot,
@@ -95,11 +97,13 @@ function SidebarContent({
             </div>
           </>
         )}
-        {/* Guest não tem sessão de conta para encerrar — a saída deliberada (com confirmação) já
-            existe em Configurações ("Apagar meus dados deste dispositivo"), não no nav bar. */}
-        {isAccount && (
+        {isAccount ? (
           <Button variant="ghost" fullWidth onClick={onLogout}>
             Sair
+          </Button>
+        ) : (
+          <Button variant="ghost" fullWidth onClick={onAccessAccount}>
+            Acessar minha conta
           </Button>
         )}
       </div>
@@ -240,6 +244,7 @@ export function AppShell() {
           progress={progress}
           isTimerRunning={isTimerRunning}
           onLogout={handleLogout}
+          onAccessAccount={() => navigate('/login')}
           onStartSession={handleStartSession}
           promoSlot={<PromoCard secondsPerAd={settings.promoSecondsPerAd} isDimmed={isPromoDimmed} />}
         />
@@ -278,6 +283,7 @@ export function AppShell() {
               progress={progress}
               isTimerRunning={isTimerRunning}
               onLogout={handleLogout}
+              onAccessAccount={() => navigate('/login')}
               onStartSession={handleStartSession}
               onNavigate={() => setIsMenuOpen(false)}
             />
@@ -285,7 +291,7 @@ export function AppShell() {
         </div>
       )}
 
-      <div className="flex min-w-0 flex-1 flex-col pb-[172px] lg:pb-0">
+      <div className="flex min-w-0 flex-1 flex-col pb-[144px] lg:pb-0">
         <header className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-border bg-surface px-4 py-3 lg:px-6 lg:py-4">
           <div className="flex min-w-0 items-center gap-3">
             <button
@@ -327,9 +333,13 @@ export function AppShell() {
               <LofiMiniPlayer />
             </div>
             <div className="hidden lg:block">
-              <Button onClick={handleStartSession} disabled={isTimerRunning}>
-                Iniciar Sessão
-              </Button>
+              {isAccount ? (
+                <Button variant="ghost" onClick={handleLogout}>
+                  Sair
+                </Button>
+              ) : (
+                <Button onClick={() => navigate('/login')}>Acessar minha conta</Button>
+              )}
             </div>
             <EventsBell />
             <ThemeToggle />
@@ -347,10 +357,11 @@ export function AppShell() {
         </main>
       </div>
 
-      <PromoBar secondsPerAd={settings.promoSecondsPerAd} isDimmed={isPromoDimmed} />
-
-      <div className="fixed inset-x-0 bottom-0 z-20 flex justify-center border-t border-border bg-surface p-2 lg:hidden">
-        <LofiMiniPlayer />
+      <div className="fixed inset-x-0 bottom-0 z-20 flex flex-col border-t border-border bg-surface lg:hidden">
+        <PromoBar secondsPerAd={settings.promoSecondsPerAd} isDimmed={isPromoDimmed} />
+        <div className="flex justify-center border-t border-border p-2">
+          <LofiMiniPlayer />
+        </div>
       </div>
 
       {timer.rewardToast && <RewardToastView toast={timer.rewardToast} onDismiss={timer.dismissRewardToast} />}

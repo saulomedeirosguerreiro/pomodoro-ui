@@ -35,6 +35,12 @@ VITE_API_URL=http://localhost:5134
 > este frontend não funciona sozinho, ele só consome a API. O `Cors:AllowedOrigin` da API precisa bater com
 > a origem de onde este frontend sobe (`http://localhost:5173` por padrão).
 
+`VITE_GA_MEASUREMENT_ID` é opcional (Google Analytics 4, formato `G-XXXXXXXXXX`, em Admin > Fluxos
+de dados > fluxo Web da propriedade GA4). Sem essa variável o app funciona normalmente e nenhum
+evento é enviado (ver `src/lib/analytics.ts`); com ela, o envio vem ligado por padrão e cada pessoa
+pode desativar em Configurações > Privacidade (ver `PoliticaDePrivacidadePage.tsx` para o texto de
+divulgação).
+
 ## Como executar em desenvolvimento
 
 ```bash

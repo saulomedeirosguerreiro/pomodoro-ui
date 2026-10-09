@@ -29,6 +29,18 @@ export const FLEXIBLE_BREAK_MAX_MINUTES = 60
 export const FLEXIBLE_FOCUS_PRESETS_MINUTES = [5, 10, 15, 25, 30, 45, 60] as const
 export const FLEXIBLE_BREAK_PRESETS_MINUTES = [5, 10, 15, 20] as const
 
+/**
+ * Faixa min/max por tipo (em minutos), espelhando `SessionTypeDurations` do backend 1:1 (ao
+ * contrário de `FLEXIBLE_BREAK_MIN/MAX_MINUTES`, que são uma faixa única simplificada p/ a UI de
+ * escolha de duração). Usado para explicar ao usuário por que um bloco ficou fora da faixa
+ * permitida (ex.: "Encerrar agora" poucos segundos após iniciar).
+ */
+export const SESSION_DURATION_RANGE_MINUTES: Record<SessionType, { min: number; max: number }> = {
+  foco: { min: 5, max: 120 },
+  descanso_curto: { min: 1, max: 30 },
+  descanso_longo: { min: 5, max: 60 },
+}
+
 /** Converte os 3 campos de duração das Settings (minutos) no mapa de segundos por tipo que o timer consome. */
 export function sessionDurationsSecondsFrom(
   focusMinutes: number,

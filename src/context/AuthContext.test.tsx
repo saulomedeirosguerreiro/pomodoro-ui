@@ -2,6 +2,7 @@ import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { UNAUTHORIZED_EVENT } from '../lib/apiClient'
+import { trackEvent } from '../lib/analytics'
 import { authService } from '../lib/authService'
 import { tokenStorage } from '../lib/tokenStorage'
 import { usersService } from '../lib/usersService'
@@ -13,6 +14,10 @@ vi.mock('../lib/usersService', () => ({
 
 vi.mock('../lib/authService', () => ({
   authService: { login: vi.fn() },
+}))
+
+vi.mock('../lib/analytics', () => ({
+  trackEvent: vi.fn(),
 }))
 
 /** Consumidor mínimo só para expor `user`/`sessionExpired` no DOM e disparar `acknowledgeSessionExpired`. */
@@ -85,5 +90,6 @@ describe('AuthContext', () => {
     expect(await screen.findByText('user: João')).toBeInTheDocument()
     expect(screen.getByText('sessionExpired: false')).toBeInTheDocument()
     expect(tokenStorage.get()).toBe('tok-123')
+    expect(trackEvent).toHaveBeenCalledWith('login')
   })
 })

@@ -22,25 +22,30 @@ const SECTIONS: SectionConfig[] = [
   {
     number: 3,
     title: 'Não comercialização de dados',
-    body: 'Não vendemos, alugamos nem compartilhamos seus dados pessoais com terceiros para fins de publicidade ou marketing.',
+    body: 'Não vendemos nem alugamos seus dados pessoais a terceiros, e não os usamos para publicidade. O único compartilhamento de dados que fazemos com um serviço externo é o descrito na seção "Google Analytics" abaixo — uso agregado, não dados pessoais.',
   },
   {
     number: 4,
     title: 'Armazenamento local (localStorage)',
-    body: 'O aplicativo usa o armazenamento local do seu navegador (`localStorage`) para guardar preferências (como tema claro/escuro e durações de foco/pausa) e, no modo convidado, todo o seu histórico de uso. Esses dados não são cookies de rastreamento de terceiros e não são compartilhados com nenhum serviço externo.',
+    body: 'O aplicativo usa o armazenamento local do seu navegador (`localStorage`) para guardar preferências (como tema claro/escuro e durações de foco/pausa) e, no modo convidado, todo o seu histórico de uso. Esses dados não são cookies de rastreamento de terceiros — ficam só no seu navegador, a não ser que você crie uma conta e opte por importá-los.',
   },
   {
     number: 5,
+    title: 'Google Analytics',
+    body: 'Usamos o Google Analytics (GA4) para entender, de forma agregada, como as pessoas usam o aplicativo — por exemplo, quais páginas são mais acessadas, quantos focos/pausas são concluídos, e quando alguém sobe de nível ou desbloqueia uma conquista. Isso NUNCA inclui seu nome, e-mail, senha ou o conteúdo das suas tarefas/sessões, e o GA4 não registra seu endereço IP completo. Essa coleta vem ativada por padrão, mas pode ser desativada a qualquer momento em Configurações > Privacidade — a partir daí, nenhum dado novo é enviado ao Google.',
+  },
+  {
+    number: 6,
     title: 'Retenção e exclusão de dados',
     body: 'Mantemos os dados da sua conta enquanto ela existir. Você pode solicitar a exclusão da sua conta e dos dados associados a qualquer momento. No modo convidado, a opção "Apagar meus dados deste dispositivo", em Configurações, remove permanentemente os dados salvos neste navegador.',
   },
   {
-    number: 6,
+    number: 7,
     title: 'Seus direitos',
     body: 'Em conformidade com a Lei Geral de Proteção de Dados (LGPD), você tem direito a acessar, corrigir, portar ou solicitar a exclusão dos seus dados pessoais, entrando em contato pelos canais indicados abaixo.',
   },
   {
-    number: 7,
+    number: 8,
     title: 'Contato',
     body: 'Dúvidas ou solicitações sobre esta Política de Privacidade podem ser enviadas para o e-mail de suporte informado na página inicial do aplicativo.',
   },
