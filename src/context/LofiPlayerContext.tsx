@@ -6,11 +6,13 @@ const UNAVAILABLE_MESSAGE = 'Esse áudio ainda não está disponível nesta vers
 
 interface LofiPlayerContextValue {
   track: LofiTrackMeta
+  trackIndex: number
   isPlaying: boolean
   message: string | null
   volume: number
   handlePlayPause: () => void
   handleNext: () => void
+  selectTrack: (index: number) => void
   setVolume: (volume: number) => void
 }
 
@@ -88,11 +90,17 @@ export function LofiPlayerProvider({ children }: { children: ReactNode }) {
   }
 
   function handleNext() {
+    selectTrack((trackIndex + 1) % LOFI_TRACKS.length)
+  }
+
+  /** Escolha direta de uma faixa qualquer (US-57): mesma troca de `handleNext`, mas para um índice arbitrário. */
+  function selectTrack(index: number) {
+    if (index === trackIndex) return
     autoplayPendingRef.current = isPlaying
     audioRef.current?.pause()
     setIsPlaying(false)
     setMessage(null)
-    setTrackIndex((index) => (index + 1) % LOFI_TRACKS.length)
+    setTrackIndex(index)
   }
 
   function setVolume(volume: number) {
@@ -101,11 +109,13 @@ export function LofiPlayerProvider({ children }: { children: ReactNode }) {
 
   const value: LofiPlayerContextValue = {
     track,
+    trackIndex,
     isPlaying,
     message,
     volume: settings.lofiVolume,
     handlePlayPause,
     handleNext,
+    selectTrack,
     setVolume,
   }
 
