@@ -4,6 +4,7 @@ export interface SegmentedOption<T extends string> {
   value: T
   label: string
   icon?: ReactNode
+  disabled?: boolean
 }
 
 interface SegmentedControlProps<T extends string> {
@@ -28,13 +29,20 @@ export function SegmentedControl<T extends string>({ options, value, onChange, a
             type="button"
             role="tab"
             aria-selected={isActive}
-            className={`inline-flex cursor-pointer items-center gap-1 whitespace-nowrap rounded-full px-4 py-2.5 text-style-label-md text-text-muted transition-colors hover:text-text-h ${
+            disabled={option.disabled}
+            title={option.disabled ? 'Bloqueado durante a sessão' : undefined}
+            className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-4 py-2.5 text-style-label-md text-text-muted transition-colors hover:text-text-h disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:text-text-muted ${
               isActive ? 'bg-surface-raised text-style-label-lg text-primary-dark' : 'bg-transparent'
-            }`}
+            } ${option.disabled ? '' : 'cursor-pointer'}`}
             onClick={() => onChange(option.value)}
           >
             {option.icon}
             {option.label}
+            {option.disabled && (
+              <span aria-hidden="true" className="ml-0.5">
+                🔒
+              </span>
+            )}
           </button>
         )
       })}

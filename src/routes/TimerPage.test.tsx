@@ -106,6 +106,9 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
     vi.mocked(dataSource.listSessions).mockResolvedValue({ items: [], totalCount: 0, limit: 10, offset: 0 })
     vi.mocked(dataSource.listTasks).mockResolvedValue([])
     mockUseDataSource(dataSource, mode)
+    // `TimerPage` lê os dois contextos para travar o seletor de modo (ver describe abaixo) — default
+    // parado/ocioso, sobrescrito explicitamente pelos testes que precisam de outro estado.
+    mockFlexibleTimer()
   })
 
   afterEach(() => {
@@ -243,6 +246,79 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
 
       expect(screen.getByText('25:00')).toBeInTheDocument()
       expect(screen.queryByText('Quanto tempo você quer plantar nesse foco?')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('trava do seletor de modo durante sessão ativa', () => {
+    it('com o timer clássico rodando, a aba "Pomodoro Customizado" fica travada e não troca de tela', async () => {
+      mockTimer({ phase: 'rodando', canFinalize: true })
+      mockFlexibleTimer()
+      renderTimerPage()
+
+      const flexivelTab = screen.getByRole('tab', { name: 'Pomodoro Customizado' })
+      expect(flexivelTab).toBeDisabled()
+      // O ModeSwitcher de 2º nível (Foco/Pausa Curta/Pausa Longa) também trava com o timer rodando —
+      // por isso o mesmo aviso aparece duas vezes na tela (um por seletor).
+      expect(screen.getAllByText('Modo bloqueado durante a sessão. Pause ou encerre para trocar.')).toHaveLength(2)
+
+      await userEvent.click(flexivelTab)
+
+      expect(screen.getByText('25:00')).toBeInTheDocument()
+    })
+
+    it('com o timer clássico pausado, trocar de modo abre confirmação; confirmar encerra a sessão e troca', async () => {
+      const finalize = vi.fn()
+      mockTimer({ phase: 'pausado', canFinalize: true, finalize })
+      mockFlexibleTimer()
+      renderTimerPage()
+
+      await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
+
+      expect(screen.getByText('Trocar de modo vai encerrar a sessão atual. O tempo já focado será salvo.')).toBeInTheDocument()
+      expect(screen.getByText('25:00')).toBeInTheDocument()
+
+      await userEvent.click(screen.getByRole('button', { name: 'Trocar e encerrar' }))
+
+      expect(finalize).toHaveBeenCalledTimes(1)
+      expect(screen.getByText('Quanto tempo você quer plantar?')).toBeInTheDocument()
+    })
+
+    it('com o timer clássico pausado, cancelar a confirmação mantém a sessão e a tela clássica', async () => {
+      const finalize = vi.fn()
+      mockTimer({ phase: 'pausado', canFinalize: true, finalize })
+      mockFlexibleTimer()
+      renderTimerPage()
+
+      await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
+      await userEvent.click(screen.getByRole('button', { name: 'Continuar sessão' }))
+
+      expect(finalize).not.toHaveBeenCalled()
+      expect(screen.getByText('25:00')).toBeInTheDocument()
+    })
+
+    it('com um foco flexível rodando, a aba "Pomodoro Clássico" fica travada', async () => {
+      mockTimer()
+      mockFlexibleTimer({ phase: { kind: 'foco_rodando' } })
+      renderTimerPage()
+
+      await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
+
+      const classicoTab = screen.getByRole('tab', { name: 'Pomodoro Clássico' })
+      expect(classicoTab).toBeDisabled()
+    })
+
+    it('com um foco flexível pausado, confirmar a troca encerra o bloco atual antes de ir para o Clássico', async () => {
+      const endCurrentBlockNow = vi.fn()
+      mockTimer()
+      mockFlexibleTimer({ phase: { kind: 'foco_pausado' }, endCurrentBlockNow })
+      renderTimerPage()
+
+      await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Customizado' }))
+      await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Clássico' }))
+      await userEvent.click(screen.getByRole('button', { name: 'Trocar e encerrar' }))
+
+      expect(endCurrentBlockNow).toHaveBeenCalledTimes(1)
+      expect(screen.getByText('25:00')).toBeInTheDocument()
     })
   })
 })
