@@ -32,7 +32,7 @@ describe('WelcomeModal', () => {
 
     renderWelcomeModal()
 
-    expect(screen.getByRole('dialog', { name: 'Boas-vindas ao PomoGarden' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Boas-vindas ao Guardião Pomodoro' })).toBeInTheDocument()
   })
 
   it('submit com nome vazio não avança: mostra erro e não chama startGuest', async () => {

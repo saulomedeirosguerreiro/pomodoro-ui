@@ -13,11 +13,14 @@ import { TimerProvider } from './context/TimerContext'
 import { AjudaPage } from './routes/AjudaPage'
 import { ConfiguracoesPage } from './routes/ConfiguracoesPage'
 import { ConquistasPage } from './routes/ConquistasPage'
+import { CopyrightPage } from './routes/CopyrightPage'
 import { ForgotPasswordPage } from './routes/ForgotPasswordPage'
 import { JardimPage } from './routes/JardimPage'
 import { LoginPage } from './routes/LoginPage'
+import { PoliticaDePrivacidadePage } from './routes/PoliticaDePrivacidadePage'
 import { RegisterPage } from './routes/RegisterPage'
 import { TarefasPage } from './routes/TarefasPage'
+import { TermosDeUsoPage } from './routes/TermosDeUsoPage'
 import { TimerPage } from './routes/TimerPage'
 
 function TimerScope() {
@@ -58,6 +61,10 @@ export default function App() {
                     </Route>
                   </Route>
                 </Route>
+
+                <Route path="/termos-de-uso" element={<TermosDeUsoPage />} />
+                <Route path="/privacidade" element={<PoliticaDePrivacidadePage />} />
+                <Route path="/copyright" element={<CopyrightPage />} />
 
                 <Route path="/dashboard" element={<Navigate to="/timer" replace />} />
                 <Route path="/" element={<Navigate to="/timer" replace />} />

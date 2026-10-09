@@ -67,7 +67,7 @@ export function AppShell() {
             🍅
           </span>
           <div>
-            <p className="text-style-headline-sm text-primary-dark">PomoGarden</p>
+            <p className="text-style-headline-sm text-primary-dark">Guardião Pomodoro</p>
             <p className="text-style-label-sm text-secondary-dark">Horta em Crescimento</p>
           </div>
         </div>
@@ -139,6 +139,24 @@ export function AppShell() {
             className="px-4 py-1 text-style-label-md text-text-muted no-underline hover:text-text-h"
           >
             Ajuda
+          </NavLink>
+          <NavLink
+            to="/termos-de-uso"
+            className="px-4 py-1 text-style-label-md text-text-muted no-underline hover:text-text-h"
+          >
+            Termos de Uso
+          </NavLink>
+          <NavLink
+            to="/privacidade"
+            className="px-4 py-1 text-style-label-md text-text-muted no-underline hover:text-text-h"
+          >
+            Privacidade
+          </NavLink>
+          <NavLink
+            to="/copyright"
+            className="px-4 py-1 text-style-label-md text-text-muted no-underline hover:text-text-h"
+          >
+            Copyright
           </NavLink>
         </div>
       </aside>

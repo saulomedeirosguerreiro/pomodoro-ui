@@ -66,6 +66,7 @@ async function fillAndSubmit() {
   await userEvent.type(screen.getByLabelText('E-mail'), 'joao@email.com')
   await userEvent.type(screen.getByLabelText('Senha'), 'Senha123')
   await userEvent.type(screen.getByLabelText('Confirmação de senha'), 'Senha123')
+  await userEvent.click(screen.getByRole('checkbox'))
   await userEvent.click(screen.getByRole('button', { name: 'Cadastrar' }))
 }
 
@@ -105,10 +106,47 @@ describe('RegisterPage', () => {
     await userEvent.type(screen.getByLabelText('E-mail'), 'joao@email.com')
     await userEvent.type(screen.getByLabelText('Senha'), 'Senha123')
     await userEvent.type(screen.getByLabelText('Confirmação de senha'), 'Outra123')
+    await userEvent.click(screen.getByRole('checkbox'))
     await userEvent.click(screen.getByRole('button', { name: 'Cadastrar' }))
 
     expect(screen.getByText('As senhas não conferem.')).toBeInTheDocument()
     expect(authService.register).not.toHaveBeenCalled()
+  })
+
+  it('mantém o botão Cadastrar desabilitado enquanto os termos não forem aceitos', async () => {
+    mockGuest()
+    mockAuth()
+
+    render(
+      <MemoryRouter>
+        <RegisterPage />
+      </MemoryRouter>,
+    )
+
+    await userEvent.type(screen.getByLabelText('Nome'), 'João')
+    await userEvent.type(screen.getByLabelText('E-mail'), 'joao@email.com')
+    await userEvent.type(screen.getByLabelText('Senha'), 'Senha123')
+    await userEvent.type(screen.getByLabelText('Confirmação de senha'), 'Senha123')
+
+    expect(screen.getByRole('button', { name: 'Cadastrar' })).toBeDisabled()
+    expect(authService.register).not.toHaveBeenCalled()
+  })
+
+  it('envia acceptedTerms: true ao marcar o checkbox e cadastrar', async () => {
+    mockGuest()
+    mockAuth()
+    vi.mocked(authService.register).mockResolvedValue({ id: 1, name: 'João', email: 'joao@email.com' })
+    vi.mocked(hasAnyLocalGuestData).mockReturnValue(false)
+
+    renderRegisterPage()
+    await fillAndSubmit()
+
+    expect(authService.register).toHaveBeenCalledWith({
+      name: 'João',
+      email: 'joao@email.com',
+      password: 'Senha123',
+      acceptedTerms: true,
+    })
   })
 
   it('campo nome vem pré-preenchido quando há guest.name', () => {

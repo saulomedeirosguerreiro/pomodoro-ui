@@ -165,7 +165,7 @@ export function useSessionRegistration() {
           // US-59: só com a aba em segundo plano, e só se a permissão já foi concedida (CA-002).
           if (settings.notificationsEnabled && document.hidden) {
             const nextAction = registration.type === 'foco' ? 'Hora de uma pausa.' : 'Hora de focar.'
-            showSessionNotification('PomoGarden', `${SESSION_LABELS[registration.type]} concluído! ${nextAction}`)
+            showSessionNotification('Guardião Pomodoro', `${SESSION_LABELS[registration.type]} concluído! ${nextAction}`)
           }
           if (settings.sessionEndSoundEnabled) {
             playSessionEndSound()

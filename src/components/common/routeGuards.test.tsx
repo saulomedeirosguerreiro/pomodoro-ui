@@ -71,7 +71,7 @@ describe('ProtectedRoute', () => {
 
     renderProtected('/dashboard')
 
-    expect(screen.getByRole('dialog', { name: 'Boas-vindas ao PomoGarden' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Boas-vindas ao Guardião Pomodoro' })).toBeInTheDocument()
     expect(screen.getByText('Tela do dashboard')).toBeInTheDocument()
   })
 

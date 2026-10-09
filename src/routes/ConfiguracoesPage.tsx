@@ -195,7 +195,7 @@ export function ConfiguracoesPage() {
         <section className={DANGER_CARD_CLASSES}>
           <h2 className="text-style-headline-sm">Apagar meus dados deste dispositivo</h2>
           <p className="text-style-body-sm text-text-muted">
-            Você está usando o PomoGarden sem conta: tarefas, sessões e conquistas ficam salvas só neste navegador.
+            Você está usando o Guardião Pomodoro sem conta: tarefas, sessões e conquistas ficam salvas só neste navegador.
             Apagar os dados deste dispositivo os remove para sempre — não há como recuperá-los depois.
           </p>
 

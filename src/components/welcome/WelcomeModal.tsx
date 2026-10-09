@@ -36,9 +36,9 @@ export function WelcomeModal() {
   }
 
   return (
-    <Dialog titleText="Boas-vindas ao PomoGarden" dismissible={false}>
+    <Dialog titleText="Boas-vindas ao Guardião Pomodoro" dismissible={false}>
       <p className="mb-4 text-style-body-md text-text">
-        Use o PomoGarden sem precisar criar conta. Seus dados ficam só neste navegador.
+        Use o Guardião Pomodoro sem precisar criar conta. Seus dados ficam só neste navegador.
       </p>
 
       <form onSubmit={handleSubmit} noValidate>

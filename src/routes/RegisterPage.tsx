@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { AuthLayout } from '../components/common/AuthLayout'
 import { Banner } from '../components/common/Banner'
 import { Button } from '../components/common/Button'
+import { Checkbox } from '../components/common/Checkbox'
 import { FormField } from '../components/common/FormField'
 import { MigrationReport } from '../components/migration/MigrationReport'
 import { useAuth } from '../context/AuthContext'
@@ -22,6 +23,7 @@ export function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
 
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState<string | null>(null)
@@ -37,11 +39,16 @@ export function RegisterPage() {
       return
     }
 
+    if (!acceptedTerms) {
+      setFieldErrors({ acceptedTerms: 'Você precisa aceitar os Termos de Uso e a Política de Privacidade.' })
+      return
+    }
+
     setFieldErrors({})
     setIsSubmitting(true)
 
     try {
-      await authService.register({ name, email, password })
+      await authService.register({ name, email, password, acceptedTerms })
     } catch (err) {
       if (err instanceof ApiError) {
         setFormError(err.message)
@@ -49,6 +56,7 @@ export function RegisterPage() {
           name: err.fieldMessage('Name') ?? '',
           email: err.fieldMessage('Email') ?? '',
           password: err.fieldMessage('Password') ?? '',
+          acceptedTerms: err.fieldMessage('AcceptedTerms') ?? '',
         })
       } else {
         setFormError('Não foi possível criar a conta. Tente novamente.')
@@ -145,7 +153,33 @@ export function RegisterPage() {
           onChange={(e) => setConfirmPassword(e.target.value)}
           error={fieldErrors.confirmPassword}
         />
-        <Button type="submit" fullWidth disabled={isSubmitting}>
+        <div className="mb-4 flex flex-col gap-1">
+          <Checkbox
+            id="acceptedTerms"
+            checked={acceptedTerms}
+            onChange={setAcceptedTerms}
+            label={
+              <>
+                Li e aceito os{' '}
+                <Link to="/termos-de-uso" target="_blank" rel="noopener noreferrer" className="text-primary-dark">
+                  Termos de Uso
+                </Link>{' '}
+                e a{' '}
+                <Link to="/privacidade" target="_blank" rel="noopener noreferrer" className="text-primary-dark">
+                  Política de Privacidade
+                </Link>
+                .
+              </>
+            }
+          />
+          {fieldErrors.acceptedTerms && (
+            <p className="text-style-body-sm text-danger" role="alert">
+              {fieldErrors.acceptedTerms}
+            </p>
+          )}
+        </div>
+
+        <Button type="submit" fullWidth disabled={isSubmitting || !acceptedTerms}>
           {isSubmitting ? 'Criando…' : 'Cadastrar'}
         </Button>
       </form>
