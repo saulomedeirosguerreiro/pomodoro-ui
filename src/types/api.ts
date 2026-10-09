@@ -26,6 +26,12 @@ export interface PomodoroSession {
    * `localDataSource.listTasks` não consegue computar `TaskItem.completedPomodoros` em leitura.
    */
   taskId?: number | null
+  /** Metadados de origem do modo "Time Blocking Flexível" — `null`/ausente para o modo clássico. */
+  mode?: 'flexivel' | null
+  /** Duração planejada do bloco (antes de qualquer "+tempo"), em segundos. Só preenchido no modo flexível. */
+  plannedDurationSeconds?: number | null
+  /** Segundos adicionados via "+tempo" durante o bloco. Só preenchido no modo flexível. */
+  addedSeconds?: number | null
 }
 
 export interface PagedResult<T> {

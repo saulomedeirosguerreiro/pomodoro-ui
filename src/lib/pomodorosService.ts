@@ -8,6 +8,10 @@ export interface CreateSessionPayload {
   startedAt: string
   completedAt: string
   taskId?: number
+  /** Metadados de origem do modo "Time Blocking Flexível" — omitidos para o modo clássico. */
+  mode?: 'flexivel'
+  plannedDurationSeconds?: number
+  addedSeconds?: number
 }
 
 export const pomodorosService = {

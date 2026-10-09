@@ -36,6 +36,11 @@
   --color-highlight: #ffd166;
   --color-highlight-bg: rgba(255, 209, 102, 0.2);
 
+  /* Cor "azul claro" — paleta calma da pausa no modo Time Blocking Flexível (pedido explícito do spec). */
+  --color-calm: #5bc0ff;
+  --color-calm-dark: #2f9fe0;
+  --color-calm-bg: rgba(91, 192, 255, 0.14);
+
   /* Cores — estado */
   --color-accent: var(--color-primary);
   --color-accent-bg: var(--color-primary-bg);
@@ -101,6 +106,11 @@
 
   --color-highlight: #f59e0b;
   --color-highlight-bg: rgba(245, 158, 11, 0.15);
+
+  /* Dark: mesma intenção calma, ajustada para contraste sobre fundo escuro. */
+  --color-calm: #7cd1ff;
+  --color-calm-dark: #5bc0ff;
+  --color-calm-bg: rgba(124, 209, 255, 0.15);
 
   --color-danger: #ffb4ab;
   --color-danger-bg: #93000a;

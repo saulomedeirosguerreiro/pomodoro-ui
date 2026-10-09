@@ -3,13 +3,15 @@ import type { PomodoroSession, TaskItem } from '../types/api'
 import { evaluateAchievements } from './achievementsEngine'
 import { checkSessionIntegrity } from './antifraudGuard'
 import type { DataSource } from './dataSource'
-import { isDurationWithinTolerance, validateTaskPayload } from './entityValidation'
+import { isDurationWithinFlexibleRange, isDurationWithinTolerance, validateTaskPayload } from './entityValidation'
 import { loadUnlockedLedger, saveUnlockedLedger } from './localAchievementsStore'
 import { loadLocalSessions, saveLocalSessions } from './localSessionsStore'
 import { loadLocalTasks, saveLocalTasks, type StoredLocalTask } from './localTasksStore'
 import type { CreateSessionPayload } from './pomodorosService'
 import { computeLevelInfo, computeTotals, buildProgressSummary } from './progressEngine'
+import { loadSettings } from './settings'
 import type { TaskPayload } from './tasksService'
+import { sessionDurationsSecondsFrom } from './timerLogic'
 
 /**
  * Implementação de `DataSource` para o modo sem conta: opera só sobre `localStorage` (via os stores
@@ -42,7 +44,17 @@ export function makeLocalDataSource(_guestId: string): DataSource {
         })
       }
 
-      if (!isDurationWithinTolerance(payload.type, payload.durationSeconds)) {
+      const settings = loadSettings()
+      const configuredDurations = sessionDurationsSecondsFrom(
+        settings.focusMinutes,
+        settings.shortBreakMinutes,
+        settings.longBreakMinutes,
+      )
+      const isDurationValid =
+        payload.mode === 'flexivel'
+          ? isDurationWithinFlexibleRange(payload.type, payload.durationSeconds)
+          : isDurationWithinTolerance(payload.type, payload.durationSeconds, configuredDurations[payload.type])
+      if (!isDurationValid) {
         throw new ApiError(422, {
           code: 'invalid_duration',
           message: 'A duração informada está fora da tolerância permitida para este tipo de sessão.',
@@ -58,6 +70,9 @@ export function makeLocalDataSource(_guestId: string): DataSource {
         completedAt: payload.completedAt,
         createdAt: now.toISOString(),
         taskId: payload.taskId ?? null,
+        mode: payload.mode ?? null,
+        plannedDurationSeconds: payload.plannedDurationSeconds ?? null,
+        addedSeconds: payload.addedSeconds ?? null,
       }
 
       saveLocalSessions([...existingSessions, session])

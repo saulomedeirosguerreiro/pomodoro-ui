@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { nextSuggestedType, SESSION_DURATIONS_SECONDS } from '../../lib/timerLogic'
+import { computeRemainingSeconds, DEFAULT_SESSION_DURATIONS_SECONDS, nextSuggestedType } from '../../lib/timerLogic'
 import type { SessionStatus, SessionType } from '../../types/api'
 
 export type TimerPhase = 'parado' | 'rodando' | 'pausado'
@@ -16,26 +16,31 @@ interface UseTimerOptions {
   /** Total histórico de focos concluídos (D-Q7), usado só para sugerir o próximo tipo (US-12 RN-02). */
   totalFociCompleted: number
   onSessionReady: (registration: SessionRegistration) => void
+  /** Durações configuráveis por tipo (minutos personalizados nas Settings). Default: valores de fábrica. */
+  durations?: Record<SessionType, number>
 }
 
 const TICK_MS = 250
 
-/** Tempo restante calculado pelo relógio real (RNF-08, US-08 RN-02) — sobrevive a aba em segundo plano. */
-function computeRemainingSeconds(totalSeconds: number, startedAtMs: number, pausedAccumulatedMs: number, now: number): number {
-  const elapsedMs = now - startedAtMs - pausedAccumulatedMs
-  return Math.max(0, totalSeconds - elapsedMs / 1000)
-}
+export function useTimer({ totalFociCompleted, onSessionReady, durations }: UseTimerOptions) {
+  // Última configuração de durações conhecida — não dirige a sessão em andamento diretamente,
+  // só alimenta o snapshot (`totalSeconds`) na próxima vez que `resetToType` rodar (US: editar
+  // as durações em Configurações não deve alterar uma sessão já em curso, só a próxima).
+  const durationsRef = useRef(durations ?? DEFAULT_SESSION_DURATIONS_SECONDS)
+  durationsRef.current = durations ?? DEFAULT_SESSION_DURATIONS_SECONDS
 
-export function useTimer({ totalFociCompleted, onSessionReady }: UseTimerOptions) {
   const [type, setTypeState] = useState<SessionType>('foco')
   const [phase, setPhase] = useState<TimerPhase>('parado')
-  const [remainingSeconds, setRemainingSeconds] = useState(SESSION_DURATIONS_SECONDS.foco)
+  const [totalSeconds, setTotalSeconds] = useState(() => durationsRef.current.foco)
+  const [remainingSeconds, setRemainingSeconds] = useState(() => durationsRef.current.foco)
 
   const startedAtMsRef = useRef<number | null>(null)
   const pausedAccumulatedMsRef = useRef(0)
   const pauseStartedAtMsRef = useRef<number | null>(null)
   const totalFociRef = useRef(totalFociCompleted)
   totalFociRef.current = totalFociCompleted
+  const totalSecondsRef = useRef(totalSeconds)
+  totalSecondsRef.current = totalSeconds
 
   const resetToType = useCallback((nextType: SessionType) => {
     startedAtMsRef.current = null
@@ -43,7 +48,9 @@ export function useTimer({ totalFociCompleted, onSessionReady }: UseTimerOptions
     pauseStartedAtMsRef.current = null
     setTypeState(nextType)
     setPhase('parado')
-    setRemainingSeconds(SESSION_DURATIONS_SECONDS[nextType])
+    const total = durationsRef.current[nextType]
+    setTotalSeconds(total)
+    setRemainingSeconds(total)
   }, [])
 
   const start = useCallback(() => {
@@ -122,7 +129,7 @@ export function useTimer({ totalFociCompleted, onSessionReady }: UseTimerOptions
 
       const now = Date.now()
       const remaining = computeRemainingSeconds(
-        SESSION_DURATIONS_SECONDS[type],
+        totalSecondsRef.current,
         startedAtMs,
         pausedAccumulatedMsRef.current,
         now,
@@ -132,7 +139,7 @@ export function useTimer({ totalFociCompleted, onSessionReady }: UseTimerOptions
         onSessionReady({
           type,
           status: 'concluido',
-          durationSeconds: SESSION_DURATIONS_SECONDS[type],
+          durationSeconds: totalSecondsRef.current,
           startedAt: new Date(startedAtMs).toISOString(),
           completedAt: new Date(now).toISOString(),
         })
@@ -152,6 +159,7 @@ export function useTimer({ totalFociCompleted, onSessionReady }: UseTimerOptions
     type,
     phase,
     remainingSeconds,
+    totalSeconds,
     canFinalize: phase !== 'parado',
     start,
     pause,

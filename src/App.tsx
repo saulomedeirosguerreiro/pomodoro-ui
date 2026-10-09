@@ -4,7 +4,9 @@ import { ProtectedRoute } from './components/common/ProtectedRoute'
 import { PublicOnlyRoute } from './components/common/PublicOnlyRoute'
 import { AuthProvider } from './context/AuthContext'
 import { DataSourceProvider } from './context/DataSourceContext'
+import { FlexibleTimerProvider } from './context/FlexibleTimerContext'
 import { GuestProvider } from './context/GuestContext'
+import { SessionRegistrationProvider } from './context/SessionRegistrationContext'
 import { SettingsProvider } from './context/SettingsContext'
 import { ThemeProvider } from './context/ThemeContext'
 import { TimerProvider } from './context/TimerContext'
@@ -20,9 +22,13 @@ import { TimerPage } from './routes/TimerPage'
 
 function TimerScope() {
   return (
-    <TimerProvider>
-      <Outlet />
-    </TimerProvider>
+    <SessionRegistrationProvider>
+      <TimerProvider>
+        <FlexibleTimerProvider>
+          <Outlet />
+        </FlexibleTimerProvider>
+      </TimerProvider>
+    </SessionRegistrationProvider>
   )
 }
 

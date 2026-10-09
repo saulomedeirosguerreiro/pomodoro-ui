@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import * as FlexibleTimerContextModule from '../context/FlexibleTimerContext'
 import * as TimerContextModule from '../context/TimerContext'
 import { SettingsProvider } from '../context/SettingsContext'
 import { buildMockDataSource, DATA_SOURCE_MODES, mockUseDataSource } from '../test/dataSourceMocks'
@@ -36,6 +37,7 @@ function mockTimer(overrides?: Partial<ReturnType<typeof TimerContextModule.useT
     type: 'foco',
     phase: 'parado',
     remainingSeconds: 1500,
+    totalSeconds: 1500,
     canFinalize: false,
     start: vi.fn(),
     pause: vi.fn(),
@@ -56,6 +58,42 @@ function mockTimer(overrides?: Partial<ReturnType<typeof TimerContextModule.useT
     dismissAchievementToast: vi.fn(),
     events: [],
     markEventsSeen: vi.fn(),
+    ...overrides,
+  })
+}
+
+function mockFlexibleTimer(overrides?: Partial<ReturnType<typeof FlexibleTimerContextModule.useFlexibleTimerContext>>) {
+  vi.spyOn(FlexibleTimerContextModule, 'useFlexibleTimerContext').mockReturnValue({
+    phase: { kind: 'selecionando_foco' },
+    draftMinutes: 5,
+    totalSeconds: 0,
+    remainingSeconds: 0,
+    addedSeconds: 0,
+    breakType: null,
+    focusBlocksCompleted: 0,
+    totalFocusSecondsCompleted: 0,
+    chooseFocusPreset: vi.fn(),
+    chooseFocusCustom: vi.fn(),
+    startFocus: vi.fn(),
+    pause: vi.fn(),
+    resume: vi.fn(),
+    addTime: vi.fn(),
+    endCurrentBlockNow: vi.fn(),
+    startBreak: vi.fn(),
+    startAnotherFocus: vi.fn(),
+    endSession: vi.fn(),
+    chooseBreakPreset: vi.fn(),
+    chooseBreakCustom: vi.fn(),
+    backToFocusNow: vi.fn(),
+    backToFocus: vi.fn(),
+    startNewSession: vi.fn(),
+    registrationError: null,
+    retryRegistration: vi.fn(),
+    rewardToast: null,
+    dismissRewardToast: vi.fn(),
+    achievementToast: null,
+    dismissAchievementToast: vi.fn(),
+    progress: null,
     ...overrides,
   })
 }
@@ -172,5 +210,39 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
     await userEvent.click(screen.getByRole('checkbox', { name: 'Relatório mensal' }))
 
     expect(dataSource.setTaskStatus).toHaveBeenCalledWith(1, 'feito')
+  })
+
+  describe('alternância de modo (Parte 5)', () => {
+    it('inicia no modo clássico', () => {
+      mockTimer()
+      mockFlexibleTimer()
+      renderTimerPage()
+
+      expect(screen.getByRole('tab', { name: 'Pomodoro Clássico', selected: true })).toBeInTheDocument()
+      expect(screen.getByText('25:00')).toBeInTheDocument()
+    })
+
+    it('alternar para "Time Blocking Flexível" troca para a FlexibleTimerView e some com a tela clássica', async () => {
+      mockTimer()
+      mockFlexibleTimer()
+      renderTimerPage()
+
+      await userEvent.click(screen.getByRole('tab', { name: 'Time Blocking Flexível' }))
+
+      expect(screen.getByText('Quanto tempo você quer plantar?')).toBeInTheDocument()
+      expect(screen.queryByText('25:00')).not.toBeInTheDocument()
+    })
+
+    it('voltar para "Pomodoro Clássico" restaura a tela clássica', async () => {
+      mockTimer()
+      mockFlexibleTimer()
+      renderTimerPage()
+
+      await userEvent.click(screen.getByRole('tab', { name: 'Time Blocking Flexível' }))
+      await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Clássico' }))
+
+      expect(screen.getByText('25:00')).toBeInTheDocument()
+      expect(screen.queryByText('Quanto tempo você quer plantar nesse foco?')).not.toBeInTheDocument()
+    })
   })
 })

@@ -1,6 +1,12 @@
 import type { FieldError, SessionType, TaskItem } from '../types/api'
 import type { TaskPayload } from './tasksService'
-import { SESSION_DURATIONS_SECONDS } from './timerLogic'
+import {
+  DEFAULT_SESSION_DURATIONS_SECONDS,
+  FLEXIBLE_BREAK_MAX_MINUTES,
+  FLEXIBLE_BREAK_MIN_MINUTES,
+  FLEXIBLE_FOCUS_MAX_MINUTES,
+  FLEXIBLE_FOCUS_MIN_MINUTES,
+} from './timerLogic'
 
 /**
  * Espelha os invariantes de `TaskItem` (C#, `Pomodoro.Domain.Entities.TaskItem`) e de
@@ -52,16 +58,36 @@ export function validateTaskPayload(payload: TaskPayload): FieldError[] {
 }
 
 /**
- * Duração dentro de tolerância por tipo: `SESSION_DURATIONS_SECONDS[type] + 60s` no máximo (status
- * concluído). Replica `CreatePomodoroValidator`/`SessionTypeDurations.MaxAllowedSecondsFor` ao pé da
- * letra: só há tolerância para CIMA do padrão — o único piso é `duration > 0` (não há tolerância
- * para baixo do padrão).
+ * Duração dentro de tolerância por tipo: `expectedSeconds + 60s` no máximo (status concluído).
+ * `expectedSeconds` é a duração configurada pelo usuário pra esse tipo (default: valor de
+ * fábrica) — só há tolerância para CIMA do esperado — o único piso é `duration > 0` (não há
+ * tolerância para baixo). Mesma regra do backend (`CreatePomodoroValidator`/
+ * `SessionTypeDurations`), que aceita uma faixa alargada por tipo em vez do padrão fixo.
  */
-export function isDurationWithinTolerance(type: SessionType, durationSeconds: number): boolean {
+export function isDurationWithinTolerance(
+  type: SessionType,
+  durationSeconds: number,
+  expectedSeconds: number = DEFAULT_SESSION_DURATIONS_SECONDS[type],
+): boolean {
   if (durationSeconds <= 0) {
     return false
   }
-  return durationSeconds <= SESSION_DURATIONS_SECONDS[type] + DURATION_TOLERANCE_SECONDS
+  return durationSeconds <= expectedSeconds + DURATION_TOLERANCE_SECONDS
+}
+
+/**
+ * Duração dentro da faixa min/max real do modo "Time Blocking Flexível" — espelha
+ * `SessionTypeDurations` do backend (Foco 5–120min, pausas 1–60min via `flexibleBreakSessionType`).
+ * Validação nova e separada de `isDurationWithinTolerance` (modelo antigo, só para o modo clássico):
+ * aqui não há tolerância, é a própria faixa escolhida pela pessoa na tela de seleção de duração.
+ */
+export function isDurationWithinFlexibleRange(type: SessionType, durationSeconds: number): boolean {
+  const [minMinutes, maxMinutes] =
+    type === 'foco'
+      ? [FLEXIBLE_FOCUS_MIN_MINUTES, FLEXIBLE_FOCUS_MAX_MINUTES]
+      : [FLEXIBLE_BREAK_MIN_MINUTES, FLEXIBLE_BREAK_MAX_MINUTES]
+
+  return durationSeconds >= minMinutes * 60 && durationSeconds <= maxMinutes * 60
 }
 
 /** `completedAt >= startedAt`, replicando `CreatePomodoroValidator`. */

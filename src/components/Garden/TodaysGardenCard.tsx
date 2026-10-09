@@ -37,7 +37,7 @@ export function TodaysGardenCard({ maturedCount, isGrowing }: TodaysGardenCardPr
               <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-style-label-sm text-text-h">
                 {species.name}
               </span>
-              <span className="text-style-label-sm text-secondary-dark">Maduro (25m)</span>
+              <span className="text-style-label-sm text-secondary-dark">Maduro</span>
             </div>
           ))}
           {isGrowing && (

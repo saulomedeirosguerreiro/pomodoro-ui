@@ -4,6 +4,7 @@ import type { TaskPayload } from './tasksService'
 import {
   canLinkTaskToSession,
   isCompletedAtValid,
+  isDurationWithinFlexibleRange,
   isDurationWithinTolerance,
   validateTaskPayload,
 } from './entityValidation'
@@ -141,6 +142,56 @@ describe('isDurationWithinTolerance', () => {
     expect(isDurationWithinTolerance('descanso_curto', 5 * 60 + 61)).toBe(false)
     expect(isDurationWithinTolerance('descanso_longo', 15 * 60 + 60)).toBe(true)
     expect(isDurationWithinTolerance('descanso_longo', 15 * 60 + 61)).toBe(false)
+  })
+})
+
+describe('isDurationWithinFlexibleRange', () => {
+  describe('foco (5–120min)', () => {
+    it('abaixo de 5min é inválido', () => {
+      expect(isDurationWithinFlexibleRange('foco', 5 * 60 - 1)).toBe(false)
+    })
+
+    it('exatamente 5min (fronteira mínima) é válido', () => {
+      expect(isDurationWithinFlexibleRange('foco', 5 * 60)).toBe(true)
+    })
+
+    it('exatamente 120min (fronteira máxima) é válido', () => {
+      expect(isDurationWithinFlexibleRange('foco', 120 * 60)).toBe(true)
+    })
+
+    it('acima de 120min é inválido', () => {
+      expect(isDurationWithinFlexibleRange('foco', 120 * 60 + 1)).toBe(false)
+    })
+  })
+
+  describe('pausas (1–60min)', () => {
+    it.each(['descanso_curto', 'descanso_longo'] as const)(
+      '%s: abaixo de 1min é inválido',
+      (type) => {
+        expect(isDurationWithinFlexibleRange(type, 59)).toBe(false)
+      },
+    )
+
+    it.each(['descanso_curto', 'descanso_longo'] as const)(
+      '%s: exatamente 1min (fronteira mínima) é válido',
+      (type) => {
+        expect(isDurationWithinFlexibleRange(type, 60)).toBe(true)
+      },
+    )
+
+    it.each(['descanso_curto', 'descanso_longo'] as const)(
+      '%s: exatamente 60min (fronteira máxima) é válido',
+      (type) => {
+        expect(isDurationWithinFlexibleRange(type, 60 * 60)).toBe(true)
+      },
+    )
+
+    it.each(['descanso_curto', 'descanso_longo'] as const)(
+      '%s: acima de 60min é inválido',
+      (type) => {
+        expect(isDurationWithinFlexibleRange(type, 60 * 60 + 1)).toBe(false)
+      },
+    )
   })
 })
 
