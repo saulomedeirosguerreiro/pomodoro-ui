@@ -19,7 +19,7 @@ const RADIUS = 100
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 const STEP_MINUTES = 5
 const ICON_BUTTON_CLASSES =
-  'flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 border-border bg-surface text-[20px] text-text-h transition-[background-color,transform] duration-150 ease-out hover:bg-bg-subtle active:scale-95'
+  'flex h-11 w-11 shrink-0 max-[480px]:h-9 max-[480px]:w-9 cursor-pointer items-center justify-center rounded-full border-2 border-border bg-surface text-[20px] text-text-h transition-[background-color,transform] duration-150 ease-out hover:bg-bg-subtle active:scale-95'
 
 const BADGE_LABELS: Record<FlexibleDurationContext, string> = {
   foco: 'Novo foco',
@@ -159,7 +159,7 @@ export function FlexibleDurationPicker({
       </p>
       <h2 className="text-center text-style-headline-sm text-text-h">{TITLES[context]}</h2>
 
-      <div className="flex w-full items-center justify-center gap-3 rounded-2xl border border-border p-4">
+      <div className="flex w-full items-center justify-center gap-3 rounded-2xl border border-border p-4 max-[480px]:gap-2 max-[480px]:p-2">
         <button
           type="button"
           className={ICON_BUTTON_CLASSES}
@@ -172,7 +172,7 @@ export function FlexibleDurationPicker({
         <div
           ref={ringContainerRef}
           data-testid="flexible-duration-ring"
-          className="relative h-[min(220px,60vw)] w-[min(220px,60vw)] shrink-0 cursor-pointer touch-none select-none"
+          className="relative h-[min(220px,60vw)] w-[min(220px,60vw)] max-[480px]:h-[min(220px,calc(100vw-184px))] max-[480px]:w-[min(220px,calc(100vw-184px))] shrink-0 cursor-pointer touch-none select-none"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}

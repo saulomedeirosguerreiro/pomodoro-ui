@@ -31,7 +31,7 @@ export function SegmentedControl<T extends string>({ options, value, onChange, a
             aria-selected={isActive}
             disabled={option.disabled}
             title={option.disabled ? 'Bloqueado durante a sessão' : undefined}
-            className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-4 py-2.5 text-style-label-md text-text-muted transition-colors hover:text-text-h disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:text-text-muted ${
+            className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-4 py-2.5 max-[480px]:px-3 text-style-label-md text-text-muted transition-colors hover:text-text-h disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:text-text-muted ${
               isActive ? 'bg-surface-raised text-style-label-lg text-primary-dark' : 'bg-transparent'
             } ${option.disabled ? '' : 'cursor-pointer'}`}
             onClick={() => onChange(option.value)}

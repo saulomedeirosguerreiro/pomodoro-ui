@@ -43,7 +43,7 @@ export function FlexibleFocusView() {
         Foco flexível
       </p>
 
-      <div className="relative h-[min(320px,80vw)] w-[min(320px,80vw)]">
+      <div className="relative h-[min(320px,calc(100vw-80px))] w-[min(320px,calc(100vw-80px))]">
         <svg className="block h-full w-full -rotate-90" viewBox="0 0 260 260" aria-hidden="true">
           <circle cx="130" cy="130" r={RADIUS} fill="none" stroke="var(--color-bg-subtle)" strokeWidth="14" />
           <circle
