@@ -1,11 +1,10 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { LofiPlayerProvider } from '../../context/LofiPlayerContext'
 import { SettingsProvider } from '../../context/SettingsContext'
 import { LOFI_TRACKS } from '../../lib/soundCatalog'
 import { LofiMiniPlayer } from './LofiMiniPlayer'
-import { LofiPlayer } from './LofiPlayer'
 
 function renderMiniPlayer() {
   return render(
@@ -17,12 +16,17 @@ function renderMiniPlayer() {
   )
 }
 
-function renderBoth() {
+/** As duas instâncias reais do app: header (desktop) e barra fixa do rodapé (mobile) — mesmo `LofiPlayerContext`. */
+function renderHeaderAndMobileInstances() {
   return render(
     <SettingsProvider>
       <LofiPlayerProvider>
-        <LofiMiniPlayer />
-        <LofiPlayer />
+        <div data-testid="header-player">
+          <LofiMiniPlayer />
+        </div>
+        <div data-testid="mobile-player">
+          <LofiMiniPlayer />
+        </div>
       </LofiPlayerProvider>
     </SettingsProvider>,
   )
@@ -106,25 +110,63 @@ describe('LofiMiniPlayer', () => {
     expect(volumeIcon).toHaveTextContent('🔊')
   })
 
-  describe('sincronização com o LofiPlayer do Checklist', () => {
-    it('tocar no header deixa o checklist com o botão de pausar (mesmo isPlaying)', async () => {
-      const user = userEvent.setup()
-      renderBoth()
+  it('mostra o crédito do autor da faixa atual e atualiza ao trocar de faixa', async () => {
+    const user = userEvent.setup()
+    renderMiniPlayer()
 
-      await user.click(screen.getByRole('button', { name: 'Tocar música de fundo' }))
+    expect(screen.getByText(`Crédito: ${LOFI_TRACKS[0].credit}`)).toBeInTheDocument()
 
-      expect(await screen.findByRole('button', { name: 'Pausar lo-fi' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Próxima música de fundo' }))
+
+    expect(screen.getByText(`Crédito: ${LOFI_TRACKS[1].credit}`)).toBeInTheDocument()
+  })
+
+  it('se play() rejeitar (ex.: arquivo ausente), mostra o aviso honesto e não fica marcado como tocando', async () => {
+    playSpy.mockRejectedValueOnce(new Error('arquivo não encontrado'))
+    const user = userEvent.setup()
+    renderMiniPlayer()
+
+    await user.click(screen.getByRole('button', { name: 'Tocar música de fundo' }))
+
+    expect(await screen.findByText('Esse áudio ainda não está disponível nesta versão.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Tocar música de fundo' })).toBeInTheDocument()
+  })
+
+  it('o elemento <audio> disparando "error" mostra o mesmo aviso honesto', () => {
+    renderMiniPlayer()
+
+    const audio = document.querySelector('audio')
+    expect(audio).not.toBeNull()
+    act(() => {
+      audio?.dispatchEvent(new Event('error'))
     })
 
-    it('trocar de faixa no checklist atualiza o título refletido no header (title attribute)', async () => {
+    expect(screen.getByText('Esse áudio ainda não está disponível nesta versão.')).toBeInTheDocument()
+  })
+
+  describe('sincronização entre o header e a barra mobile (mesma instância de LofiMiniPlayer nos dois lugares)', () => {
+    it('tocar numa instância reflete o estado de tocando na outra', async () => {
       const user = userEvent.setup()
-      const { container } = renderBoth()
+      const { getByTestId } = renderHeaderAndMobileInstances()
 
-      await user.click(screen.getByRole('button', { name: 'Próxima faixa' }))
+      await user.click(within(getByTestId('header-player')).getByRole('button', { name: 'Tocar música de fundo' }))
 
-      expect(screen.getByRole('combobox', { name: 'Escolher faixa lo-fi (mini player)' })).toHaveValue('1')
-      expect(screen.getByRole('combobox', { name: 'Escolher faixa lo-fi' })).toHaveValue('1')
-      expect(container.querySelector('[title]')?.getAttribute('title')).toBe(LOFI_TRACKS[1].title)
+      expect(
+        await within(getByTestId('mobile-player')).findByRole('button', { name: 'Pausar música de fundo' }),
+      ).toBeInTheDocument()
+    })
+
+    it('trocar de faixa numa instância atualiza a faixa e o crédito na outra', async () => {
+      const user = userEvent.setup()
+      const { getByTestId } = renderHeaderAndMobileInstances()
+
+      await user.click(within(getByTestId('mobile-player')).getByRole('button', { name: 'Próxima música de fundo' }))
+
+      expect(
+        within(getByTestId('header-player')).getByRole('combobox', { name: 'Escolher faixa lo-fi (mini player)' }),
+      ).toHaveValue('1')
+      expect(within(getByTestId('header-player')).getByText(`Crédito: ${LOFI_TRACKS[1].credit}`)).toBeInTheDocument()
+      expect(within(getByTestId('mobile-player')).getByText(`Crédito: ${LOFI_TRACKS[1].credit}`)).toBeInTheDocument()
     })
   })
 })

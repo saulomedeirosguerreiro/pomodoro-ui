@@ -2,8 +2,6 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
-import { LofiPlayerProvider } from '../../context/LofiPlayerContext'
-import { SettingsProvider } from '../../context/SettingsContext'
 import type { TaskItem } from '../../types/api'
 import { ChecklistCard, type ChecklistCardProps } from './ChecklistCard'
 
@@ -25,11 +23,7 @@ function buildTask(overrides: Partial<TaskItem> = {}): TaskItem {
 function renderCard(props: ChecklistCardProps) {
   return render(
     <MemoryRouter>
-      <SettingsProvider>
-        <LofiPlayerProvider>
-          <ChecklistCard {...props} />
-        </LofiPlayerProvider>
-      </SettingsProvider>
+      <ChecklistCard {...props} />
     </MemoryRouter>,
   )
 }

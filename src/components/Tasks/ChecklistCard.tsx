@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Checkbox } from '../common/Checkbox'
-import { LofiPlayer } from '../Sound/LofiPlayer'
 import { TaskForm } from './TaskForm'
 import type { TaskPayload } from '../../lib/tasksService'
 import type { TaskItem } from '../../types/api'
@@ -82,8 +81,6 @@ export function ChecklistCard({ tasks, error, onCreate, onMarkDone, onFocus }: C
           ))}
         </ul>
       )}
-
-      <LofiPlayer />
     </section>
   )
 }
