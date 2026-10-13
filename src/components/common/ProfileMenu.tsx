@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useDismissOnOutsideClick } from '../../hooks/useDismissOnOutsideClick'
 
 interface ProfileMenuProps {
   firstName: string
@@ -11,33 +12,14 @@ const MENU_ITEM_CLASSES =
 
 /**
  * Avatar do cabeçalho vira o gatilho de um menu (Perfil / Sair) — some ao clicar fora, com Escape,
- * ou ao navegar. Nenhum componente do app tinha esse fechamento por clique-fora até aqui; o popover
- * em si (posicionamento `absolute right-0 top-[calc(100%+8px)]`) espelha o do `EventsBell`.
+ * ou ao navegar. O popover em si (posicionamento `absolute right-0 top-[calc(100%+8px)]`) espelha
+ * o do `EventsBell`.
  */
 export function ProfileMenu({ firstName, onLogout }: ProfileMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    if (!isOpen) return
-
-    function handlePointerDown(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false)
-      }
-    }
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') setIsOpen(false)
-    }
-
-    document.addEventListener('mousedown', handlePointerDown)
-    document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown)
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [isOpen])
+  useDismissOnOutsideClick(containerRef, isOpen, () => setIsOpen(false))
 
   function handleLogoutClick() {
     setIsOpen(false)

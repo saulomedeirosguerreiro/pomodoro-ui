@@ -1,3 +1,4 @@
+import { Button } from '../common/Button'
 import { useFlexibleTimerContext } from '../../context/FlexibleTimerContext'
 import { speciesForIndex } from '../../lib/gardenSpecies'
 
@@ -81,14 +82,9 @@ export function FlexiblePostFocusChoices() {
         </div>
       </div>
 
-      <button
-        type="button"
-        className="cursor-pointer text-style-label-md text-text-muted transition-colors hover:text-text-h"
-        onClick={endSession}
-      >
-        <span aria-hidden="true">✕ </span>
+      <Button variant="ghost" onClick={endSession}>
         Encerrar sessão
-      </button>
+      </Button>
     </section>
   )
 }
