@@ -1,7 +1,8 @@
-import { useRef, useState } from 'react'
-import { useDismissOnOutsideClick } from '../../hooks/useDismissOnOutsideClick'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useTimerContext } from '../../context/TimerContext'
 import type { AppEvent } from '../../context/TimerContext'
+import { formatEventTimestamp } from '../../lib/format'
 
 const EVENT_ICON: Record<AppEvent['type'], string> = {
   achievement: '🏆',
@@ -13,14 +14,40 @@ const EVENT_ICON_CLASSES: Record<AppEvent['type'], string> = {
   level: 'bg-secondary-bg text-secondary-dark',
 }
 
-/** US-60: central de eventos local (nível novo, conquista nova). Abrir marca tudo como visto. */
+/**
+ * US-60: central de eventos local (nível novo, conquista nova). Abrir marca tudo como visto.
+ * Responsivo: tela cheia no mobile (`<lg`), drawer saindo da direita no desktop (`lg:`) — um
+ * popover pequeno ancorado no sino não cabia no mobile (US-60-bis).
+ *
+ * O painel é renderizado via `createPortal` direto em `document.body`: o sino fica dentro do
+ * `<header>` (`sticky`, `z-10`), que forma seu próprio contexto de empilhamento — um `fixed z-40`
+ * aninhado ali dentro continuaria perdendo pro `z-20` da barra de áudio/promo (irmã no nível
+ * raiz), porque o header inteiro (contexto) já perde pro `z-20` antes de qualquer z-index interno
+ * ser comparado. O portal tira o painel de dentro do header, então ele compete como root-level.
+ */
 export function EventsBell() {
   const { events, markEventsSeen } = useTimerContext()
   const [isOpen, setIsOpen] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
   const unseenCount = events.filter((event) => !event.seen).length
 
-  useDismissOnOutsideClick(containerRef, isOpen, () => setIsOpen(false))
+  // Enquanto o painel ocupa a tela (mesmo padrão do menu hambúrguer em `AppShell.tsx`): Escape
+  // fecha e o scroll do body trava (o painel já rola sozinho). Clique fora fecha via o próprio
+  // backdrop abaixo — sem precisar de `useDismissOnOutsideClick` aqui, já que o painel não fica
+  // mais aninhado junto do botão-gatilho (foi pro portal).
+  useEffect(() => {
+    if (!isOpen) return
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setIsOpen(false)
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = ''
+    }
+  }, [isOpen])
 
   function handleToggle() {
     const next = !isOpen
@@ -31,12 +58,12 @@ export function EventsBell() {
   }
 
   return (
-    <div className="relative" ref={containerRef}>
+    <>
       <button
         type="button"
         className="relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-border bg-surface text-base"
         onClick={handleToggle}
-        aria-haspopup="menu"
+        aria-haspopup="dialog"
         aria-expanded={isOpen}
         aria-label="Notificações"
       >
@@ -48,47 +75,69 @@ export function EventsBell() {
         )}
       </button>
 
-      {isOpen && (
-        <div
-          className="absolute right-0 top-[calc(100%+12px)] z-30 w-[300px] rounded-2xl border border-border bg-surface shadow-popover"
-          role="menu"
-          aria-label="Notificações"
-        >
-          <span
-            aria-hidden="true"
-            className="absolute -top-[7px] right-3 h-3 w-3 rotate-45 border-l border-t border-border bg-surface"
-          />
+      {isOpen &&
+        createPortal(
+          <div className="fixed inset-0 z-40">
+            <div
+              data-testid="notifications-backdrop"
+              className="absolute inset-0 bg-[rgba(46,36,61,0.45)]"
+              onClick={() => setIsOpen(false)}
+              aria-hidden="true"
+            />
 
-          <p className="relative rounded-t-2xl bg-surface px-3 py-2 text-style-label-md text-text-h">Notificações</p>
-          <div className="border-b border-border" />
-
-          {events.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 px-3 py-8 text-center">
-              <span aria-hidden="true" className="text-2xl">
-                🌱
-              </span>
-              <p className="text-style-body-sm text-text-muted">Nenhum evento por aqui ainda.</p>
-            </div>
-          ) : (
-            <ul className="m-0 flex max-h-[320px] list-none flex-col gap-1 overflow-y-auto p-2">
-              {events.map((event) => (
-                <li
-                  key={event.id}
-                  className="flex items-start gap-2 rounded-xl px-2 py-2 text-style-body-sm text-text hover:bg-bg-subtle"
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-label="Notificações"
+              className="absolute inset-0 flex flex-col bg-surface lg:inset-y-0 lg:left-auto lg:right-0 lg:w-[380px] lg:max-w-[90vw] lg:shadow-popover"
+            >
+              <div className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3">
+                <span className="text-style-headline-sm text-text-h">Notificações</span>
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-border bg-surface"
+                  aria-label="Fechar notificações"
                 >
-                  <span
-                    aria-hidden="true"
-                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[13px] ${EVENT_ICON_CLASSES[event.type]}`}
-                  >
-                    {EVENT_ICON[event.type]}
+                  ✕
+                </button>
+              </div>
+
+              {events.length === 0 ? (
+                <div className="flex flex-1 flex-col items-center justify-center gap-2 px-4 text-center">
+                  <span aria-hidden="true" className="text-3xl">
+                    🌱
                   </span>
-                  <span className="pt-0.5">{event.message}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
-    </div>
+                  <p className="text-style-body-sm text-text-muted">Nenhum evento por aqui ainda.</p>
+                </div>
+              ) : (
+                <ul className="m-0 flex flex-1 list-none flex-col gap-1 overflow-y-auto p-2">
+                  {events.map((event) => {
+                    const timestamp = formatEventTimestamp(event.createdAt)
+                    return (
+                      <li
+                        key={event.id}
+                        className="flex items-start gap-3 rounded-xl px-3 py-3 text-style-body-sm text-text hover:bg-bg-subtle"
+                      >
+                        <span
+                          aria-hidden="true"
+                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[14px] ${EVENT_ICON_CLASSES[event.type]}`}
+                        >
+                          {EVENT_ICON[event.type]}
+                        </span>
+                        <span className="flex flex-col gap-0.5">
+                          <span>{event.message}</span>
+                          {timestamp && <span className="text-style-label-sm text-text-muted">{timestamp}</span>}
+                        </span>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+            </div>
+          </div>,
+          document.body,
+        )}
+    </>
   )
 }

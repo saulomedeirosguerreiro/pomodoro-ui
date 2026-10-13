@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
-import { pluralize, pluralizeCount, streakLabel } from './format'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { formatEventTimestamp, pluralize, pluralizeCount, streakLabel } from './format'
 
 describe('pluralize', () => {
   it('usa a forma singular quando count é 1', () => {
@@ -45,5 +45,33 @@ describe('streakLabel', () => {
 
   it('usa plural para mais de 1 dia de streak', () => {
     expect(streakLabel(3)).toBe('3 dias seguidos')
+  })
+})
+
+describe('formatEventTimestamp', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 9, 13, 18, 0))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('mostra "Hoje" para um horário no mesmo dia', () => {
+    expect(formatEventTimestamp(new Date(2026, 9, 13, 14, 32).toISOString())).toBe('Hoje · 14:32')
+  })
+
+  it('mostra "Ontem" para um horário no dia anterior', () => {
+    expect(formatEventTimestamp(new Date(2026, 9, 12, 9, 5).toISOString())).toBe('Ontem · 09:05')
+  })
+
+  it('mostra dd/MM para datas mais antigas', () => {
+    expect(formatEventTimestamp(new Date(2026, 9, 1, 8, 0).toISOString())).toBe('01/10 · 08:00')
+  })
+
+  it('retorna string vazia para uma data inválida/ausente em vez de "NaN/NaN · NaN:NaN"', () => {
+    expect(formatEventTimestamp(undefined as unknown as string)).toBe('')
+    expect(formatEventTimestamp('')).toBe('')
   })
 })

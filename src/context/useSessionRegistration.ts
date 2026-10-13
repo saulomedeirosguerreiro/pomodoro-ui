@@ -57,6 +57,8 @@ export interface AppEvent {
   type: 'level' | 'achievement'
   message: string
   seen: boolean
+  /** ISO UTC — momento em que o evento foi registrado (exibido como "Hoje"/"Ontem" na central). */
+  createdAt: string
 }
 
 /**
@@ -84,12 +86,12 @@ export function useSessionRegistration() {
   const unlockedAchievementCodesRef = useRef<Set<string> | null>(null)
 
   /** US-60: adiciona um evento à central local, sem duplicar pelo mesmo id (ex.: mesmo nível/conquista). */
-  const pushEvent = useCallback((event: Omit<AppEvent, 'seen'>) => {
+  const pushEvent = useCallback((event: Omit<AppEvent, 'seen' | 'createdAt'>) => {
     setEvents((prev) => {
       if (prev.some((e) => e.id === event.id)) {
         return prev
       }
-      return [{ ...event, seen: false }, ...prev].slice(0, 20)
+      return [{ ...event, seen: false, createdAt: new Date().toISOString() }, ...prev].slice(0, 20)
     })
   }, [])
 
