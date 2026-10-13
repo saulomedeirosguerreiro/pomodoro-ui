@@ -10,25 +10,30 @@ interface LofiPlayerContextValue {
   isPlaying: boolean
   message: string | null
   volume: number
+  currentTime: number
+  duration: number
   handlePlayPause: () => void
   handleNext: () => void
+  handlePrevious: () => void
   selectTrack: (index: number) => void
   setVolume: (volume: number) => void
+  seek: (time: number) => void
 }
 
 const LofiPlayerContext = createContext<LofiPlayerContextValue | undefined>(undefined)
 
 /**
- * Estado único de reprodução lo-fi, compartilhado pelo mini player do header (`LofiMiniPlayer`) e
- * pelo player do Checklist de Foco (`LofiPlayer`) — um só `<audio>` real, pra tocar/pausar/trocar de
- * faixa em qualquer um dos dois refletir no outro. Montado em `TimerScope` (`App.tsx`), então
- * sobrevive à navegação entre páginas autenticadas (só pausa se o usuário pausar, ou ao deslogar).
+ * Estado único de reprodução lo-fi, consumido pela barra fixa do rodapé (`LofiPlayerBar`) — um só
+ * `<audio>` real. Montado em `TimerScope` (`App.tsx`), então sobrevive à navegação entre páginas
+ * autenticadas (só pausa se o usuário pausar, ou ao deslogar).
  */
 export function LofiPlayerProvider({ children }: { children: ReactNode }) {
   const { settings, updateSettings } = useSettings()
   const [trackIndex, setTrackIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   /** `true` quando a troca de faixa deve retomar a reprodução assim que o novo `src` for aplicado. */
   const autoplayPendingRef = useRef(false)
@@ -93,6 +98,11 @@ export function LofiPlayerProvider({ children }: { children: ReactNode }) {
     selectTrack((trackIndex + 1) % LOFI_TRACKS.length)
   }
 
+  /** Espelha `handleNext`, andando pra trás no catálogo — completa o trio anterior/play/próxima do Spotify. */
+  function handlePrevious() {
+    selectTrack((trackIndex - 1 + LOFI_TRACKS.length) % LOFI_TRACKS.length)
+  }
+
   /** Escolha direta de uma faixa qualquer (US-57): mesma troca de `handleNext`, mas para um índice arbitrário. */
   function selectTrack(index: number) {
     if (index === trackIndex) return
@@ -100,11 +110,21 @@ export function LofiPlayerProvider({ children }: { children: ReactNode }) {
     audioRef.current?.pause()
     setIsPlaying(false)
     setMessage(null)
+    setCurrentTime(0)
+    setDuration(0)
     setTrackIndex(index)
   }
 
   function setVolume(volume: number) {
     updateSettings({ lofiVolume: volume })
+  }
+
+  /** Arrastar a barra de progresso — feedback imediato no estado, sem esperar o próximo `timeupdate`. */
+  function seek(time: number) {
+    if (audioRef.current) {
+      audioRef.current.currentTime = time
+    }
+    setCurrentTime(time)
   }
 
   const value: LofiPlayerContextValue = {
@@ -113,15 +133,27 @@ export function LofiPlayerProvider({ children }: { children: ReactNode }) {
     isPlaying,
     message,
     volume: settings.lofiVolume,
+    currentTime,
+    duration,
     handlePlayPause,
     handleNext,
+    handlePrevious,
     selectTrack,
     setVolume,
+    seek,
   }
 
   return (
     <LofiPlayerContext.Provider value={value}>
-      <audio ref={audioRef} src={track.src} loop preload="none" onError={handleAudioError} />
+      <audio
+        ref={audioRef}
+        src={track.src}
+        loop
+        preload="none"
+        onError={handleAudioError}
+        onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+      />
       {children}
     </LofiPlayerContext.Provider>
   )

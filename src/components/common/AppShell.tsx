@@ -7,7 +7,7 @@ import { useTimerContext } from '../../context/TimerContext'
 import { formatHoursAndMinutes } from '../../lib/format'
 import { formatMMSS, SESSION_LABELS } from '../../lib/timerLogic'
 import type { ProgressSummary } from '../../types/api'
-import { LofiMiniPlayer } from '../Sound/LofiMiniPlayer'
+import { LofiPlayerBar } from '../Sound/LofiPlayerBar'
 import { AchievementToastView } from './AchievementToastView'
 import { Badge } from './Badge'
 import { Button } from './Button'
@@ -234,7 +234,10 @@ export function AppShell() {
 
   return (
     <div className="flex min-h-svh w-full flex-col lg:flex-row">
-      <aside className="hidden lg:sticky lg:top-0 lg:z-auto lg:flex lg:h-svh lg:w-[280px] lg:flex-col lg:gap-4 lg:border-r lg:border-border lg:bg-surface lg:p-4">
+      {/* `lg:h-[calc(100svh-88px)]` deixa de ser `lg:h-svh` cheio porque a `LofiPlayerBar` agora também
+          aparece no desktop (fixa no rodapé, ~88px de altura ali) — sem isso, o rodapé da sidebar
+          (Configurações/Ajuda/copyright) ficaria escondido atrás da barra do player. */}
+      <aside className="hidden lg:sticky lg:top-0 lg:z-auto lg:flex lg:h-[calc(100svh-88px)] lg:w-[280px] lg:flex-col lg:gap-4 lg:border-r lg:border-border lg:bg-surface lg:p-4">
         <SidebarContent
           displayName={displayName}
           isAccount={isAccount}
@@ -286,7 +289,9 @@ export function AppShell() {
         </div>
       )}
 
-      <div className="flex min-w-0 flex-1 flex-col pb-[160px] lg:pb-0">
+      {/* `pb-[160px]`/`lg:pb-[88px]` reservam a altura real da `LofiPlayerBar` fixa no rodapé (mais a
+          `PromoBar` empilhada acima dela, só no mobile) — ver o mesmo número comentado na `<aside>`. */}
+      <div className="flex min-w-0 flex-1 flex-col pb-[160px] lg:pb-[88px]">
         <header className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-border bg-surface px-4 py-3 lg:px-6 lg:py-4">
           <div className="flex min-w-0 items-center gap-3">
             <button
@@ -324,9 +329,6 @@ export function AppShell() {
                 {SESSION_LABELS[timer.type]} {formatMMSS(timer.remainingSeconds)}
               </span>
             )}
-            <div className="hidden lg:block">
-              <LofiMiniPlayer />
-            </div>
             {!isAccount && (
               <div className="hidden lg:block">
                 <Button onClick={() => navigate('/login')}>Acessar minha conta</Button>
@@ -352,11 +354,11 @@ export function AppShell() {
         </main>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-20 flex flex-col border-t border-border bg-surface lg:hidden">
-        <PromoBar secondsPerAd={settings.promoSecondsPerAd} isDimmed={isPromoDimmed} />
-        <div className="flex justify-center border-t border-border p-2">
-          <LofiMiniPlayer />
+      <div className="fixed inset-x-0 bottom-0 z-20 flex flex-col bg-surface">
+        <div className="lg:hidden">
+          <PromoBar secondsPerAd={settings.promoSecondsPerAd} isDimmed={isPromoDimmed} />
         </div>
+        <LofiPlayerBar />
       </div>
 
       {timer.rewardToast && <RewardToastView toast={timer.rewardToast} onDismiss={timer.dismissRewardToast} />}
