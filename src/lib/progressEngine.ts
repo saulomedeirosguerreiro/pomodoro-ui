@@ -13,6 +13,9 @@ import { FOCUS_XP, REST_XP, SEEDS_PER_CYCLE_BONUS, SEEDS_PER_FOCUS, XP_PER_LEVEL
  * `computeTitleForLevel` usa a primeira faixa cujo `minLevel` o nível atinge.
  */
 const LEVEL_TITLE_BANDS: ReadonlyArray<{ minLevel: number; title: string }> = [
+  { minLevel: 25, title: 'Lenda do Pomar Eterno' },
+  { minLevel: 20, title: 'Protetor da Natureza' },
+  { minLevel: 16, title: 'Guardião da Floresta' },
   { minLevel: 12, title: 'Guardião do Pomar' },
   { minLevel: 8, title: 'Mestre da Horta' },
   { minLevel: 5, title: 'Horticultor Focado' },

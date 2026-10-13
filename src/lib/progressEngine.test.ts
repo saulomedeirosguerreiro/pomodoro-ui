@@ -94,7 +94,13 @@ describe('computeTitleForLevel', () => {
     [8, 'Mestre da Horta'],
     [11, 'Mestre da Horta'],
     [12, 'Guardião do Pomar'],
-    [100, 'Guardião do Pomar'],
+    [15, 'Guardião do Pomar'],
+    [16, 'Guardião da Floresta'],
+    [19, 'Guardião da Floresta'],
+    [20, 'Protetor da Natureza'],
+    [24, 'Protetor da Natureza'],
+    [25, 'Lenda do Pomar Eterno'],
+    [100, 'Lenda do Pomar Eterno'],
   ] as const)('nível %i => %s', (level, expected) => {
     expect(computeTitleForLevel(level)).toBe(expected)
   })
