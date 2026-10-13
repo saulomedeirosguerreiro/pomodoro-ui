@@ -236,3 +236,14 @@
     transform: translateY(-28px);
   }
 }
+
+/* Balanço de "cadê isso?" do mascote na página 404 (NotFoundPage.tsx). */
+@keyframes confusedWobble {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}

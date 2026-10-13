@@ -19,6 +19,7 @@ import { ConquistasPage } from './routes/ConquistasPage'
 import { ForgotPasswordPage } from './routes/ForgotPasswordPage'
 import { JardimPage } from './routes/JardimPage'
 import { LoginPage } from './routes/LoginPage'
+import { NotFoundPage } from './routes/NotFoundPage'
 import { PerfilPage } from './routes/PerfilPage'
 import { PoliticaDePrivacidadePage } from './routes/PoliticaDePrivacidadePage'
 import { RegisterPage } from './routes/RegisterPage'
@@ -97,7 +98,7 @@ export default function App() {
 
                 <Route path="/dashboard" element={<Navigate to="/timer" replace />} />
                 <Route path="/" element={<Navigate to="/timer" replace />} />
-                <Route path="*" element={<Navigate to="/timer" replace />} />
+                <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </DataSourceProvider>
           </GuestProvider>
