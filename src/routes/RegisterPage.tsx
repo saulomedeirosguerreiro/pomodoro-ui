@@ -18,7 +18,7 @@ import { ApiError } from '../types/api'
 export function RegisterPage() {
   const navigate = useNavigate()
   const { guest, clearGuestData } = useGuest()
-  const { refreshProfile } = useAuth()
+  const { login, refreshProfile } = useAuth()
 
   const [name, setName] = useState(guest?.name ?? '')
   const [email, setEmail] = useState('')
@@ -69,7 +69,19 @@ export function RegisterPage() {
     trackEvent('sign_up')
 
     if (!hasAnyLocalGuestData()) {
-      navigate('/login', { state: { email, message: 'Conta criada com sucesso! Faça login.' } })
+      try {
+        await login(email, password)
+        navigate('/timer', { replace: true })
+      } catch {
+        navigate('/login', {
+          state: {
+            email,
+            message: 'Conta criada, mas não foi possível entrar automaticamente. Informe sua senha para continuar.',
+          },
+        })
+      } finally {
+        setIsSubmitting(false)
+      }
       return
     }
 

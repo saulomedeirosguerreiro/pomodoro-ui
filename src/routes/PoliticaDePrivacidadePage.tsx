@@ -66,21 +66,11 @@ export function PoliticaDePrivacidadePage() {
           to="/timer"
           className="rounded-full border border-border px-3 py-1.5 text-style-label-md text-primary-dark no-underline transition-colors hover:bg-bg-subtle"
         >
-          <span aria-hidden="true">← </span>Voltar
+          Voltar
         </Link>
       </header>
 
       <h1>Política de Privacidade</h1>
-
-      <section className="flex flex-col gap-2 rounded-2xl border border-highlight bg-highlight-bg p-4">
-        <p className="flex items-start gap-2 text-style-body-sm text-text">
-          <span aria-hidden="true">ℹ️</span>
-          <span>
-            Este é um texto-modelo, pensado para um aplicativo pessoal de produtividade. Ele serve como ponto de
-            partida e não substitui revisão por um profissional jurídico antes do uso em produção.
-          </span>
-        </p>
-      </section>
 
       {SECTIONS.map((section) => (
         <section key={section.number} className={CARD_CLASSES}>

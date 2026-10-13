@@ -53,17 +53,17 @@ function mockGuest(name: string | null = null) {
   return clearGuestData
 }
 
-function mockAuth(refreshProfile = vi.fn().mockResolvedValue(undefined)) {
+function mockAuth(refreshProfile = vi.fn().mockResolvedValue(undefined), login = vi.fn().mockResolvedValue(undefined)) {
   vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
     user: null,
     isLoading: false,
     sessionExpired: false,
-    login: vi.fn(),
+    login,
     logout: vi.fn(),
     refreshProfile,
     acknowledgeSessionExpired: vi.fn(),
   })
-  return refreshProfile
+  return { refreshProfile, login }
 }
 
 async function fillAndSubmit() {
@@ -167,9 +167,24 @@ describe('RegisterPage', () => {
     expect(screen.getByLabelText('Nome')).toHaveValue('Visitante Curioso')
   })
 
-  it('cadastro sem dados locais pendentes: fluxo atual intacto, navega para /login com banner de sucesso', async () => {
+  it('cadastro sem dados locais pendentes: entra automaticamente e navega direto para /timer', async () => {
     mockGuest()
-    mockAuth()
+    const { login } = mockAuth()
+    vi.mocked(authService.register).mockResolvedValue({ id: 1, name: 'João', email: 'joao@email.com' })
+    vi.mocked(hasAnyLocalGuestData).mockReturnValue(false)
+
+    renderRegisterPage()
+    await fillAndSubmit()
+
+    expect(await screen.findByText('Tela do timer')).toBeInTheDocument()
+    expect(login).toHaveBeenCalledWith('joao@email.com', 'Senha123')
+    expect(migrationService.importLocalData).not.toHaveBeenCalled()
+    expect(trackEvent).toHaveBeenCalledWith('sign_up')
+  })
+
+  it('cadastro sem dados locais pendentes: se o auto-login falhar, manda para /login com aviso', async () => {
+    mockGuest()
+    mockAuth(undefined, vi.fn().mockRejectedValue(new Error('login falhou')))
     vi.mocked(authService.register).mockResolvedValue({ id: 1, name: 'João', email: 'joao@email.com' })
     vi.mocked(hasAnyLocalGuestData).mockReturnValue(false)
 
@@ -177,14 +192,11 @@ describe('RegisterPage', () => {
     await fillAndSubmit()
 
     expect(await screen.findByText('Tela de login')).toBeInTheDocument()
-    expect(authService.login).not.toHaveBeenCalled()
-    expect(migrationService.importLocalData).not.toHaveBeenCalled()
-    expect(trackEvent).toHaveBeenCalledWith('sign_up')
   })
 
   it('cadastro com dados locais pendentes importa automaticamente, sem diálogo, e navega para /timer quando nada foi pulado', async () => {
     const clearGuestData = mockGuest('Visitante')
-    const refreshProfile = mockAuth()
+    const { refreshProfile } = mockAuth()
     vi.mocked(authService.register).mockResolvedValue({ id: 1, name: 'Visitante', email: 'joao@email.com' })
     vi.mocked(authService.login).mockResolvedValue({ token: 'tok-123', user: { id: 1, name: 'Visitante', email: 'joao@email.com' } })
     vi.mocked(hasAnyLocalGuestData).mockReturnValue(true)
@@ -202,7 +214,7 @@ describe('RegisterPage', () => {
 
   it('cadastro com dados locais pendentes e itens pulados mostra o MigrationReport antes de navegar', async () => {
     mockGuest('Visitante')
-    const refreshProfile = mockAuth()
+    const { refreshProfile } = mockAuth()
     vi.mocked(authService.register).mockResolvedValue({ id: 1, name: 'Visitante', email: 'joao@email.com' })
     vi.mocked(authService.login).mockResolvedValue({ token: 'tok-123', user: { id: 1, name: 'Visitante', email: 'joao@email.com' } })
     vi.mocked(hasAnyLocalGuestData).mockReturnValue(true)

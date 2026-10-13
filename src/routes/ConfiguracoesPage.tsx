@@ -93,7 +93,10 @@ export function ConfiguracoesPage() {
     try {
       await usersService.deleteAccount(deletePassword)
       logout()
-      navigate('/login')
+      // Mesmo fluxo do "Sair" (AppShell.tsx): limpa guest residual e volta pro /timer, que mostra o
+      // WelcomeModal sozinho sem user nem guest — em vez de forçar especificamente a tela de login.
+      clearGuestData()
+      navigate('/timer', { replace: true })
     } catch (err) {
       setDeleteError(err instanceof ApiError ? err.message : 'Não foi possível excluir a conta. Tente novamente.')
     } finally {

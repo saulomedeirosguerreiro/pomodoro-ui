@@ -215,16 +215,19 @@ describe('ConfiguracoesPage', () => {
       expect(screen.queryByLabelText(/confirme sua senha para excluir a conta/i)).not.toBeInTheDocument()
     })
 
-    it('confirmar com senha correta chama usersService.deleteAccount e desloga o usuário', async () => {
+    it('confirmar com senha correta chama usersService.deleteAccount, desloga e segue o mesmo fluxo de "Sair" (limpa guest e volta pro /timer)', async () => {
+      const clearGuestData = mockGuest()
       vi.spyOn(notifications, 'getNotificationPermission').mockReturnValue('granted')
       vi.mocked(usersService.deleteAccount).mockResolvedValue(undefined)
 
-      renderPage()
+      renderPageWithTimerRoute()
       await userEvent.click(screen.getByRole('button', { name: 'Excluir minha conta' }))
       await userEvent.type(screen.getByLabelText(/confirme sua senha para excluir a conta/i), 'Senha123')
       await userEvent.click(screen.getByRole('button', { name: 'Excluir definitivamente' }))
 
       expect(usersService.deleteAccount).toHaveBeenCalledWith('Senha123')
+      expect(clearGuestData).toHaveBeenCalledTimes(1)
+      expect(await screen.findByText('Tela do timer')).toBeInTheDocument()
     })
 
     it('confirmar com senha errada mostra o erro e não desloga', async () => {
