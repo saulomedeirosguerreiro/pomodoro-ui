@@ -115,6 +115,9 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
   let dataSource: DataSource
 
   beforeEach(() => {
+    // `TimerPage` agora lê/grava `lastTimerMode` via `SettingsProvider` real (não mockado) — sem
+    // isso, o modo escolhido por um teste vaza pros seguintes através do `localStorage` de verdade.
+    localStorage.clear()
     dataSource = buildMockDataSource()
     vi.mocked(dataSource.listSessions).mockResolvedValue({ items: [], totalCount: 0, limit: 10, offset: 0 })
     vi.mocked(dataSource.listTasks).mockResolvedValue([])
@@ -176,6 +179,27 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
     expect(screen.getByText('2 colheitas')).toBeInTheDocument()
     expect(screen.getByText('Tomatinho')).toBeInTheDocument()
     expect(screen.getByText('Moranguinho')).toBeInTheDocument()
+  })
+
+  it('exibe o singular quando só há 1 colheita hoje', () => {
+    mockTimer({
+      progress: {
+        level: 1,
+        title: 'Semente Curiosa',
+        xpInLevel: 0,
+        xpForNextLevel: 200,
+        totalXp: 0,
+        seeds: 0,
+        streakDays: 0,
+        isStreakAtRiskToday: true,
+        todayFocusCount: 1,
+        todayFocusSeconds: 1500,
+      },
+    })
+
+    renderTimerPage()
+
+    expect(screen.getByText('1 colheita')).toBeInTheDocument()
   })
 
   it('mostra erro de registro com botão de tentar novamente', async () => {
@@ -261,6 +285,23 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
       expect(screen.getByText('25:00')).toBeInTheDocument()
       expect(screen.queryByText('Quanto tempo você quer plantar nesse foco?')).not.toBeInTheDocument()
     })
+
+    it('lembra o modo escolhido mesmo remontando a página (ex.: navegar pro Perfil e voltar)', async () => {
+      mockTimer()
+      mockFlexibleTimer()
+      const { unmount } = renderTimerPage()
+
+      await userEvent.click(screen.getByRole('tab', { name: 'Personalizado' }))
+      expect(screen.getByText('Quanto tempo você quer plantar?')).toBeInTheDocument()
+
+      // Simula sair de /timer (desmonta a página) e voltar (monta uma instância nova) — antes dessa
+      // mudança, isso reiniciava sempre no clássico porque o modo vivia num `useState` local.
+      unmount()
+      renderTimerPage()
+
+      expect(screen.getByRole('tab', { name: 'Personalizado', selected: true })).toBeInTheDocument()
+      expect(screen.queryByText('25:00')).not.toBeInTheDocument()
+    })
   })
 
   describe('trava do seletor de modo durante sessão ativa', () => {
@@ -309,6 +350,17 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
       // selo de `FlexibleFocusView`, não existe na tela clássica.
       expect(screen.getByText('Foco flexível')).toBeInTheDocument()
       expect(screen.queryByText('25:00')).not.toBeInTheDocument()
+    })
+
+    it('ao remontar a página já no modo Personalizado (ex.: voltando do Perfil) com um foco flexível rodando, o card "Pomodoro Clássico" já nasce travado, sem precisar clicar em "Personalizado" antes', () => {
+      mockTimer()
+      mockFlexibleTimer({ phase: { kind: 'foco_rodando' } })
+      localStorage.setItem('pomogarden:settings', JSON.stringify({ lastTimerMode: 'flexivel' }))
+
+      renderTimerPage()
+
+      expect(screen.getByRole('tab', { name: 'Pomodoro Clássico' })).toHaveAttribute('aria-disabled', 'true')
+      expect(screen.getByText('Foco flexível')).toBeInTheDocument()
     })
 
     it('com um foco flexível pausado, o card "Pomodoro Clássico" continua travado — pausar não libera a troca', async () => {

@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useGuest } from '../../context/GuestContext'
 import { useSettings } from '../../context/SettingsContext'
 import { useTimerContext } from '../../context/TimerContext'
-import { formatHoursAndMinutes } from '../../lib/format'
+import { formatHoursAndMinutes, pluralizeCount, streakLabel } from '../../lib/format'
 import { formatMMSS, SESSION_LABELS } from '../../lib/timerLogic'
 import type { ProgressSummary } from '../../types/api'
 import { LofiPlayerBar } from '../Sound/LofiPlayerBar'
@@ -332,11 +332,11 @@ export function AppShell() {
               {progress && (
                 <div className="hidden flex-wrap items-center gap-2 lg:flex">
                   <Badge variant={progress.streakDays > 0 ? 'highlight' : 'neutral'}>
-                    🔥 {progress.streakDays > 0 ? `${progress.streakDays} dias seguidos` : 'Plante o 1º foco de hoje'}
+                    🔥 {streakLabel(progress.streakDays)}
                   </Badge>
                   {progress.todayFocusCount > 0 && (
                     <Badge variant="primary">
-                      🍅 {progress.todayFocusCount} pomodoros ({formatHoursAndMinutes(progress.todayFocusSeconds)})
+                      🍅 {pluralizeCount(progress.todayFocusCount, 'pomodoro')} ({formatHoursAndMinutes(progress.todayFocusSeconds)})
                     </Badge>
                   )}
                 </div>

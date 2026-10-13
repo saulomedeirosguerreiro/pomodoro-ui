@@ -1,3 +1,4 @@
+import type { TimerMode } from '../components/TimeBlocking/TimerModeToggle'
 import { DEFAULT_SESSION_DURATIONS_SECONDS } from './timerLogic'
 
 export interface Settings {
@@ -13,6 +14,9 @@ export interface Settings {
   promoFocusPreview: boolean
   /** Opt-out do Google Analytics (ligado por padrão — ver Política de Privacidade). */
   analyticsEnabled: boolean
+  /** Última aba escolhida em `TimerPage.tsx` (Clássico/Customizado) — sem isso, navegar pra outra
+   *  página e voltar pro Timer desmonta/remonta a página e perde a escolha. */
+  lastTimerMode: TimerMode
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -28,6 +32,7 @@ export const DEFAULT_SETTINGS: Settings = {
   promoSecondsPerAd: 8,
   promoFocusPreview: false,
   analyticsEnabled: true,
+  lastTimerMode: 'classico',
 }
 
 const STORAGE_KEY = 'pomogarden:settings'

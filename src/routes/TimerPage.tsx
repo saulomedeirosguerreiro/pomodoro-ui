@@ -1,8 +1,8 @@
-import { useState } from 'react'
 import { ClassicTimerView } from '../components/TimeBlocking/ClassicTimerView'
 import { FlexibleTimerView } from '../components/TimeBlocking/FlexibleTimerView'
 import { TimerModeToggle, type TimerMode } from '../components/TimeBlocking/TimerModeToggle'
 import { useFlexibleTimerContext } from '../context/FlexibleTimerContext'
+import { useSettings } from '../context/SettingsContext'
 import { useTimerContext } from '../context/TimerContext'
 import { trackEvent } from '../lib/analytics'
 
@@ -11,9 +11,9 @@ const IDLE_FLEXIBLE_KINDS = ['selecionando_foco', 'encerrado']
 
 /**
  * `TimerPage` (Parte 5 do plano) vira só o switch entre os dois modos — a tela clássica inteira foi
- * extraída, sem mudança de comportamento, para `ClassicTimerView`. Seleção de modo não persiste
- * entre reloads (paridade com o comportamento já existente do timer clássico, que também é só
- * estado em memória).
+ * extraída, sem mudança de comportamento, para `ClassicTimerView`. Seleção de modo persiste via
+ * `settings.lastTimerMode` (sobrevive a navegar pra outra página — `TimerPage` desmonta/remonta a
+ * cada troca de rota — e a um reload), em vez de um `useState` local que se perdia nos dois casos.
  *
  * Trava do seletor de modo: os dois hooks de timer (`useTimer` clássico e `useFlexibleTimer`) ficam
  * montados o tempo todo via `TimerScope`, rodando em paralelo independente de qual está visível —
@@ -23,7 +23,8 @@ const IDLE_FLEXIBLE_KINDS = ['selecionando_foco', 'encerrado']
  * aqui: enquanto travado, o clique no outro card nem chega a `handleModeChange`.
  */
 export function TimerPage() {
-  const [activeMode, setActiveMode] = useState<TimerMode>('classico')
+  const { settings, updateSettings } = useSettings()
+  const activeMode = settings.lastTimerMode
   const timer = useTimerContext()
   const flexible = useFlexibleTimerContext()
 
@@ -31,7 +32,7 @@ export function TimerPage() {
     activeMode === 'classico' ? timer.phase !== 'parado' : !IDLE_FLEXIBLE_KINDS.includes(flexible.phase.kind)
 
   function handleModeChange(nextMode: TimerMode) {
-    setActiveMode(nextMode)
+    updateSettings({ lastTimerMode: nextMode })
     trackEvent('mode_switch', { mode: nextMode })
   }
 

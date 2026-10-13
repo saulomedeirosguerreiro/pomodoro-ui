@@ -29,3 +29,21 @@ export function formatHoursAndMinutes(totalSeconds: number): string {
 
   return hours > 0 ? `${hours}h${String(minutes).padStart(2, '0')}m` : `${minutes}min`
 }
+
+/** Pluralização PT-BR: escolhe a forma singular ou plural pelo count.
+ *  Sem `plural` explícito, usa singular + "s" (regra regular). */
+export function pluralize(count: number, singular: string, plural: string = `${singular}s`): string {
+  return count === 1 ? singular : plural
+}
+
+/** Atalho para "<count> <palavra>" (ex.: "1 colheita", "2 colheitas"). */
+export function pluralizeCount(count: number, singular: string, plural?: string): string {
+  return `${count} ${pluralize(count, singular, plural)}`
+}
+
+/** Texto do badge de streak, compartilhado entre AppShell e PerfilPage. */
+export function streakLabel(streakDays: number): string {
+  return streakDays > 0
+    ? `${pluralizeCount(streakDays, 'dia', 'dias')} ${pluralize(streakDays, 'seguido', 'seguidos')}`
+    : 'Plante o 1º foco de hoje'
+}

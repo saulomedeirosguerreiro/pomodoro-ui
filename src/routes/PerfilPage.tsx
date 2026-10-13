@@ -7,6 +7,7 @@ import { FormField } from '../components/common/FormField'
 import { ProgressBar } from '../components/common/ProgressBar'
 import { useAuth } from '../context/AuthContext'
 import { useTimerContext } from '../context/TimerContext'
+import { streakLabel } from '../lib/format'
 import { usersService } from '../lib/usersService'
 import { ApiError } from '../types/api'
 
@@ -131,7 +132,7 @@ export function PerfilPage() {
                 Nível {progress.level} • {progress.title}
               </p>
               <Badge variant={progress.streakDays > 0 ? 'highlight' : 'neutral'}>
-                🔥 {progress.streakDays > 0 ? `${progress.streakDays} dias seguidos` : 'Plante o 1º foco de hoje'}
+                🔥 {streakLabel(progress.streakDays)}
               </Badge>
             </div>
             <div className="flex items-center gap-2">

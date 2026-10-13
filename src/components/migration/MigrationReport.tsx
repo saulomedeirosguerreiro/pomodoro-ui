@@ -1,5 +1,6 @@
 import { Button } from '../common/Button'
 import { Dialog } from '../common/Dialog'
+import { pluralize } from '../../lib/format'
 import type { ImportGuestDataResponse, ImportSkippedItem } from '../../lib/migrationService'
 
 interface MigrationReportProps {
@@ -23,8 +24,7 @@ function friendlyReason(reason: string): string {
 }
 
 function itemLabel(itemType: ImportSkippedItem['itemType'], count: number): string {
-  if (itemType === 'task') return count === 1 ? 'tarefa' : 'tarefas'
-  return count === 1 ? 'sessão' : 'sessões'
+  return itemType === 'task' ? pluralize(count, 'tarefa') : pluralize(count, 'sessão', 'sessões')
 }
 
 /** Agrupa itens pulados por (tipo + motivo já traduzido) — evita repetir a mesma linha técnica
@@ -61,14 +61,14 @@ export function MigrationReport({ result, onDismiss }: MigrationReportProps) {
         <p className="text-style-body-md text-secondary-dark">
           {importedCount === 0
             ? 'Sua conta está pronta — é só começar a plantar foco.'
-            : `Trouxemos ${importedCount} ${importedCount === 1 ? 'item que você já tinha' : 'itens que você já tinha'} neste navegador.`}
+            : `Trouxemos ${importedCount} ${pluralize(importedCount, 'item', 'itens')} que você já tinha neste navegador.`}
         </p>
       </div>
 
       {skippedCount > 0 && (
         <div className="mb-4 rounded-lg bg-bg-subtle p-3">
           <p className="mb-2 text-style-body-sm text-text-muted">
-            {skippedCount === 1 ? 'Só 1 item ficou de fora:' : `Só ${skippedCount} itens ficaram de fora:`}
+            {`Só ${skippedCount} ${pluralize(skippedCount, 'item', 'itens')} ${pluralize(skippedCount, 'ficou', 'ficaram')} de fora:`}
           </p>
           <ul className="m-0 flex list-none flex-col gap-1 p-0 text-style-body-sm text-text-muted">
             {groups.map((group) => (

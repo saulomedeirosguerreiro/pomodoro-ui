@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { pluralize } from '../../lib/format'
 import type { RewardToast } from '../../context/TimerContext'
 
 const AUTO_DISMISS_MS = 4000
@@ -15,7 +16,7 @@ export function RewardToastView({ toast, onDismiss }: { toast: RewardToast; onDi
       role="status"
     >
       <p className="text-style-label-lg text-primary-dark">
-        +{toast.xp} XP · +{toast.seeds} 🌱 Sementes
+        +{toast.xp} XP · +{toast.seeds} 🌱 {pluralize(toast.seeds, 'Semente', 'Sementes')}
       </p>
       {toast.leveledUp && (
         <p className="mt-1 text-style-headline-sm text-secondary-dark">Subiu para o Nível {toast.newLevel}! 🎉</p>

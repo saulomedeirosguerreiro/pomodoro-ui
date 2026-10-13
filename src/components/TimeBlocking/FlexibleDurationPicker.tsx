@@ -1,6 +1,7 @@
 import { useCallback, useId, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react'
 import { Button } from '../common/Button'
 import { SegmentedControl, type SegmentedOption } from '../common/SegmentedControl'
+import { pluralizeCount } from '../../lib/format'
 
 export type FlexibleDurationContext = 'foco' | 'pausa'
 
@@ -163,7 +164,7 @@ export function FlexibleDurationPicker({
         <button
           type="button"
           className={ICON_BUTTON_CLASSES}
-          aria-label={`Diminuir ${STEP_MINUTES} minutos`}
+          aria-label={`Diminuir ${pluralizeCount(STEP_MINUTES, 'minuto')}`}
           onClick={() => onChooseCustom(clamp(draftMinutes - STEP_MINUTES, minMinutes, maxMinutes))}
         >
           −
@@ -205,7 +206,7 @@ export function FlexibleDurationPicker({
             aria-valuemin={minMinutes}
             aria-valuemax={maxMinutes}
             aria-valuenow={draftMinutes}
-            aria-valuetext={`${draftMinutes} minutos`}
+            aria-valuetext={pluralizeCount(draftMinutes, 'minuto')}
             onKeyDown={handleKeyDown}
             className={`absolute h-6 w-6 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border-2 border-surface shadow-popover focus:outline-none focus:ring-4 focus:ring-primary-bg active:cursor-grabbing ${colors.handle}`}
             style={{ left: `${handleLeftPercent}%`, top: `${handleTopPercent}%` }}
@@ -226,7 +227,7 @@ export function FlexibleDurationPicker({
         <button
           type="button"
           className={ICON_BUTTON_CLASSES}
-          aria-label={`Aumentar ${STEP_MINUTES} minutos`}
+          aria-label={`Aumentar ${pluralizeCount(STEP_MINUTES, 'minuto')}`}
           onClick={() => onChooseCustom(clamp(draftMinutes + STEP_MINUTES, minMinutes, maxMinutes))}
         >
           +

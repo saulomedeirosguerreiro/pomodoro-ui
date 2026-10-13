@@ -1,4 +1,5 @@
 import { ProgressBar } from '../common/ProgressBar'
+import { pluralize } from '../../lib/format'
 import type { TaskItem } from '../../types/api'
 
 interface MissionCardProps {
@@ -24,10 +25,10 @@ export function MissionCard({ task }: MissionCardProps) {
       <ProgressBar
         value={task.completedPomodoros}
         max={task.estimatedPomodoros}
-        label={`${task.completedPomodoros} de ${task.estimatedPomodoros} pomodoros`}
+        label={`${task.completedPomodoros} de ${task.estimatedPomodoros} ${pluralize(task.estimatedPomodoros, 'pomodoro')}`}
       />
       <p className="text-style-label-sm text-text-muted">
-        {task.completedPomodoros} de {task.estimatedPomodoros} pomodoros
+        {task.completedPomodoros} de {task.estimatedPomodoros} {pluralize(task.estimatedPomodoros, 'pomodoro')}
       </p>
     </section>
   )

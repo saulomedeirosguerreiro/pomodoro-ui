@@ -1,4 +1,5 @@
 import { speciesForIndex } from '../../lib/gardenSpecies'
+import { pluralizeCount } from '../../lib/format'
 
 interface TodaysGardenCardProps {
   maturedCount: number
@@ -16,7 +17,7 @@ export function TodaysGardenCard({ maturedCount, isGrowing }: TodaysGardenCardPr
       <div className="flex items-center justify-between">
         <h2 className="text-style-headline-sm">🌱 Jardim de Foco de Hoje</h2>
         <span className="rounded-full bg-secondary-bg px-2 py-0.5 text-style-label-sm text-secondary-dark">
-          {maturedCount} colheitas
+          {pluralizeCount(maturedCount, 'colheita')}
         </span>
       </div>
       <p className="text-style-body-sm text-text-muted">

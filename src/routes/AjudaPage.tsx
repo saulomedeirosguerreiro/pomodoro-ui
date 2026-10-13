@@ -1,5 +1,5 @@
 import { useSettings } from '../context/SettingsContext'
-import { formatDurationMinutes } from '../lib/format'
+import { formatDurationMinutes, pluralizeCount } from '../lib/format'
 import { FOCUS_XP, REST_XP, SEEDS_PER_CYCLE_BONUS, SEEDS_PER_FOCUS, XP_PER_LEVEL_MULTIPLIER } from '../lib/gameConstants'
 import { GARDEN_SPECIES } from '../lib/gardenSpecies'
 import { FOCI_PER_LONG_BREAK, sessionDurationsSecondsFrom } from '../lib/timerLogic'
@@ -61,8 +61,9 @@ export function AjudaPage() {
             <span aria-hidden="true">🌰</span> Sementes
           </h2>
           <p className="text-style-body-md text-text">
-            Cada foco concluído rende <strong>{SEEDS_PER_FOCUS} sementes</strong>, e completar uma pausa longa dá um
-            bônus de <strong>{SEEDS_PER_CYCLE_BONUS} sementes</strong> por fechar o ciclo.
+            Cada foco concluído rende <strong>{pluralizeCount(SEEDS_PER_FOCUS, 'semente')}</strong>, e completar uma
+            pausa longa dá um bônus de <strong>{pluralizeCount(SEEDS_PER_CYCLE_BONUS, 'semente')}</strong> por fechar
+            o ciclo.
           </p>
         </section>
 
