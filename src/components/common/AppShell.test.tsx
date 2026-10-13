@@ -148,7 +148,6 @@ describe('AppShell', () => {
     const auth = mockAuth({ id: 1, name: 'João Silva', email: 'joao@email.com', completedSessions: 0 })
     const guest = mockGuest(null)
     mockTimer('parado')
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
     const user = userEvent.setup()
 
     renderShellOnTarefasRoute()
@@ -156,27 +155,35 @@ describe('AppShell', () => {
 
     await user.click(screen.getByRole('button', { name: 'Sair' }))
 
-    expect(confirmSpy).toHaveBeenCalledWith('Deseja mesmo sair da sua conta?')
+    const dialog = screen.getByRole('dialog', { name: 'Sair da sua conta?' })
+    expect(within(dialog).getByText('Você pode entrar novamente quando quiser.')).toBeInTheDocument()
+    expect(auth.logout).not.toHaveBeenCalled()
+
+    await user.click(within(dialog).getByRole('button', { name: 'Sair' }))
+
     expect(auth.logout).toHaveBeenCalledTimes(1)
     expect(guest.clearGuestData).toHaveBeenCalledTimes(1)
     expect(await screen.findByText('Conteúdo da página')).toBeInTheDocument()
     expect(screen.queryByText('Conteúdo de tarefas')).not.toBeInTheDocument()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
-  it('com um período em andamento: a confirmação avisa que ele será perdido, e recusar não desloga', async () => {
+  it('com um período em andamento: o diálogo avisa que ele será perdido, e cancelar não desloga', async () => {
     const auth = mockAuth({ id: 1, name: 'João Silva', email: 'joao@email.com', completedSessions: 0 })
     const guest = mockGuest(null)
     mockTimer('rodando')
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false)
     const user = userEvent.setup()
 
     renderShell()
 
     await user.click(screen.getByRole('button', { name: 'Sair' }))
 
-    expect(confirmSpy).toHaveBeenCalledWith(
-      'Há um período em andamento. Ele será perdido. Deseja mesmo sair da sua conta?',
-    )
+    const dialog = screen.getByRole('dialog', { name: 'Sair da sua conta?' })
+    expect(within(dialog).getByText('Há um período em andamento. Ele será perdido ao sair.')).toBeInTheDocument()
+
+    await user.click(within(dialog).getByRole('button', { name: 'Cancelar' }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(auth.logout).not.toHaveBeenCalled()
     expect(guest.clearGuestData).not.toHaveBeenCalled()
   })

@@ -11,6 +11,7 @@ import { LofiPlayerBar } from '../Sound/LofiPlayerBar'
 import { AchievementToastView } from './AchievementToastView'
 import { Badge } from './Badge'
 import { Button } from './Button'
+import { Dialog } from './Dialog'
 import { EventsBell } from './EventsBell'
 import { ProfileMenu } from './ProfileMenu'
 import { ProgressBar } from './ProgressBar'
@@ -179,6 +180,7 @@ export function AppShell() {
   const navigate = useNavigate()
   const location = useLocation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false)
 
   // "Foco ativo" (Tweaks) força a prévia do esmaecimento; uma sessão de foco de verdade já em
   // andamento esmaece sozinha, sem precisar do toggle manual.
@@ -218,11 +220,11 @@ export function AppShell() {
   }, [isMenuOpen])
 
   function handleLogout() {
-    const message = isTimerRunning
-      ? 'Há um período em andamento. Ele será perdido. Deseja mesmo sair da sua conta?'
-      : 'Deseja mesmo sair da sua conta?'
-    if (!window.confirm(message)) return
+    setIsLogoutDialogOpen(true)
+  }
 
+  function confirmLogout() {
+    setIsLogoutDialogOpen(false)
     logout()
     // Sem isso, um perfil guest residual no localStorage (como quase todo mundo começa, antes de criar
     // conta) faria o header cair pro nome/avatar dele assim que `user` virasse `null` — dando a
@@ -373,6 +375,22 @@ export function AppShell() {
       {timer.rewardToast && <RewardToastView toast={timer.rewardToast} onDismiss={timer.dismissRewardToast} />}
       {timer.achievementToast && (
         <AchievementToastView achievement={timer.achievementToast} onDismiss={timer.dismissAchievementToast} />
+      )}
+
+      {isLogoutDialogOpen && (
+        <Dialog titleText="Sair da sua conta?" onDismiss={() => setIsLogoutDialogOpen(false)}>
+          <p className="text-style-body-sm text-text-muted">
+            {isTimerRunning
+              ? 'Há um período em andamento. Ele será perdido ao sair.'
+              : 'Você pode entrar novamente quando quiser.'}
+          </p>
+          <div className="mt-4 flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setIsLogoutDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={confirmLogout}>Sair</Button>
+          </div>
+        </Dialog>
       )}
     </div>
   )
