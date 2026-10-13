@@ -350,6 +350,11 @@ export function AppShell() {
                 {SESSION_LABELS[timer.type]} {formatMMSS(timer.remainingSeconds)}
               </span>
             )}
+            {!isAccount && (
+              <div className="hidden lg:block">
+                <Button onClick={() => navigate('/login')}>Acessar minha conta</Button>
+              </div>
+            )}
             <EventsBell />
             <ThemeToggle />
             {isAccount ? (

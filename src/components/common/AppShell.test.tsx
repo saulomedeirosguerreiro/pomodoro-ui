@@ -200,7 +200,7 @@ describe('AppShell', () => {
     expect(screen.queryByRole('button', { name: 'Sair' })).not.toBeInTheDocument()
   })
 
-  it('guest: menu do avatar abre com "Acessar minha conta" e "Trocar de pessoa"; confirmar limpa o guest e volta pra /timer', async () => {
+  it('guest: botão "Acessar minha conta" fica à parte no header; menu do avatar só tem "Trocar de pessoa", que limpa o guest e volta pra /timer', async () => {
     const auth = mockAuth(null)
     const guest = mockGuest({ id: 'guest-1', name: 'Visitante', createdAt: '2026-01-01T00:00:00Z' })
     mockTimer('parado')
@@ -208,9 +208,10 @@ describe('AppShell', () => {
 
     renderShellOnTarefasRoute()
     expect(screen.getByText('Conteúdo de tarefas')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Acessar minha conta' })).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Menu do visitante' }))
-    expect(screen.getByRole('menuitem', { name: 'Acessar minha conta' })).toHaveAttribute('href', '/login')
+    expect(screen.queryByRole('menuitem', { name: 'Acessar minha conta' })).not.toBeInTheDocument()
 
     await user.click(screen.getByRole('menuitem', { name: 'Trocar de pessoa' }))
 

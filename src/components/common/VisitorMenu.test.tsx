@@ -21,15 +21,15 @@ describe('VisitorMenu', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('abre ao clicar no avatar, mostrando "Acessar minha conta" e "Trocar de pessoa"', async () => {
+  it('abre ao clicar no avatar, mostrando "Trocar de pessoa" ("Acessar minha conta" é um botão à parte no header, não um item deste menu)', async () => {
     const user = userEvent.setup()
     renderMenu()
 
     await user.click(screen.getByRole('button', { name: 'Menu do visitante' }))
 
     expect(screen.getByRole('menu')).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: 'Acessar minha conta' })).toHaveAttribute('href', '/login')
     expect(screen.getByRole('menuitem', { name: 'Trocar de pessoa' })).toBeInTheDocument()
+    expect(screen.queryByRole('menuitem', { name: 'Acessar minha conta' })).not.toBeInTheDocument()
   })
 
   it('fecha ao clicar fora', async () => {
