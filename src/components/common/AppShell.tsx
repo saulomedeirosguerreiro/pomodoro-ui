@@ -34,12 +34,10 @@ interface SidebarContentProps {
   displayName: string
   isAccount: boolean
   progress: ProgressSummary | null
-  isTimerRunning: boolean
   onLogout: () => void
   /** Some do card de perfil quando não passado — a sidebar desktop já tem esse CTA no cabeçalho, só
       o menu hambúrguer do mobile (sem cabeçalho de desktop) passa essa prop. */
   onAccessAccount?: () => void
-  onStartSession: () => void
   /** Fecha o menu hambúrguer ao navegar — `undefined` na sidebar desktop, que não tem o que fechar. */
   onNavigate?: () => void
   /** Card de divulgação, logo acima de Configurações — só a sidebar desktop passa; o menu hambúrguer
@@ -57,10 +55,8 @@ function SidebarContent({
   displayName,
   isAccount,
   progress,
-  isTimerRunning,
   onLogout,
   onAccessAccount,
-  onStartSession,
   onNavigate,
   promoSlot,
 }: SidebarContentProps) {
@@ -119,10 +115,6 @@ function SidebarContent({
           </NavLink>
         ))}
       </nav>
-
-      <Button fullWidth onClick={onStartSession} disabled={isTimerRunning}>
-        🌱 Plantar Foco
-      </Button>
 
       {promoSlot && <div className="mt-auto">{promoSlot}</div>}
 
@@ -245,13 +237,6 @@ export function AppShell() {
     navigate('/timer', { replace: true })
   }
 
-  function handleStartSession() {
-    navigate('/timer')
-    if (!isTimerRunning) {
-      timer.start()
-    }
-  }
-
   return (
     <div className="flex min-h-svh w-full flex-col lg:flex-row">
       <aside className="hidden lg:sticky lg:top-0 lg:z-auto lg:flex lg:h-svh lg:w-[280px] lg:flex-col lg:gap-4 lg:border-r lg:border-border lg:bg-surface lg:p-4">
@@ -259,9 +244,7 @@ export function AppShell() {
           displayName={displayName}
           isAccount={isAccount}
           progress={progress}
-          isTimerRunning={isTimerRunning}
           onLogout={handleLogout}
-          onStartSession={handleStartSession}
           promoSlot={<PromoCard secondsPerAd={settings.promoSecondsPerAd} isDimmed={isPromoDimmed} />}
         />
       </aside>
@@ -296,10 +279,8 @@ export function AppShell() {
               displayName={displayName}
               isAccount={isAccount}
               progress={progress}
-              isTimerRunning={isTimerRunning}
               onLogout={handleLogout}
               onAccessAccount={() => navigate('/login')}
-              onStartSession={handleStartSession}
               onNavigate={() => setIsMenuOpen(false)}
             />
           </div>
