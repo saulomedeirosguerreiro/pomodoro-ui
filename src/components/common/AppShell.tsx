@@ -172,7 +172,7 @@ function SidebarContent({
 
 export function AppShell() {
   const { user, logout } = useAuth()
-  const { guest } = useGuest()
+  const { guest, clearGuestData } = useGuest()
   const timer = useTimerContext()
   const { progress } = timer
   const { settings } = useSettings()
@@ -218,11 +218,19 @@ export function AppShell() {
   }, [isMenuOpen])
 
   function handleLogout() {
-    if (isTimerRunning) {
-      const confirmed = window.confirm('Há um período em andamento. Ele será perdido. Deseja mesmo sair?')
-      if (!confirmed) return
-    }
+    const message = isTimerRunning
+      ? 'Há um período em andamento. Ele será perdido. Deseja mesmo sair da sua conta?'
+      : 'Deseja mesmo sair da sua conta?'
+    if (!window.confirm(message)) return
+
     logout()
+    // Sem isso, um perfil guest residual no localStorage (como quase todo mundo começa, antes de criar
+    // conta) faria o header cair pro nome/avatar dele assim que `user` virasse `null` — dando a
+    // impressão de que o logout não fez nada.
+    clearGuestData()
+    // `/timer` é a rota padrão do app; sem `user` nem `guest`, `ProtectedRoute` mostra o `WelcomeModal`
+    // de novo sozinho — "começar do zero" pedindo nome ou login, sem precisar de uma rota especial.
+    navigate('/timer', { replace: true })
   }
 
   function handleStartSession() {

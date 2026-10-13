@@ -211,7 +211,7 @@ export function FlexibleDurationPicker({
             style={{ left: `${handleLeftPercent}%`, top: `${handleTopPercent}%` }}
           />
 
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
+          <div className="absolute inset-0 flex -translate-y-2 flex-col items-center justify-center gap-0.5">
             <span className="text-[28px]" aria-hidden="true">
               🌱
             </span>
@@ -237,12 +237,14 @@ export function FlexibleDurationPicker({
         Arraste o anel para qualquer tempo entre {minMinutes} e {maxMinutes} min
       </p>
 
-      <SegmentedControl
-        options={segmentedOptions}
-        value={activePresetValue}
-        onChange={(value) => onChoosePreset(Number(value))}
-        ariaLabel="Durações sugeridas"
-      />
+      <div className="max-[480px]:hidden">
+        <SegmentedControl
+          options={segmentedOptions}
+          value={activePresetValue}
+          onChange={(value) => onChoosePreset(Number(value))}
+          ariaLabel="Durações sugeridas"
+        />
+      </div>
 
       <Button onClick={onConfirm} fullWidth>
         ▶ {CONFIRM_VERBS[context]} {draftMinutes} min

@@ -8,14 +8,14 @@ describe('TimerModeToggle', () => {
     render(<TimerModeToggle value="classico" onChange={vi.fn()} />)
 
     expect(screen.getByRole('tab', { name: 'Pomodoro Clássico', selected: true })).toBeInTheDocument()
-    expect(screen.getByRole('tab', { name: 'Customizado', selected: false })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Personalizado', selected: false })).toBeInTheDocument()
   })
 
   it('clicar na outra opção chama onChange com o novo modo', async () => {
     const onChange = vi.fn()
     render(<TimerModeToggle value="classico" onChange={onChange} />)
 
-    await userEvent.click(screen.getByRole('tab', { name: 'Customizado' }))
+    await userEvent.click(screen.getByRole('tab', { name: 'Personalizado' }))
 
     expect(onChange).toHaveBeenCalledWith('flexivel')
   })
@@ -24,7 +24,7 @@ describe('TimerModeToggle', () => {
     const onChange = vi.fn()
     render(<TimerModeToggle value="classico" onChange={onChange} isLocked />)
 
-    const flexivelTab = screen.getByRole('tab', { name: 'Customizado' })
+    const flexivelTab = screen.getByRole('tab', { name: 'Personalizado' })
     expect(flexivelTab).toHaveAttribute('aria-disabled', 'true')
     // continua focável de propósito — travar não pode tirar o card da ordem de Tab, porque o
     // tooltip também precisa aparecer chegando nele com teclado, não só no hover do mouse.

@@ -48,7 +48,7 @@ const OPTIONS: ModeOption[] = [
   },
   {
     value: 'flexivel',
-    title: 'Customizado',
+    title: 'Personalizado',
     description: 'Plante no seu próprio ritmo.',
     icon: <SlidersIcon />,
   },

@@ -11,7 +11,7 @@ import { ThemeProvider } from '../../context/ThemeContext'
 import { AppShell } from './AppShell'
 
 function mockAuth(user: { id: number; name: string; email: string; completedSessions: number } | null) {
-  vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
+  const mock = {
     user,
     isLoading: false,
     sessionExpired: false,
@@ -19,22 +19,26 @@ function mockAuth(user: { id: number; name: string; email: string; completedSess
     logout: vi.fn(),
     refreshProfile: vi.fn(),
     acknowledgeSessionExpired: vi.fn(),
-  })
+  }
+  vi.spyOn(AuthContext, 'useAuth').mockReturnValue(mock)
+  return mock
 }
 
 function mockGuest(guest: { id: string; name: string; createdAt: string } | null) {
-  vi.spyOn(GuestContext, 'useGuest').mockReturnValue({
+  const mock = {
     guest,
     isLoading: false,
     startGuest: vi.fn(),
     clearGuestData: vi.fn(),
-  })
+  }
+  vi.spyOn(GuestContext, 'useGuest').mockReturnValue(mock)
+  return mock
 }
 
-function mockTimer() {
+function mockTimer(phase: 'parado' | 'rodando' | 'pausado' = 'parado') {
   vi.spyOn(TimerContextModule, 'useTimerContext').mockReturnValue({
     type: 'foco',
-    phase: 'parado',
+    phase,
     remainingSeconds: 1500,
     totalSeconds: 1500,
     canFinalize: false,
@@ -70,6 +74,27 @@ function renderShell() {
             <Routes>
               <Route element={<AppShell />}>
                 <Route path="/timer" element={<p>Conteúdo da página</p>} />
+              </Route>
+            </Routes>
+          </LofiPlayerProvider>
+        </SettingsProvider>
+      </ThemeProvider>
+    </MemoryRouter>,
+  )
+}
+
+/** Começa numa rota diferente de `/timer` — usada pra conferir que o logout manda de volta pra lá
+ *  (rota padrão do app, onde `ProtectedRoute` mostra o `WelcomeModal` sozinho sem `user`/`guest`). */
+function renderShellOnTarefasRoute() {
+  return render(
+    <MemoryRouter initialEntries={['/tarefas']}>
+      <ThemeProvider>
+        <SettingsProvider>
+          <LofiPlayerProvider>
+            <Routes>
+              <Route element={<AppShell />}>
+                <Route path="/timer" element={<p>Conteúdo da página</p>} />
+                <Route path="/tarefas" element={<p>Conteúdo de tarefas</p>} />
               </Route>
             </Routes>
           </LofiPlayerProvider>
@@ -117,6 +142,43 @@ describe('AppShell', () => {
     // "Sair" aparece tanto no cabeçalho (desktop) quanto na sidebar — alternância por CSS
     // (`hidden lg:block`), que o jsdom não aplica, então os dois ficam no DOM ao mesmo tempo.
     expect(screen.getAllByRole('button', { name: 'Sair' }).length).toBeGreaterThan(0)
+  })
+
+  it('clicar em "Sair" confirma, limpa a sessão e o guest residual, e volta pra /timer (onde o WelcomeModal reaparece sozinho)', async () => {
+    const auth = mockAuth({ id: 1, name: 'João Silva', email: 'joao@email.com', completedSessions: 0 })
+    const guest = mockGuest(null)
+    mockTimer('parado')
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
+    const user = userEvent.setup()
+
+    renderShellOnTarefasRoute()
+    expect(screen.getByText('Conteúdo de tarefas')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Sair' }))
+
+    expect(confirmSpy).toHaveBeenCalledWith('Deseja mesmo sair da sua conta?')
+    expect(auth.logout).toHaveBeenCalledTimes(1)
+    expect(guest.clearGuestData).toHaveBeenCalledTimes(1)
+    expect(await screen.findByText('Conteúdo da página')).toBeInTheDocument()
+    expect(screen.queryByText('Conteúdo de tarefas')).not.toBeInTheDocument()
+  })
+
+  it('com um período em andamento: a confirmação avisa que ele será perdido, e recusar não desloga', async () => {
+    const auth = mockAuth({ id: 1, name: 'João Silva', email: 'joao@email.com', completedSessions: 0 })
+    const guest = mockGuest(null)
+    mockTimer('rodando')
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false)
+    const user = userEvent.setup()
+
+    renderShell()
+
+    await user.click(screen.getByRole('button', { name: 'Sair' }))
+
+    expect(confirmSpy).toHaveBeenCalledWith(
+      'Há um período em andamento. Ele será perdido. Deseja mesmo sair da sua conta?',
+    )
+    expect(auth.logout).not.toHaveBeenCalled()
+    expect(guest.clearGuestData).not.toHaveBeenCalled()
   })
 
   it('guest: mostra o nome do guest, SEM e-mail e SEM o botão "Sair" (não vira página em branco)', () => {

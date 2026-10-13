@@ -238,12 +238,12 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
       expect(screen.getByText('25:00')).toBeInTheDocument()
     })
 
-    it('alternar para "Customizado" troca para a FlexibleTimerView e some com a tela clássica', async () => {
+    it('alternar para "Personalizado" troca para a FlexibleTimerView e some com a tela clássica', async () => {
       mockTimer()
       mockFlexibleTimer()
       renderTimerPage()
 
-      await userEvent.click(screen.getByRole('tab', { name: 'Customizado' }))
+      await userEvent.click(screen.getByRole('tab', { name: 'Personalizado' }))
 
       expect(screen.getByText('Quanto tempo você quer plantar?')).toBeInTheDocument()
       expect(screen.queryByText('25:00')).not.toBeInTheDocument()
@@ -255,7 +255,7 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
       mockFlexibleTimer()
       renderTimerPage()
 
-      await userEvent.click(screen.getByRole('tab', { name: 'Customizado' }))
+      await userEvent.click(screen.getByRole('tab', { name: 'Personalizado' }))
       await userEvent.click(screen.getByRole('tab', { name: 'Pomodoro Clássico' }))
 
       expect(screen.getByText('25:00')).toBeInTheDocument()
@@ -264,12 +264,12 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
   })
 
   describe('trava do seletor de modo durante sessão ativa', () => {
-    it('com o timer clássico rodando, o card "Customizado" fica travado (aria-disabled, com tooltip) e não troca de tela', async () => {
+    it('com o timer clássico rodando, o card "Personalizado" fica travado (aria-disabled, com tooltip) e não troca de tela', async () => {
       mockTimer({ phase: 'rodando', canFinalize: true })
       mockFlexibleTimer()
       renderTimerPage()
 
-      const flexivelTab = screen.getByRole('tab', { name: 'Customizado' })
+      const flexivelTab = screen.getByRole('tab', { name: 'Personalizado' })
       expect(flexivelTab).toHaveAttribute('aria-disabled', 'true')
       expect(flexivelTab).not.toBeDisabled()
 
@@ -278,13 +278,13 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
       expect(screen.getByText('25:00')).toBeInTheDocument()
     })
 
-    it('com o timer clássico pausado, o card "Customizado" continua travado — pausar não libera a troca', async () => {
+    it('com o timer clássico pausado, o card "Personalizado" continua travado — pausar não libera a troca', async () => {
       const finalize = vi.fn()
       mockTimer({ phase: 'pausado', canFinalize: true, finalize })
       mockFlexibleTimer()
       renderTimerPage()
 
-      const flexivelTab = screen.getByRole('tab', { name: 'Customizado' })
+      const flexivelTab = screen.getByRole('tab', { name: 'Personalizado' })
       expect(flexivelTab).toHaveAttribute('aria-disabled', 'true')
 
       await userEvent.click(flexivelTab)
@@ -298,7 +298,7 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
       mockFlexibleTimer({ phase: { kind: 'foco_rodando' } })
       renderTimerPage()
 
-      await userEvent.click(screen.getByRole('tab', { name: 'Customizado' }))
+      await userEvent.click(screen.getByRole('tab', { name: 'Personalizado' }))
 
       const classicoTab = screen.getByRole('tab', { name: 'Pomodoro Clássico' })
       expect(classicoTab).toHaveAttribute('aria-disabled', 'true')
@@ -317,7 +317,7 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
       mockFlexibleTimer({ phase: { kind: 'foco_pausado' }, endCurrentBlockNow })
       renderTimerPage()
 
-      await userEvent.click(screen.getByRole('tab', { name: 'Customizado' }))
+      await userEvent.click(screen.getByRole('tab', { name: 'Personalizado' }))
       const classicoTab = screen.getByRole('tab', { name: 'Pomodoro Clássico' })
       expect(classicoTab).toHaveAttribute('aria-disabled', 'true')
 
@@ -336,7 +336,7 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
       renderTimerPage()
 
       expect(screen.getByRole('tab', { name: 'Pomodoro Clássico' })).not.toHaveAttribute('aria-disabled')
-      expect(screen.getByRole('tab', { name: 'Customizado' })).not.toHaveAttribute('aria-disabled')
+      expect(screen.getByRole('tab', { name: 'Personalizado' })).not.toHaveAttribute('aria-disabled')
     })
   })
 })
