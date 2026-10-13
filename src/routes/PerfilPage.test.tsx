@@ -46,12 +46,8 @@ function mockTimer(progress: ProgressSummary | null = null) {
     retryRegistration: vi.fn(),
     canRetryRegistration: true,
     progress,
-    rewardToast: null,
-    dismissRewardToast: vi.fn(),
     focusedTask: null,
     refreshFocusedTask: vi.fn(),
-    achievementToast: null,
-    dismissAchievementToast: vi.fn(),
     events: [],
     markEventsSeen: vi.fn(),
   })

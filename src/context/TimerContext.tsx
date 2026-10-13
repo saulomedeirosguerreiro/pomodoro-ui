@@ -1,12 +1,12 @@
 import { createContext, useContext, useMemo, type ReactNode } from 'react'
 import { useTimer } from '../components/Timer/useTimer'
 import { sessionDurationsSecondsFrom } from '../lib/timerLogic'
-import type { Achievement, PomodoroSession, ProgressSummary, TaskItem } from '../types/api'
+import type { PomodoroSession, ProgressSummary, TaskItem } from '../types/api'
 import { useSessionRegistrationContext } from './SessionRegistrationContext'
 import { useSettings } from './SettingsContext'
-import type { AppEvent, RewardToast } from './useSessionRegistration'
+import type { AppEvent } from './useSessionRegistration'
 
-export type { AppEvent, RewardToast }
+export type { AppEvent }
 
 interface TimerContextValue extends ReturnType<typeof useTimer> {
   /** Última sessão registrada com sucesso — usado por quem exibe o histórico para atualizar sem refetch. */
@@ -15,12 +15,8 @@ interface TimerContextValue extends ReturnType<typeof useTimer> {
   retryRegistration: () => void
   canRetryRegistration: boolean
   progress: ProgressSummary | null
-  rewardToast: RewardToast | null
-  dismissRewardToast: () => void
   focusedTask: TaskItem | null
   refreshFocusedTask: () => void
-  achievementToast: Achievement | null
-  dismissAchievementToast: () => void
   events: AppEvent[]
   markEventsSeen: () => void
 }
@@ -49,12 +45,8 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     retryRegistration: sessionRegistration.retryRegistration,
     canRetryRegistration: sessionRegistration.canRetryRegistration,
     progress: sessionRegistration.progress,
-    rewardToast: sessionRegistration.rewardToast,
-    dismissRewardToast: sessionRegistration.dismissRewardToast,
     focusedTask: sessionRegistration.focusedTask,
     refreshFocusedTask: sessionRegistration.refreshFocusedTask,
-    achievementToast: sessionRegistration.achievementToast,
-    dismissAchievementToast: sessionRegistration.dismissAchievementToast,
     events: sessionRegistration.events,
     markEventsSeen: sessionRegistration.markEventsSeen,
   }

@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { SessionRegistration } from '../components/Timer/useTimer'
 import { trackEvent } from '../lib/analytics'
+import { pluralize } from '../lib/format'
 import { getNotificationPermission, requestNotificationPermission, showSessionNotification } from '../lib/notifications'
 import { playSessionEndSound } from '../lib/sound'
 import { SESSION_DURATION_RANGE_MINUTES, SESSION_LABELS } from '../lib/timerLogic'
 import { ApiError } from '../types/api'
-import type { Achievement, PomodoroSession, ProgressSummary, TaskItem } from '../types/api'
+import type { PomodoroSession, ProgressSummary, TaskItem } from '../types/api'
 import { useDataSource } from './DataSourceContext'
 import { useSettings } from './SettingsContext'
 
@@ -45,13 +46,6 @@ function describeRegistrationError(error: unknown, registration: SessionRegistra
   return { message: GENERIC_REGISTRATION_ERROR, retryable: true }
 }
 
-export interface RewardToast {
-  xp: number
-  seeds: number
-  leveledUp: boolean
-  newLevel: number
-}
-
 export interface AppEvent {
   id: string
   type: 'level' | 'achievement'
@@ -76,9 +70,7 @@ export function useSessionRegistration() {
   const [registrationError, setRegistrationError] = useState<string | null>(null)
   const [pendingRegistration, setPendingRegistration] = useState<SessionRegistration | null>(null)
   const [progress, setProgress] = useState<ProgressSummary | null>(null)
-  const [rewardToast, setRewardToast] = useState<RewardToast | null>(null)
   const [focusedTask, setFocusedTask] = useState<TaskItem | null>(null)
-  const [achievementToast, setAchievementToast] = useState<Achievement | null>(null)
   const [events, setEvents] = useState<AppEvent[]>([])
   const [totalFociCompleted, setTotalFociCompleted] = useState(0)
   const progressRef = useRef<ProgressSummary | null>(null)
@@ -148,11 +140,10 @@ export function useSessionRegistration() {
       if (previous) {
         const newlyUnlocked = items.find((a) => a.unlockedAt && !previous.has(a.code))
         if (newlyUnlocked) {
-          setAchievementToast(newlyUnlocked)
           pushEvent({
             id: `achievement-${newlyUnlocked.code}`,
             type: 'achievement',
-            message: `Conquista desbloqueada: ${newlyUnlocked.name}`,
+            message: `Conquista desbloqueada: ${newlyUnlocked.name} — ${newlyUnlocked.description}`,
           })
           trackEvent('achievement_unlocked', { achievement_code: newlyUnlocked.code })
         }
@@ -224,15 +215,16 @@ export function useSessionRegistration() {
           await refreshTotalFociCompleted()
           const { updated, previous } = await refreshProgress()
           if (updated && previous) {
+            const xp = updated.totalXp - previous.totalXp
+            const seeds = updated.seeds - previous.seeds
             const leveledUp = updated.level > previous.level
-            setRewardToast({
-              xp: updated.totalXp - previous.totalXp,
-              seeds: updated.seeds - previous.seeds,
-              leveledUp,
-              newLevel: updated.level,
+            const rewardMessage = `+${xp} XP · +${seeds} 🌱 ${pluralize(seeds, 'Semente', 'Sementes')}`
+            pushEvent({
+              id: `reward-${created.id}`,
+              type: 'level',
+              message: leveledUp ? `${rewardMessage} · Subiu para o Nível ${updated.level}! 🎉` : rewardMessage,
             })
             if (leveledUp) {
-              pushEvent({ id: `level-${updated.level}`, type: 'level', message: `Nível ${updated.level} alcançado!` })
               trackEvent('level_up', { level: updated.level })
             }
           }
@@ -253,9 +245,6 @@ export function useSessionRegistration() {
     }
   }, [pendingRegistration, registerSession])
 
-  const dismissRewardToast = useCallback(() => setRewardToast(null), [])
-  const dismissAchievementToast = useCallback(() => setAchievementToast(null), [])
-
   return {
     totalFociCompleted,
     registerSession,
@@ -264,12 +253,8 @@ export function useSessionRegistration() {
     retryRegistration,
     canRetryRegistration: pendingRegistration !== null,
     progress,
-    rewardToast,
-    dismissRewardToast,
     focusedTask,
     refreshFocusedTask,
-    achievementToast,
-    dismissAchievementToast,
     events,
     markEventsSeen,
   }

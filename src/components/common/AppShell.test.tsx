@@ -54,12 +54,8 @@ function mockTimer(phase: 'parado' | 'rodando' | 'pausado' = 'parado') {
     retryRegistration: vi.fn(),
     canRetryRegistration: true,
     progress: null,
-    rewardToast: null,
-    dismissRewardToast: vi.fn(),
     focusedTask: null,
     refreshFocusedTask: vi.fn(),
-    achievementToast: null,
-    dismissAchievementToast: vi.fn(),
     events: [],
     markEventsSeen: vi.fn(),
   })

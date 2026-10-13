@@ -49,12 +49,8 @@ describe.each(DATA_SOURCE_MODES)('TarefasPage (mode: %s)', (mode) => {
       retryRegistration: vi.fn(),
       canRetryRegistration: true,
       progress: null,
-      rewardToast: null,
-      dismissRewardToast: vi.fn(),
       focusedTask: null,
       refreshFocusedTask,
-      achievementToast: null,
-      dismissAchievementToast: vi.fn(),
       events: [],
       markEventsSeen: vi.fn(),
     })

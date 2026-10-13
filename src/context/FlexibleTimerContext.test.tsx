@@ -6,7 +6,7 @@ import { trackEvent } from '../lib/analytics'
 import { ApiError } from '../types/api'
 import type { Achievement, PomodoroSession, ProgressSummary } from '../types/api'
 import { FlexibleTimerProvider, useFlexibleTimerContext } from './FlexibleTimerContext'
-import { SessionRegistrationProvider } from './SessionRegistrationContext'
+import { SessionRegistrationProvider, useSessionRegistrationContext } from './SessionRegistrationContext'
 import { SettingsProvider } from './SettingsContext'
 
 vi.mock('../lib/analytics', () => ({
@@ -14,20 +14,26 @@ vi.mock('../lib/analytics', () => ({
 }))
 
 /** Consumidor mínimo só para expor o estado relevante do contexto nas asserções via DOM. */
+/** Reward/conquista viraram eventos na central de notificações (`events`), compartilhada via
+ *  `SessionRegistrationContext` entre o modo clássico e o flexível — não existe mais um toast
+ *  próprio aqui, então a sonda lê os eventos direto dessa instância compartilhada. */
 function Probe() {
   const flexible = useFlexibleTimerContext()
+  const { events, markEventsSeen } = useSessionRegistrationContext()
   return (
     <div>
       <p>fase: {flexible.phase.kind}</p>
       <p>erro: {flexible.registrationError ?? 'nenhum'}</p>
       <p>pode tentar novamente: {flexible.canRetryRegistration ? 'sim' : 'não'}</p>
-      <p>reward: {flexible.rewardToast ? `${flexible.rewardToast.xp}xp/${flexible.rewardToast.seeds}sementes` : 'nenhum'}</p>
-      <p>conquista: {flexible.achievementToast ? flexible.achievementToast.name : 'nenhuma'}</p>
+      <ul>
+        {events.map((event) => (
+          <li key={event.id}>{event.message}</li>
+        ))}
+      </ul>
       <button onClick={flexible.startFocus}>iniciar foco</button>
       <button onClick={flexible.endCurrentBlockNow}>encerrar agora</button>
       <button onClick={flexible.retryRegistration}>tentar novamente</button>
-      <button onClick={flexible.dismissRewardToast}>dispensar reward</button>
-      <button onClick={flexible.dismissAchievementToast}>dispensar conquista</button>
+      <button onClick={markEventsSeen}>marcar eventos como vistos</button>
     </div>
   )
 }
@@ -104,7 +110,7 @@ describe('FlexibleTimerContext', () => {
     vi.restoreAllMocks()
   })
 
-  it('sucesso: registra a sessão concluída e mostra o reward toast com XP/sementes ganhos', async () => {
+  it('sucesso: registra a sessão concluída e gera um evento de notificação com XP/sementes ganhos', async () => {
     vi.mocked(dataSource.createSession).mockResolvedValue(session())
     vi.mocked(dataSource.getProgress)
       .mockResolvedValueOnce(progress()) // baseline, no mount
@@ -118,13 +124,13 @@ describe('FlexibleTimerContext', () => {
       expect.objectContaining({ type: 'foco', status: 'concluido', mode: 'flexivel', plannedDurationSeconds: 300, addedSeconds: 0 }),
     )
 
-    expect(screen.getByText('reward: 25xp/15sementes')).toBeInTheDocument()
+    expect(screen.getByText('+25 XP · +15 🌱 Sementes')).toBeInTheDocument()
     expect(screen.getByText('fase: foco_concluido')).toBeInTheDocument()
     expect(screen.getByText('erro: nenhum')).toBeInTheDocument()
     expect(trackEvent).toHaveBeenCalledWith('focus_completed', { duration_seconds: 300 })
 
-    fireEvent.click(screen.getByRole('button', { name: 'dispensar reward' }))
-    expect(screen.getByText('reward: nenhum')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'marcar eventos como vistos' }))
+    expect(screen.getByText('+25 XP · +15 🌱 Sementes')).toBeInTheDocument()
   })
 
   it('erro + retry: falha ao registrar mostra o erro; tentar novamente registra com sucesso e limpa o erro', async () => {
@@ -174,7 +180,7 @@ describe('FlexibleTimerContext', () => {
     expect(dataSource.createSession).toHaveBeenCalledTimes(1)
   })
 
-  it('conquista: uma conquista recém-desbloqueada após o registro aparece como toast', async () => {
+  it('conquista: uma conquista recém-desbloqueada após o registro vira um evento de notificação', async () => {
     const achievement: Achievement = {
       code: 'primeira_semente',
       name: 'Primeira Semente',
@@ -191,11 +197,8 @@ describe('FlexibleTimerContext', () => {
     renderProbe()
     await completeDefaultFocusBlock()
 
-    expect(screen.getByText('conquista: Primeira Semente')).toBeInTheDocument()
+    expect(screen.getByText('Conquista desbloqueada: Primeira Semente — Complete seu primeiro foco.')).toBeInTheDocument()
     expect(trackEvent).toHaveBeenCalledWith('achievement_unlocked', { achievement_code: 'primeira_semente' })
-
-    fireEvent.click(screen.getByRole('button', { name: 'dispensar conquista' }))
-    expect(screen.getByText('conquista: nenhuma')).toBeInTheDocument()
   })
 
   it('nível: subir de nível envia o evento level_up com o novo nível', async () => {

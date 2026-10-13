@@ -1,16 +1,12 @@
 import { createContext, useContext, type ReactNode } from 'react'
 import { useFlexibleTimer } from '../components/TimeBlocking/useFlexibleTimer'
-import type { Achievement, ProgressSummary } from '../types/api'
+import type { ProgressSummary } from '../types/api'
 import { useSessionRegistrationContext } from './SessionRegistrationContext'
 
 interface FlexibleTimerContextValue extends ReturnType<typeof useFlexibleTimer> {
   registrationError: string | null
   retryRegistration: () => void
   canRetryRegistration: boolean
-  rewardToast: ReturnType<typeof useSessionRegistrationContext>['rewardToast']
-  dismissRewardToast: () => void
-  achievementToast: Achievement | null
-  dismissAchievementToast: () => void
   progress: ProgressSummary | null
 }
 
@@ -33,10 +29,6 @@ export function FlexibleTimerProvider({ children }: { children: ReactNode }) {
     registrationError: sessionRegistration.registrationError,
     retryRegistration: sessionRegistration.retryRegistration,
     canRetryRegistration: sessionRegistration.canRetryRegistration,
-    rewardToast: sessionRegistration.rewardToast,
-    dismissRewardToast: sessionRegistration.dismissRewardToast,
-    achievementToast: sessionRegistration.achievementToast,
-    dismissAchievementToast: sessionRegistration.dismissAchievementToast,
     progress: sessionRegistration.progress,
   }
 

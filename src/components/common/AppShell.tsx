@@ -8,7 +8,6 @@ import { formatHoursAndMinutes, pluralizeCount, streakLabel } from '../../lib/fo
 import { formatMMSS, SESSION_LABELS } from '../../lib/timerLogic'
 import type { ProgressSummary } from '../../types/api'
 import { LofiPlayerBar } from '../Sound/LofiPlayerBar'
-import { AchievementToastView } from './AchievementToastView'
 import { Badge } from './Badge'
 import { Button } from './Button'
 import { Dialog } from './Dialog'
@@ -17,7 +16,6 @@ import { ProfileMenu } from './ProfileMenu'
 import { ProgressBar } from './ProgressBar'
 import { PromoBar } from './PromoBar'
 import { PromoCard } from './PromoCard'
-import { RewardToastView } from './RewardToastView'
 import { ThemeToggle } from './ThemeToggle'
 import { VisitorMenu } from './VisitorMenu'
 
@@ -378,11 +376,6 @@ export function AppShell() {
         </div>
         <LofiPlayerBar />
       </div>
-
-      {timer.rewardToast && <RewardToastView toast={timer.rewardToast} onDismiss={timer.dismissRewardToast} />}
-      {timer.achievementToast && (
-        <AchievementToastView achievement={timer.achievementToast} onDismiss={timer.dismissAchievementToast} />
-      )}
 
       {isLogoutDialogOpen && (
         <Dialog titleText="Sair da sua conta?" onDismiss={() => setIsLogoutDialogOpen(false)}>
