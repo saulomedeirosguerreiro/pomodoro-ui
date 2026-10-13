@@ -178,7 +178,7 @@ export function FlexibleDurationPicker({
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
         >
-          <svg className="h-full w-full -rotate-90" viewBox="0 0 260 260" aria-hidden="true">
+          <svg className="block h-full w-full -rotate-90" viewBox="0 0 260 260" aria-hidden="true">
             <circle cx="130" cy="130" r={RADIUS} fill="none" stroke="var(--color-bg-subtle)" strokeWidth="14" />
             <line x1="130" y1="12" x2="130" y2="24" stroke="var(--color-border)" strokeWidth="3" />
             <line x1="248" y1="130" x2="236" y2="130" stroke="var(--color-border)" strokeWidth="3" />

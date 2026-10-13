@@ -105,7 +105,7 @@ describe('AppShell', () => {
     vi.restoreAllMocks()
   })
 
-  it('conta: mostra nome, e-mail e o botão "Sair"', () => {
+  it('conta: mostra nome e o botão "Sair", SEM e-mail no card de perfil', () => {
     mockAuth({ id: 1, name: 'João Silva', email: 'joao@email.com', completedSessions: 0 })
     mockGuest(null)
     mockTimer()
@@ -113,7 +113,7 @@ describe('AppShell', () => {
     renderShell()
 
     expect(screen.getByText('João Silva')).toBeInTheDocument()
-    expect(screen.getByText('joao@email.com')).toBeInTheDocument()
+    expect(screen.queryByText('joao@email.com')).not.toBeInTheDocument()
     // "Sair" aparece tanto no cabeçalho (desktop) quanto na sidebar — alternância por CSS
     // (`hidden lg:block`), que o jsdom não aplica, então os dois ficam no DOM ao mesmo tempo.
     expect(screen.getAllByRole('button', { name: 'Sair' }).length).toBeGreaterThan(0)
@@ -180,7 +180,7 @@ describe('AppShell', () => {
       await user.click(screen.getByRole('button', { name: 'Abrir menu' }))
 
       const dialog = within(screen.getByRole('dialog', { name: 'Menu' }))
-      expect(dialog.getByText('joao@email.com')).toBeInTheDocument()
+      expect(dialog.getByText('João Silva')).toBeInTheDocument()
       expect(dialog.getByRole('link', { name: /Timer/ })).toBeInTheDocument()
       expect(dialog.getByRole('link', { name: 'Configurações' })).toBeInTheDocument()
       expect(dialog.getByRole('link', { name: 'Ajuda' })).toBeInTheDocument()

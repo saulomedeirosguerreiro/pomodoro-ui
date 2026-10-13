@@ -31,7 +31,6 @@ const LINK_ACTIVE_CLASSES = 'bg-primary-bg text-primary-dark hover:bg-primary-bg
 
 interface SidebarContentProps {
   displayName: string
-  userEmail: string | null
   isAccount: boolean
   progress: ProgressSummary | null
   isTimerRunning: boolean
@@ -55,7 +54,6 @@ interface SidebarContentProps {
  */
 function SidebarContent({
   displayName,
-  userEmail,
   isAccount,
   progress,
   isTimerRunning,
@@ -79,11 +77,6 @@ function SidebarContent({
 
       <div className="flex flex-col gap-2 rounded-lg border border-border bg-bg-subtle p-4">
         <p className="overflow-hidden text-ellipsis whitespace-nowrap text-style-label-lg text-text-h">{displayName}</p>
-        {isAccount && userEmail && (
-          <p className="overflow-hidden text-ellipsis whitespace-nowrap text-style-body-sm text-text-muted">
-            {userEmail}
-          </p>
-        )}
         {progress && (
           <>
             <p className="text-style-label-sm text-primary-dark">
@@ -243,7 +236,6 @@ export function AppShell() {
       <aside className="hidden lg:sticky lg:top-0 lg:z-auto lg:flex lg:h-svh lg:w-[280px] lg:flex-col lg:gap-4 lg:border-r lg:border-border lg:bg-surface lg:p-4">
         <SidebarContent
           displayName={displayName}
-          userEmail={user?.email ?? null}
           isAccount={isAccount}
           progress={progress}
           isTimerRunning={isTimerRunning}
@@ -281,7 +273,6 @@ export function AppShell() {
 
             <SidebarContent
               displayName={displayName}
-              userEmail={user?.email ?? null}
               isAccount={isAccount}
               progress={progress}
               isTimerRunning={isTimerRunning}
