@@ -200,6 +200,49 @@ describe('AppShell', () => {
     expect(screen.queryByRole('button', { name: 'Sair' })).not.toBeInTheDocument()
   })
 
+  it('guest: menu do avatar abre com "Acessar minha conta" e "Trocar de pessoa"; confirmar limpa o guest e volta pra /timer', async () => {
+    const auth = mockAuth(null)
+    const guest = mockGuest({ id: 'guest-1', name: 'Visitante', createdAt: '2026-01-01T00:00:00Z' })
+    mockTimer('parado')
+    const user = userEvent.setup()
+
+    renderShellOnTarefasRoute()
+    expect(screen.getByText('Conteúdo de tarefas')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Menu do visitante' }))
+    expect(screen.getByRole('menuitem', { name: 'Acessar minha conta' })).toHaveAttribute('href', '/login')
+
+    await user.click(screen.getByRole('menuitem', { name: 'Trocar de pessoa' }))
+
+    const dialog = screen.getByRole('dialog', { name: 'Trocar de pessoa neste dispositivo?' })
+    expect(guest.clearGuestData).not.toHaveBeenCalled()
+
+    await user.click(within(dialog).getByRole('button', { name: 'Trocar de pessoa' }))
+
+    expect(auth.logout).not.toHaveBeenCalled()
+    expect(guest.clearGuestData).toHaveBeenCalledTimes(1)
+    expect(await screen.findByText('Conteúdo da página')).toBeInTheDocument()
+    expect(screen.queryByText('Conteúdo de tarefas')).not.toBeInTheDocument()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('guest: cancelar "Trocar de pessoa" não limpa nada', async () => {
+    mockAuth(null)
+    const guest = mockGuest({ id: 'guest-1', name: 'Visitante', createdAt: '2026-01-01T00:00:00Z' })
+    mockTimer('parado')
+    const user = userEvent.setup()
+
+    renderShell()
+
+    await user.click(screen.getByRole('button', { name: 'Menu do visitante' }))
+    await user.click(screen.getByRole('menuitem', { name: 'Trocar de pessoa' }))
+    const dialog = screen.getByRole('dialog', { name: 'Trocar de pessoa neste dispositivo?' })
+    await user.click(within(dialog).getByRole('button', { name: 'Cancelar' }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(guest.clearGuestData).not.toHaveBeenCalled()
+  })
+
   it('sem identidade nenhuma: mostra um placeholder "Visitante" em vez de página em branco (fica por trás do modal de boas-vindas, renderizado por ProtectedRoute)', () => {
     mockAuth(null)
     mockGuest(null)

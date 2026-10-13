@@ -234,7 +234,9 @@ export function ConfiguracoesPage() {
           </h2>
           <p className="text-style-body-sm text-text-muted">
             Você está usando o Guardião Pomodoro sem conta: tarefas, sessões e conquistas ficam salvas só neste navegador.
-            Apagar os dados deste dispositivo os remove para sempre — não há como recuperá-los depois.
+            Apagar os dados deste dispositivo os remove para sempre — não há como recuperá-los depois. É também como
+            você troca de pessoa neste aparelho, por exemplo pra emprestar pra alguém usar o app do zero (o mesmo
+            atalho está disponível no menu do avatar, no topo da tela).
           </p>
 
           <Button variant="ghost" className={DANGER_BUTTON_CLASSES} onClick={() => setIsConfirmingDelete(true)}>

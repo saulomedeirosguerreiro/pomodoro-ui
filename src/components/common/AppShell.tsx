@@ -19,6 +19,7 @@ import { PromoBar } from './PromoBar'
 import { PromoCard } from './PromoCard'
 import { RewardToastView } from './RewardToastView'
 import { ThemeToggle } from './ThemeToggle'
+import { VisitorMenu } from './VisitorMenu'
 
 const NAV_ITEMS = [
   { to: '/timer', label: 'Timer', icon: '⏱️' },
@@ -181,6 +182,7 @@ export function AppShell() {
   const location = useLocation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false)
+  const [isSwitchPersonDialogOpen, setIsSwitchPersonDialogOpen] = useState(false)
 
   // "Foco ativo" (Tweaks) força a prévia do esmaecimento; uma sessão de foco de verdade já em
   // andamento esmaece sozinha, sem precisar do toggle manual.
@@ -232,6 +234,16 @@ export function AppShell() {
     clearGuestData()
     // `/timer` é a rota padrão do app; sem `user` nem `guest`, `ProtectedRoute` mostra o `WelcomeModal`
     // de novo sozinho — "começar do zero" pedindo nome ou login, sem precisar de uma rota especial.
+    navigate('/timer', { replace: true })
+  }
+
+  function handleSwitchPerson() {
+    setIsSwitchPersonDialogOpen(true)
+  }
+
+  function confirmSwitchPerson() {
+    setIsSwitchPersonDialogOpen(false)
+    clearGuestData()
     navigate('/timer', { replace: true })
   }
 
@@ -338,22 +350,12 @@ export function AppShell() {
                 {SESSION_LABELS[timer.type]} {formatMMSS(timer.remainingSeconds)}
               </span>
             )}
-            {!isAccount && (
-              <div className="hidden lg:block">
-                <Button onClick={() => navigate('/login')}>Acessar minha conta</Button>
-              </div>
-            )}
             <EventsBell />
             <ThemeToggle />
             {isAccount ? (
               <ProfileMenu firstName={firstName} onLogout={handleLogout} />
             ) : (
-              <div
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-tertiary text-style-label-md text-on-primary"
-                aria-hidden="true"
-              >
-                {firstName.charAt(0).toUpperCase()}
-              </div>
+              <VisitorMenu firstName={firstName} onSwitchPerson={handleSwitchPerson} />
             )}
           </div>
         </header>
@@ -389,6 +391,21 @@ export function AppShell() {
               Cancelar
             </Button>
             <Button onClick={confirmLogout}>Sair</Button>
+          </div>
+        </Dialog>
+      )}
+
+      {isSwitchPersonDialogOpen && (
+        <Dialog titleText="Trocar de pessoa neste dispositivo?" onDismiss={() => setIsSwitchPersonDialogOpen(false)}>
+          <p className="text-style-body-sm text-text-muted">
+            Isso apaga as tarefas, sessões e conquistas salvas aqui como visitante — não há como recuperar depois. A
+            próxima pessoa começa do zero.
+          </p>
+          <div className="mt-4 flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setIsSwitchPersonDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={confirmSwitchPerson}>Trocar de pessoa</Button>
           </div>
         </Dialog>
       )}
