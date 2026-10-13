@@ -11,6 +11,7 @@ function renderWelcomeModal() {
       <Routes>
         <Route path="/timer" element={<WelcomeModal />} />
         <Route path="/login" element={<p>Tela de login</p>} />
+        <Route path="/cadastro" element={<p>Tela de cadastro</p>} />
       </Routes>
     </MemoryRouter>,
   )
@@ -57,13 +58,23 @@ describe('WelcomeModal', () => {
     expect(startGuest).toHaveBeenCalledWith('Maria')
   })
 
-  it('link "Já tenho conta" leva para /login', async () => {
+  it('link "Entrar" leva para /login', async () => {
     mockGuest()
 
     renderWelcomeModal()
 
-    await userEvent.click(screen.getByRole('link', { name: 'Já tenho conta' }))
+    await userEvent.click(screen.getByRole('link', { name: 'Entrar' }))
 
     expect(await screen.findByText('Tela de login')).toBeInTheDocument()
+  })
+
+  it('link "Criar conta" leva para /cadastro', async () => {
+    mockGuest()
+
+    renderWelcomeModal()
+
+    await userEvent.click(screen.getByRole('link', { name: 'Criar conta' }))
+
+    expect(await screen.findByText('Tela de cadastro')).toBeInTheDocument()
   })
 })

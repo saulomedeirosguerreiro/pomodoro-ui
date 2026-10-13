@@ -57,9 +57,27 @@ export function WelcomeModal() {
         </Button>
       </form>
 
-      <Link to="/login" className="mt-4 block text-center [font:700_13px/18px_var(--font-sans)] text-primary-dark">
-        Já tenho conta
-      </Link>
+      <hr className="mt-6 border-t border-border" />
+
+      <p className="mt-6 text-center text-style-body-sm text-text-muted">
+        Já tem conta ou quer usar em outros aparelhos?
+      </p>
+
+      <div className="mt-4 flex gap-3">
+        <Link
+          to="/login"
+          className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full border-2 border-border bg-bg-subtle px-6 py-3 text-style-label-lg text-text-h transition-[transform,box-shadow] duration-150 ease-out active:translate-y-0.5"
+        >
+          Entrar
+        </Link>
+
+        <Link
+          to="/cadastro"
+          className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full border-2 border-border bg-bg-subtle px-6 py-3 text-style-label-lg text-text-h transition-[transform,box-shadow] duration-150 ease-out active:translate-y-0.5"
+        >
+          Criar conta
+        </Link>
+      </div>
     </Dialog>
   )
 }
