@@ -53,6 +53,16 @@ export function useTimer({ totalFociCompleted, onSessionReady, durations }: UseT
     setRemainingSeconds(total)
   }, [])
 
+  // Resincroniza o countdown exibido quando `durations` muda (settings editadas ou carregadas
+  // tardiamente) enquanto o timer está ocioso — sem isso, o mount só refletia a config salva
+  // depois de uma troca manual de modo, porque `resetToType` só roda por ação do usuário.
+  useEffect(() => {
+    if (phase !== 'parado') return
+    const total = durationsRef.current[type]
+    setTotalSeconds(total)
+    setRemainingSeconds(total)
+  }, [durations, type, phase])
+
   const start = useCallback(() => {
     if (phase !== 'parado') return
     startedAtMsRef.current = Date.now()

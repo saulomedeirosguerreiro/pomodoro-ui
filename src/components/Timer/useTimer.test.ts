@@ -210,6 +210,21 @@ describe('useTimer', () => {
       expect(result.current.remainingSeconds).toBe(CUSTOM_DURATIONS.foco)
     })
 
+    it('mudar `durations` com o timer parado atualiza o countdown imediatamente, sem precisar trocar de tipo', () => {
+      const { result, rerender } = renderHook(
+        (props: { durations: typeof CUSTOM_DURATIONS }) =>
+          useTimer({ totalFociCompleted: 0, onSessionReady: vi.fn(), durations: props.durations }),
+        { initialProps: { durations: DEFAULT_SESSION_DURATIONS_SECONDS } },
+      )
+
+      expect(result.current.totalSeconds).toBe(DEFAULT_SESSION_DURATIONS_SECONDS.foco)
+
+      rerender({ durations: CUSTOM_DURATIONS })
+
+      expect(result.current.totalSeconds).toBe(CUSTOM_DURATIONS.foco)
+      expect(result.current.remainingSeconds).toBe(CUSTOM_DURATIONS.foco)
+    })
+
     it('mudar `durations` com o timer rodando não afeta a sessão em curso', () => {
       const onSessionReady = vi.fn()
       const { result, rerender } = renderHook(
