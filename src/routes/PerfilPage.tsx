@@ -1,9 +1,12 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Badge } from '../components/common/Badge'
 import { Banner } from '../components/common/Banner'
 import { Button } from '../components/common/Button'
 import { FormField } from '../components/common/FormField'
+import { ProgressBar } from '../components/common/ProgressBar'
 import { useAuth } from '../context/AuthContext'
+import { useTimerContext } from '../context/TimerContext'
 import { usersService } from '../lib/usersService'
 import { ApiError } from '../types/api'
 
@@ -13,6 +16,7 @@ const CARD_CLASSES = 'flex flex-col gap-2 rounded-2xl border border-border bg-su
  *  não é guest) — um guest que chegue aqui direto pela URL é mandado de volta pro timer. */
 export function PerfilPage() {
   const { user, refreshProfile } = useAuth()
+  const { progress } = useTimerContext()
   const navigate = useNavigate()
 
   const [name, setName] = useState(user?.name ?? '')
@@ -93,6 +97,8 @@ export function PerfilPage() {
     return null
   }
 
+  const firstName = user.name.trim().split(/\s+/)[0] ?? user.name
+
   return (
     <div className="mx-auto flex max-w-[640px] flex-col gap-4">
       <div>
@@ -101,8 +107,48 @@ export function PerfilPage() {
       </div>
 
       <section className={CARD_CLASSES}>
+        <div className="flex items-center gap-3">
+          <div
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-tertiary text-style-headline-sm text-on-primary"
+            aria-hidden="true"
+          >
+            {firstName.charAt(0).toUpperCase()}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="overflow-hidden text-ellipsis whitespace-nowrap text-style-headline-sm text-text-h">
+              {user.name}
+            </p>
+            <p className="overflow-hidden text-ellipsis whitespace-nowrap text-style-body-sm text-text-muted">
+              {user.email}
+            </p>
+          </div>
+        </div>
+
+        {progress && (
+          <div className="flex flex-col gap-2 border-t border-border pt-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-style-label-sm text-primary-dark">
+                Nível {progress.level} • {progress.title}
+              </p>
+              <Badge variant={progress.streakDays > 0 ? 'highlight' : 'neutral'}>
+                🔥 {progress.streakDays > 0 ? `${progress.streakDays} dias seguidos` : 'Plante o 1º foco de hoje'}
+              </Badge>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                <ProgressBar value={progress.xpInLevel} max={progress.xpForNextLevel} />
+              </div>
+              <span className="whitespace-nowrap text-style-label-sm text-text-muted">
+                {progress.xpInLevel}/{progress.xpForNextLevel} XP
+              </span>
+            </div>
+          </div>
+        )}
+      </section>
+
+      <section className={CARD_CLASSES}>
         <h2 className="flex items-center gap-2 text-style-headline-sm">
-          <span aria-hidden="true">👤</span> Nome
+          <span aria-hidden="true">✏️</span> Editar nome
         </h2>
         <form className="flex flex-col gap-2" onSubmit={handleSaveName} noValidate>
           {nameSuccess && <Banner kind="success" message={nameSuccess} />}
@@ -123,7 +169,7 @@ export function PerfilPage() {
 
       <section className={CARD_CLASSES}>
         <h2 className="flex items-center gap-2 text-style-headline-sm">
-          <span aria-hidden="true">🔑</span> Senha
+          <span aria-hidden="true">🔑</span> Alterar senha
         </h2>
         <form className="flex flex-col gap-2" onSubmit={handleSavePassword} noValidate>
           {passwordSuccess && <Banner kind="success" message={passwordSuccess} />}

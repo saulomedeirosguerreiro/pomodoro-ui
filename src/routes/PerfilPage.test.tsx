@@ -3,7 +3,9 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import * as AuthContext from '../context/AuthContext'
+import * as TimerContextModule from '../context/TimerContext'
 import { usersService } from '../lib/usersService'
+import type { ProgressSummary } from '../types/api'
 import { ApiError } from '../types/api'
 import { PerfilPage } from './PerfilPage'
 
@@ -25,6 +27,36 @@ function mockAuth(user: { id: number; name: string; email: string; completedSess
   return refreshProfile
 }
 
+function mockTimer(progress: ProgressSummary | null = null) {
+  vi.spyOn(TimerContextModule, 'useTimerContext').mockReturnValue({
+    type: 'foco',
+    phase: 'parado',
+    remainingSeconds: 1500,
+    totalSeconds: 1500,
+    canFinalize: false,
+    start: vi.fn(),
+    pause: vi.fn(),
+    resume: vi.fn(),
+    restart: vi.fn(),
+    finalize: vi.fn(),
+    selectType: vi.fn(),
+    skip: vi.fn(),
+    lastRegisteredSession: null,
+    registrationError: null,
+    retryRegistration: vi.fn(),
+    canRetryRegistration: true,
+    progress,
+    rewardToast: null,
+    dismissRewardToast: vi.fn(),
+    focusedTask: null,
+    refreshFocusedTask: vi.fn(),
+    achievementToast: null,
+    dismissAchievementToast: vi.fn(),
+    events: [],
+    markEventsSeen: vi.fn(),
+  })
+}
+
 function renderPage() {
   return render(
     <MemoryRouter initialEntries={['/perfil']}>
@@ -43,23 +75,51 @@ describe('PerfilPage', () => {
 
   it('guest (sem user): redireciona para /timer', () => {
     mockAuth(null)
+    mockTimer()
 
     renderPage()
 
     expect(screen.getByText('Tela do timer')).toBeInTheDocument()
   })
 
-  it('conta: mostra o nome atual pré-preenchido', () => {
+  it('conta: mostra o cabeçalho de identidade (avatar, nome, e-mail) e o nome pré-preenchido no formulário', () => {
     mockAuth({ id: 1, name: 'João Silva', email: 'joao@email.com', completedSessions: 0 })
+    mockTimer()
 
     renderPage()
 
+    expect(screen.getByText('João Silva')).toBeInTheDocument()
+    expect(screen.getByText('joao@email.com')).toBeInTheDocument()
+    expect(screen.getByText('J')).toBeInTheDocument()
     expect(screen.getByLabelText('Nome')).toHaveValue('João Silva')
+  })
+
+  it('conta com progresso: mostra nível, XP e streak no cabeçalho de identidade', () => {
+    mockAuth({ id: 1, name: 'João Silva', email: 'joao@email.com', completedSessions: 0 })
+    mockTimer({
+      level: 3,
+      title: 'Semente Curiosa',
+      xpInLevel: 25,
+      xpForNextLevel: 200,
+      totalXp: 425,
+      seeds: 10,
+      streakDays: 5,
+      isStreakAtRiskToday: false,
+      todayFocusCount: 1,
+      todayFocusSeconds: 1500,
+    })
+
+    renderPage()
+
+    expect(screen.getByText('Nível 3 • Semente Curiosa')).toBeInTheDocument()
+    expect(screen.getByText('25/200 XP')).toBeInTheDocument()
+    expect(screen.getByText('🔥 5 dias seguidos')).toBeInTheDocument()
   })
 
   it('salvar nome com sucesso chama usersService.updateName, atualiza o perfil e mostra banner', async () => {
     const user = userEvent.setup()
     const refreshProfile = mockAuth({ id: 1, name: 'João Silva', email: 'joao@email.com', completedSessions: 0 })
+    mockTimer()
     vi.mocked(usersService.updateName).mockResolvedValue({
       id: 1,
       name: 'João Atualizado',
@@ -80,6 +140,7 @@ describe('PerfilPage', () => {
   it('salvar nome com erro da API mostra a mensagem de erro', async () => {
     const user = userEvent.setup()
     mockAuth({ id: 1, name: 'João Silva', email: 'joao@email.com', completedSessions: 0 })
+    mockTimer()
     vi.mocked(usersService.updateName).mockRejectedValue(
       new ApiError(422, { code: 'validation_error', message: 'Nome inválido.' }),
     )
@@ -93,6 +154,7 @@ describe('PerfilPage', () => {
   it('senhas diferentes: mostra erro de confirmação sem chamar a API', async () => {
     const user = userEvent.setup()
     mockAuth({ id: 1, name: 'João Silva', email: 'joao@email.com', completedSessions: 0 })
+    mockTimer()
 
     renderPage()
     await user.type(screen.getByLabelText('Senha atual'), 'SenhaAtual1')
@@ -107,6 +169,7 @@ describe('PerfilPage', () => {
   it('trocar senha com sucesso chama usersService.changePassword, limpa os campos e mostra banner', async () => {
     const user = userEvent.setup()
     mockAuth({ id: 1, name: 'João Silva', email: 'joao@email.com', completedSessions: 0 })
+    mockTimer()
     vi.mocked(usersService.changePassword).mockResolvedValue(undefined)
 
     renderPage()
@@ -124,6 +187,7 @@ describe('PerfilPage', () => {
   it('trocar senha com senha atual errada mostra o erro de campo', async () => {
     const user = userEvent.setup()
     mockAuth({ id: 1, name: 'João Silva', email: 'joao@email.com', completedSessions: 0 })
+    mockTimer()
     const error = new ApiError(401, { code: 'invalid_credentials', message: 'Senha atual inválida.' })
     vi.mocked(usersService.changePassword).mockRejectedValue(error)
 
