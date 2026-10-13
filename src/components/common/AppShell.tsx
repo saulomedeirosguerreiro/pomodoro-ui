@@ -16,6 +16,7 @@ import { ProfileMenu } from './ProfileMenu'
 import { ProgressBar } from './ProgressBar'
 import { PromoBar } from './PromoBar'
 import { PromoCard } from './PromoCard'
+import { SidebarFraseDoDia } from './SidebarFraseDoDia'
 import { ThemeToggle } from './ThemeToggle'
 import { VisitorMenu } from './VisitorMenu'
 
@@ -115,6 +116,8 @@ function SidebarContent({
           </NavLink>
         ))}
       </nav>
+
+      <SidebarFraseDoDia />
 
       {promoSlot && <div className="mt-auto">{promoSlot}</div>}
 
