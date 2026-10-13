@@ -234,10 +234,7 @@ export function AppShell() {
 
   return (
     <div className="flex min-h-svh w-full flex-col lg:flex-row">
-      {/* `lg:h-[calc(100svh-88px)]` deixa de ser `lg:h-svh` cheio porque a `LofiPlayerBar` agora também
-          aparece no desktop (fixa no rodapé, ~88px de altura ali) — sem isso, o rodapé da sidebar
-          (Configurações/Ajuda/copyright) ficaria escondido atrás da barra do player. */}
-      <aside className="hidden lg:sticky lg:top-0 lg:z-auto lg:flex lg:h-[calc(100svh-88px)] lg:w-[280px] lg:flex-col lg:gap-4 lg:border-r lg:border-border lg:bg-surface lg:p-4">
+      <aside className="hidden lg:sticky lg:top-0 lg:z-auto lg:flex lg:h-svh lg:w-[280px] lg:flex-col lg:gap-4 lg:border-r lg:border-border lg:bg-surface lg:p-4">
         <SidebarContent
           displayName={displayName}
           isAccount={isAccount}
@@ -289,8 +286,10 @@ export function AppShell() {
         </div>
       )}
 
-      {/* `pb-[160px]`/`lg:pb-[88px]` reservam a altura real da `LofiPlayerBar` fixa no rodapé (mais a
-          `PromoBar` empilhada acima dela, só no mobile) — ver o mesmo número comentado na `<aside>`. */}
+      {/* `pb-[160px]`/`lg:pb-[88px]` reservam a altura real da `LofiPlayerBar` fixa no rodapé desta
+          coluna (mais a `PromoBar` empilhada acima dela, só no mobile) — mesmo número usado no `left`
+          do bloco fixo do player mais abaixo. A sidebar não precisa desse ajuste: a barra do player só
+          cobre a largura desta coluna (`lg:left-[280px]`), nunca passa por baixo da sidebar. */}
       <div className="flex min-w-0 flex-1 flex-col pb-[160px] lg:pb-[88px]">
         <header className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-border bg-surface px-4 py-3 lg:px-6 lg:py-4">
           <div className="flex min-w-0 items-center gap-3">
@@ -354,7 +353,9 @@ export function AppShell() {
         </main>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-20 flex flex-col bg-surface">
+      {/* `lg:left-[280px]` (largura da sidebar) impede a barra de passar por baixo dela no desktop —
+          fica só na largura da coluna de conteúdo, como pedido ("não ocupar 100% da tela"). */}
+      <div className="fixed inset-x-0 bottom-0 z-20 flex flex-col bg-surface lg:left-[280px]">
         <div className="lg:hidden">
           <PromoBar secondsPerAd={settings.promoSecondsPerAd} isDimmed={isPromoDimmed} />
         </div>

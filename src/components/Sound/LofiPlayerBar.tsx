@@ -74,7 +74,7 @@ export function LofiPlayerBar() {
               onChange={(e) => selectTrack(Number(e.target.value))}
             >
               {LOFI_TRACKS.map((lofiTrack, index) => (
-                <option key={lofiTrack.src} value={index}>
+                <option key={lofiTrack.src} value={index} className="bg-surface text-text-h">
                   {lofiTrack.title}
                 </option>
               ))}
