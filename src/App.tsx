@@ -19,6 +19,7 @@ import { ConquistasPage } from './routes/ConquistasPage'
 import { ForgotPasswordPage } from './routes/ForgotPasswordPage'
 import { JardimPage } from './routes/JardimPage'
 import { LoginPage } from './routes/LoginPage'
+import { PerfilPage } from './routes/PerfilPage'
 import { PoliticaDePrivacidadePage } from './routes/PoliticaDePrivacidadePage'
 import { RegisterPage } from './routes/RegisterPage'
 import { TarefasPage } from './routes/TarefasPage'
@@ -84,6 +85,7 @@ export default function App() {
                       <Route path="/jardim" element={<JardimPage />} />
                       <Route path="/conquistas" element={<ConquistasPage />} />
                       <Route path="/configuracoes" element={<ConfiguracoesPage />} />
+                      <Route path="/perfil" element={<PerfilPage />} />
                       <Route path="/tweaks" element={<TweaksPage />} />
                       <Route path="/ajuda" element={<AjudaPage />} />
                     </Route>

@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import * as FlexibleTimerContextModule from '../context/FlexibleTimerContext'
 import * as TimerContextModule from '../context/TimerContext'
@@ -17,11 +18,13 @@ vi.mock('../lib/analytics', () => ({
 
 function renderTimerPage() {
   return render(
-    <SettingsProvider>
-      <LofiPlayerProvider>
-        <TimerPage />
-      </LofiPlayerProvider>
-    </SettingsProvider>,
+    <MemoryRouter>
+      <SettingsProvider>
+        <LofiPlayerProvider>
+          <TimerPage />
+        </LofiPlayerProvider>
+      </SettingsProvider>
+    </MemoryRouter>,
   )
 }
 

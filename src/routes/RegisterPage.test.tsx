@@ -197,7 +197,7 @@ describe('RegisterPage', () => {
     expect(migrationService.importLocalData).toHaveBeenCalledWith({ guestId: 'guest-1', tasks: [], sessions: [] })
     expect(clearGuestData).toHaveBeenCalledTimes(1)
     expect(refreshProfile).toHaveBeenCalledTimes(1)
-    expect(screen.queryByText('Importação concluída')).not.toBeInTheDocument()
+    expect(screen.queryByText('Conta criada! 🎉')).not.toBeInTheDocument()
   })
 
   it('cadastro com dados locais pendentes e itens pulados mostra o MigrationReport antes de navegar', async () => {
@@ -213,7 +213,7 @@ describe('RegisterPage', () => {
     renderRegisterPage()
     await fillAndSubmit()
 
-    expect(await screen.findByText('Importação concluída')).toBeInTheDocument()
+    expect(await screen.findByText('Conta criada! 🎉')).toBeInTheDocument()
     expect(screen.queryByText('Tela do timer')).not.toBeInTheDocument()
 
     await userEvent.click(screen.getByRole('button', { name: 'Entendi' }))

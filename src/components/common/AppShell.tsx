@@ -12,6 +12,7 @@ import { AchievementToastView } from './AchievementToastView'
 import { Badge } from './Badge'
 import { Button } from './Button'
 import { EventsBell } from './EventsBell'
+import { ProfileMenu } from './ProfileMenu'
 import { ProgressBar } from './ProgressBar'
 import { PromoBar } from './PromoBar'
 import { PromoCard } from './PromoCard'
@@ -326,23 +327,23 @@ export function AppShell() {
             <div className="hidden lg:block">
               <LofiMiniPlayer />
             </div>
-            <div className="hidden lg:block">
-              {isAccount ? (
-                <Button variant="ghost" onClick={handleLogout}>
-                  Sair
-                </Button>
-              ) : (
+            {!isAccount && (
+              <div className="hidden lg:block">
                 <Button onClick={() => navigate('/login')}>Acessar minha conta</Button>
-              )}
-            </div>
+              </div>
+            )}
             <EventsBell />
             <ThemeToggle />
-            <div
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-tertiary text-style-label-md text-on-primary"
-              aria-hidden="true"
-            >
-              {firstName.charAt(0).toUpperCase()}
-            </div>
+            {isAccount ? (
+              <ProfileMenu firstName={firstName} onLogout={handleLogout} />
+            ) : (
+              <div
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-tertiary text-style-label-md text-on-primary"
+                aria-hidden="true"
+              >
+                {firstName.charAt(0).toUpperCase()}
+              </div>
+            )}
           </div>
         </header>
 

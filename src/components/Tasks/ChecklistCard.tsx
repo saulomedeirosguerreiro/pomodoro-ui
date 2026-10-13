@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Badge } from '../common/Badge'
 import { Button } from '../common/Button'
 import { Checkbox } from '../common/Checkbox'
@@ -35,11 +36,19 @@ export function ChecklistCard({ tasks, error, onCreate, onMarkDone, onFocus }: C
     <section className="flex w-full flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-style-headline-sm">✅ Checklist de Foco</h2>
-        {!isCreating && (
-          <Button variant="ghost" onClick={() => setIsCreating(true)}>
-            + Nova Tarefa
-          </Button>
-        )}
+        <div className="flex items-center gap-3">
+          <Link
+            to="/tarefas"
+            className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border-2 border-border bg-bg-subtle px-6 py-3 text-style-label-lg text-text-h transition-[transform,box-shadow] duration-150 ease-out active:translate-y-0.5"
+          >
+            Ver todas
+          </Link>
+          {!isCreating && (
+            <Button variant="ghost" onClick={() => setIsCreating(true)}>
+              + Nova Tarefa
+            </Button>
+          )}
+        </div>
       </div>
 
       {error && <p className="text-style-body-sm text-danger">{error}</p>}
