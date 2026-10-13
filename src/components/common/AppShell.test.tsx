@@ -114,7 +114,9 @@ describe('AppShell', () => {
 
     expect(screen.getByText('João Silva')).toBeInTheDocument()
     expect(screen.getByText('joao@email.com')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Sair' })).toBeInTheDocument()
+    // "Sair" aparece tanto no cabeçalho (desktop) quanto na sidebar — alternância por CSS
+    // (`hidden lg:block`), que o jsdom não aplica, então os dois ficam no DOM ao mesmo tempo.
+    expect(screen.getAllByRole('button', { name: 'Sair' }).length).toBeGreaterThan(0)
   })
 
   it('guest: mostra o nome do guest, SEM e-mail e SEM o botão "Sair" (não vira página em branco)', () => {

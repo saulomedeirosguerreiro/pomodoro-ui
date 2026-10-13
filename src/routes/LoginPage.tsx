@@ -81,18 +81,27 @@ export function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        <Link
+          to="/esqueci-minha-senha"
+          className="-mt-2 mb-4 block text-right text-style-body-sm text-text-muted hover:text-primary-dark"
+        >
+          Esqueci minha senha
+        </Link>
         <Button type="submit" fullWidth disabled={isSubmitting}>
           {isSubmitting ? 'Entrando…' : 'Entrar'}
         </Button>
       </form>
 
+      <div className="mt-6 flex items-center gap-3 text-style-body-sm text-text-muted">
+        <span className="h-px flex-1 bg-border" />
+        Novo por aqui?
+        <span className="h-px flex-1 bg-border" />
+      </div>
+
       <Link
-        to="/esqueci-minha-senha"
-        className="mt-4 block text-center [font:700_13px/18px_var(--font-sans)] text-primary-dark"
+        to="/cadastro"
+        className="mt-4 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border-2 border-border bg-bg-subtle px-6 py-3 text-style-label-lg text-text-h transition-[transform,box-shadow] duration-150 ease-out active:translate-y-0.5"
       >
-        Esqueci minha senha
-      </Link>
-      <Link to="/cadastro" className="mt-4 block text-center [font:700_13px/18px_var(--font-sans)] text-primary-dark">
         Criar conta
       </Link>
 

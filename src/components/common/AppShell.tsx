@@ -36,7 +36,9 @@ interface SidebarContentProps {
   progress: ProgressSummary | null
   isTimerRunning: boolean
   onLogout: () => void
-  onAccessAccount: () => void
+  /** Some do card de perfil quando não passado — a sidebar desktop já tem esse CTA no cabeçalho, só
+      o menu hambúrguer do mobile (sem cabeçalho de desktop) passa essa prop. */
+  onAccessAccount?: () => void
   onStartSession: () => void
   /** Fecha o menu hambúrguer ao navegar — `undefined` na sidebar desktop, que não tem o que fechar. */
   onNavigate?: () => void
@@ -102,9 +104,11 @@ function SidebarContent({
             Sair
           </Button>
         ) : (
-          <Button variant="ghost" fullWidth onClick={onAccessAccount}>
-            Acessar minha conta
-          </Button>
+          onAccessAccount && (
+            <Button variant="ghost" fullWidth onClick={onAccessAccount}>
+              Acessar minha conta
+            </Button>
+          )
         )}
       </div>
 
@@ -244,7 +248,6 @@ export function AppShell() {
           progress={progress}
           isTimerRunning={isTimerRunning}
           onLogout={handleLogout}
-          onAccessAccount={() => navigate('/login')}
           onStartSession={handleStartSession}
           promoSlot={<PromoCard secondsPerAd={settings.promoSecondsPerAd} isDimmed={isPromoDimmed} />}
         />

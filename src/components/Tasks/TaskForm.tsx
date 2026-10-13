@@ -21,7 +21,11 @@ export function TaskForm({ initial, onSubmit, onCancel }: TaskFormProps) {
   const [title, setTitle] = useState(initial?.title ?? '')
   const [description, setDescription] = useState(initial?.description ?? '')
   const [priority, setPriority] = useState<TaskPriority>(initial?.priority ?? 'media')
-  const [estimatedPomodoros, setEstimatedPomodoros] = useState(initial?.estimatedPomodoros ?? 1)
+  // Texto cru do input, não number: guardar `Number(e.target.value)` a cada tecla faz o estado ir e
+  // voltar pelo input a cada render, e o input type="number" exibe esse round-trip como dígitos extras
+  // (ex.: digitar "3" vira "03") porque o cursor/valor nativo já tinha avançado antes do React
+  // reconciliar. Convertendo só no submit, o campo fica livre pra digitar sem interferência.
+  const [estimatedPomodorosText, setEstimatedPomodorosText] = useState(String(initial?.estimatedPomodoros ?? 1))
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -34,7 +38,7 @@ export function TaskForm({ initial, onSubmit, onCancel }: TaskFormProps) {
         title,
         description: description.trim() === '' ? null : description,
         priority,
-        estimatedPomodoros,
+        estimatedPomodoros: Number(estimatedPomodorosText),
       })
     } catch {
       setError('Não foi possível salvar a tarefa. Tente novamente.')
@@ -80,8 +84,8 @@ export function TaskForm({ initial, onSubmit, onCancel }: TaskFormProps) {
         min={1}
         max={20}
         required
-        value={estimatedPomodoros}
-        onChange={(e) => setEstimatedPomodoros(Number(e.target.value))}
+        value={estimatedPomodorosText}
+        onChange={(e) => setEstimatedPomodorosText(e.target.value)}
       />
       <div className="flex flex-wrap justify-end gap-2">
         <Button type="button" variant="ghost" onClick={onCancel}>
