@@ -46,6 +46,10 @@ export interface LoginResponse {
   user: UserSummary
 }
 
+export interface RefreshResponse {
+  token: string
+}
+
 export interface ProgressSummary {
   level: number
   title: string

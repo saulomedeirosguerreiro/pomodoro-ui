@@ -30,9 +30,9 @@ function loadGtagScript(measurementId: string): void {
 
   window.dataLayer = window.dataLayer || []
   function gtag(..._args: unknown[]) {
-  // gtag.js só reconhece comandos enviados como objeto Arguments (não Array)
-  // eslint-disable-next-line prefer-rest-params
-  window.dataLayer!.push(arguments)
+    // gtag.js só reconhece comandos enviados como objeto Arguments (não Array)
+    // eslint-disable-next-line prefer-rest-params
+    window.dataLayer!.push(arguments)
   }
   window.gtag = gtag
 

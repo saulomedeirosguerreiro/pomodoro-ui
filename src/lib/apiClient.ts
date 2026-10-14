@@ -1,4 +1,4 @@
-import { ApiError, type ApiErrorBody } from '../types/api'
+import { ApiError, type ApiErrorBody, type RefreshResponse } from '../types/api'
 import { tokenStorage } from './tokenStorage'
 
 const API_URL = import.meta.env.VITE_API_URL ?? ''
@@ -10,8 +10,7 @@ interface RequestOptions {
   auth?: boolean
 }
 
-async function request<T>(method: string, path: string, body?: unknown, options: RequestOptions = {}): Promise<T> {
-  const { auth = true } = options
+async function rawFetch(method: string, path: string, body: unknown, auth: boolean): Promise<Response> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' }
 
   if (auth) {
@@ -21,20 +20,60 @@ async function request<T>(method: string, path: string, body?: unknown, options:
     }
   }
 
-  let response: Response
   try {
-    response = await fetch(`${API_URL}${path}`, {
+    // credentials: 'include' é obrigatório para o cookie httpOnly do refresh token trafegar — tanto
+    // nesta chamada quanto no /api/auth/refresh disparado pelo retry abaixo.
+    return await fetch(`${API_URL}${path}`, {
       method,
       headers,
+      credentials: 'include',
       body: body !== undefined ? JSON.stringify(body) : undefined,
     })
   } catch {
     throw new ApiError(0, { code: 'network_error', message: 'Não foi possível conectar à API.' })
   }
+}
+
+/**
+ * Compartilhada entre chamadas 401 concorrentes: sem isso, cada uma dispararia seu próprio
+ * `/api/auth/refresh`, rotacionando o cookie várias vezes e invalidando a request-irmã.
+ */
+let refreshPromise: Promise<boolean> | null = null
+
+async function refreshAccessToken(): Promise<boolean> {
+  refreshPromise ??= (async () => {
+    try {
+      const response = await rawFetch('POST', '/api/auth/refresh', undefined, false)
+      if (!response.ok) {
+        return false
+      }
+      const data = (await response.json()) as RefreshResponse
+      tokenStorage.set(data.token)
+      return true
+    } catch {
+      return false
+    }
+  })().finally(() => {
+    refreshPromise = null
+  })
+
+  return refreshPromise
+}
+
+async function request<T>(method: string, path: string, body?: unknown, options: RequestOptions = {}): Promise<T> {
+  const { auth = true } = options
+
+  let response = await rawFetch(method, path, body, auth)
 
   if (response.status === 401 && auth) {
-    tokenStorage.clear()
-    window.dispatchEvent(new Event(UNAUTHORIZED_EVENT))
+    if (await refreshAccessToken()) {
+      response = await rawFetch(method, path, body, auth)
+    }
+
+    if (response.status === 401) {
+      tokenStorage.clear()
+      window.dispatchEvent(new Event(UNAUTHORIZED_EVENT))
+    }
   }
 
   if (!response.ok) {

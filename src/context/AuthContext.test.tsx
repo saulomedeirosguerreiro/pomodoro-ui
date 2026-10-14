@@ -13,7 +13,7 @@ vi.mock('../lib/usersService', () => ({
 }))
 
 vi.mock('../lib/authService', () => ({
-  authService: { login: vi.fn() },
+  authService: { login: vi.fn(), logout: vi.fn() },
 }))
 
 vi.mock('../lib/analytics', () => ({
@@ -22,12 +22,13 @@ vi.mock('../lib/analytics', () => ({
 
 /** Consumidor mínimo só para expor `user`/`sessionExpired` no DOM e disparar `acknowledgeSessionExpired`. */
 function Probe() {
-  const { user, sessionExpired, login, acknowledgeSessionExpired } = useAuth()
+  const { user, sessionExpired, login, logout, acknowledgeSessionExpired } = useAuth()
   return (
     <div>
       <p>user: {user ? user.name : 'nenhum'}</p>
       <p>sessionExpired: {String(sessionExpired)}</p>
       <button onClick={() => login('joao@email.com', 'Senha123')}>Entrar</button>
+      <button onClick={logout}>Sair</button>
       <button onClick={acknowledgeSessionExpired}>Reconhecer</button>
     </div>
   )
@@ -91,5 +92,29 @@ describe('AuthContext', () => {
     expect(screen.getByText('sessionExpired: false')).toBeInTheDocument()
     expect(tokenStorage.get()).toBe('tok-123')
     expect(trackEvent).toHaveBeenCalledWith('login')
+  })
+
+  it('logout limpa o token local e revoga o refresh token no servidor', async () => {
+    vi.mocked(authService.login).mockResolvedValue({
+      token: 'tok-123',
+      user: { id: 1, name: 'João', email: 'joao@email.com' },
+    })
+    vi.mocked(authService.logout).mockResolvedValue(undefined)
+    vi.mocked(usersService.getMe).mockResolvedValue({
+      id: 1,
+      name: 'João',
+      email: 'joao@email.com',
+      completedSessions: 0,
+    })
+
+    renderProbe()
+    await userEvent.click(screen.getByRole('button', { name: 'Entrar' }))
+    expect(await screen.findByText('user: João')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Sair' }))
+
+    expect(await screen.findByText('user: nenhum')).toBeInTheDocument()
+    expect(tokenStorage.get()).toBeNull()
+    expect(authService.logout).toHaveBeenCalled()
   })
 })

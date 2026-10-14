@@ -65,6 +65,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     tokenStorage.clear()
     setUser(null)
+    // Dispara sem bloquear a UI — mesmo se falhar (rede, backend fora), a sessão local já caiu.
+    authService.logout().catch(() => {})
   }, [])
 
   const acknowledgeSessionExpired = useCallback(() => setSessionExpired(false), [])

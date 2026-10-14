@@ -1,5 +1,5 @@
 import { api } from './apiClient'
-import type { LoginResponse, UserSummary } from '../types/api'
+import type { LoginResponse, RefreshResponse, UserSummary } from '../types/api'
 
 export const authService = {
   register: (data: { name: string; email: string; password: string; acceptedTerms: boolean }) =>
@@ -7,6 +7,12 @@ export const authService = {
 
   login: (data: { email: string; password: string }) =>
     api.post<LoginResponse>('/api/auth/login', data, { auth: false }),
+
+  /** O refresh token em si nunca passa por aqui — vai só no cookie httpOnly, invisível ao JS. */
+  refresh: () => api.post<RefreshResponse>('/api/auth/refresh', undefined, { auth: false }),
+
+  /** Revoga o refresh token no servidor — sem isso, o cookie continuaria válido até expirar mesmo após "sair". */
+  logout: () => api.post<void>('/api/auth/logout', undefined, { auth: false }),
 
   /**
    * `POST /api/auth/password-recovery` — sem e-mail/token (risco aceito, decisão de produto): só troca
