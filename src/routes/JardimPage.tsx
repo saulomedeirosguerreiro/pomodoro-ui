@@ -67,7 +67,7 @@ export function JardimPage() {
                 key={species.name}
                 className="flex flex-col items-center gap-0.5 rounded-lg border border-border bg-bg-subtle p-2 text-center"
               >
-                <span className="text-[32px]" aria-hidden="true">
+                <span className="text-[26px]" aria-hidden="true">
                   {species.emoji}
                 </span>
                 <span className="text-style-label-sm text-text-h">{species.name}</span>
