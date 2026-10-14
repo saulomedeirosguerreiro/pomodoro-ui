@@ -201,8 +201,9 @@ export function useSessionRegistration() {
         )
 
         if (registration.status === 'concluido') {
-          // US-59: só com a aba em segundo plano, e só se a permissão já foi concedida (CA-002).
-          if (settings.notificationsEnabled && document.hidden) {
+          // Dispara sempre que foco/pausa (curta ou longa) termina, com a aba focada ou não —
+          // só depende da permissão já concedida (CA-002).
+          if (settings.notificationsEnabled) {
             const nextAction = registration.type === 'foco' ? 'Hora de uma pausa.' : 'Hora de focar.'
             showSessionNotification('Guardião Pomodoro', `${SESSION_LABELS[registration.type]} concluído! ${nextAction}`)
           }
