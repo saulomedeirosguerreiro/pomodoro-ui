@@ -57,7 +57,11 @@ function mockAuth(
 
 function mockGuest(
   guest: { id: string; name: string; createdAt: string } | null,
-  overrides: { isGuestSessionConfirmed?: boolean; clearGuestData?: ReturnType<typeof vi.fn>; confirmGuestSession?: ReturnType<typeof vi.fn> } = {},
+  overrides: {
+    isGuestSessionConfirmed?: boolean
+    clearGuestData?: ReturnType<typeof vi.fn<() => void>>
+    confirmGuestSession?: ReturnType<typeof vi.fn<() => void>>
+  } = {},
 ) {
   vi.spyOn(GuestContext, 'useGuest').mockReturnValue({
     guest,

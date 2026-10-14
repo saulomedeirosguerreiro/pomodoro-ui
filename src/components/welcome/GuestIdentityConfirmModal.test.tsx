@@ -18,7 +18,12 @@ function renderModal() {
   )
 }
 
-function mockGuest(overrides: { confirmGuestSession?: ReturnType<typeof vi.fn>; clearGuestData?: ReturnType<typeof vi.fn> } = {}) {
+function mockGuest(
+  overrides: {
+    confirmGuestSession?: ReturnType<typeof vi.fn<() => void>>
+    clearGuestData?: ReturnType<typeof vi.fn<() => void>>
+  } = {},
+) {
   const confirmGuestSession = overrides.confirmGuestSession ?? vi.fn()
   const clearGuestData = overrides.clearGuestData ?? vi.fn()
   vi.spyOn(GuestContext, 'useGuest').mockReturnValue({
