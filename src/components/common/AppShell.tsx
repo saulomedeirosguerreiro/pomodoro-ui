@@ -9,6 +9,7 @@ import { formatMMSS, SESSION_LABELS } from '../../lib/timerLogic'
 import type { ProgressSummary } from '../../types/api'
 import { LofiPlayerBar } from '../Sound/LofiPlayerBar'
 import { Badge } from './Badge'
+import { BrandLogo } from './BrandLogo'
 import { Button } from './Button'
 import { Dialog } from './Dialog'
 import { EventsBell } from './EventsBell'
@@ -63,14 +64,9 @@ function SidebarContent({
 }: SidebarContentProps) {
   return (
     <>
-      <div className="flex items-center gap-2 p-1">
-        <span className="text-[28px]" aria-hidden="true">
-          🍅
-        </span>
-        <div>
-          <p className="text-style-headline-sm text-primary-dark">Guardião Pomodoro</p>
-          <p className="text-style-label-sm text-secondary-dark">Horta em Crescimento</p>
-        </div>
+      <div className="flex flex-col gap-1 p-1">
+        <BrandLogo size="sm" />
+        <p className="pl-1 text-style-label-sm text-secondary-dark">Horta em Crescimento</p>
       </div>
 
       <div className="flex flex-col gap-2 rounded-lg border border-border bg-bg-subtle p-4">
