@@ -97,7 +97,12 @@ export function ClassicTimerView() {
       <section className="flex w-full flex-col items-center gap-4 rounded-2xl border border-border bg-surface p-6 shadow-card">
         <Mascot />
 
-        <ModeSwitcher type={timer.type} phase={timer.phase} onSelectType={timer.selectType} />
+        <ModeSwitcher
+          type={timer.type}
+          phase={timer.phase}
+          suggestedNextType={timer.suggestedNextType}
+          onSelectType={timer.selectType}
+        />
 
         <TimerDisplay
           type={timer.type}

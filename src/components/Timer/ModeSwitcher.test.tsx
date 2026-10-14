@@ -10,7 +10,13 @@ function renderSwitcher(props: Partial<Parameters<typeof ModeSwitcher>[0]> = {})
     onSelectType,
     ...render(
       <SettingsProvider>
-        <ModeSwitcher type="foco" phase="parado" onSelectType={onSelectType} {...props} />
+        <ModeSwitcher
+          type="foco"
+          phase="parado"
+          suggestedNextType="descanso_curto"
+          onSelectType={onSelectType}
+          {...props}
+        />
       </SettingsProvider>,
     ),
   }
@@ -41,6 +47,26 @@ describe('ModeSwitcher', () => {
     renderSwitcher({ phase: 'rodando', type: 'foco' })
 
     expect(screen.getByRole('tab', { name: /^Foco/ })).not.toBeDisabled()
+  })
+
+  it('parado trava a aba fora da sequência clássica e mostra o aviso', async () => {
+    const { onSelectType } = renderSwitcher({ phase: 'parado', type: 'foco', suggestedNextType: 'descanso_curto' })
+
+    const pausaLonga = screen.getByRole('tab', { name: /Pausa Longa/ })
+    expect(pausaLonga).toBeDisabled()
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Siga a sequência do Pomodoro: agora só é possível avançar para Pausa curta.',
+    )
+
+    await userEvent.click(pausaLonga)
+    expect(onSelectType).not.toHaveBeenCalled()
+  })
+
+  it('parado não trava a aba do tipo atual nem a do tipo sugerido pela sequência', () => {
+    renderSwitcher({ phase: 'parado', type: 'foco', suggestedNextType: 'descanso_curto' })
+
+    expect(screen.getByRole('tab', { name: /^Foco/ })).not.toBeDisabled()
+    expect(screen.getByRole('tab', { name: /Pausa Curta/ })).not.toBeDisabled()
   })
 
   it('pausado abre o diálogo de confirmação em vez de trocar direto', async () => {

@@ -124,6 +124,32 @@ describe('useTimer', () => {
     expect(result.current.type).toBe('descanso_longo')
   })
 
+  describe('suggestedNextType (US-33b)', () => {
+    it('em foco, fora do 4º ciclo, sugere pausa curta', () => {
+      const { result } = renderHook(() => useTimer({ totalFociCompleted: 0, onSessionReady: vi.fn() }))
+
+      expect(result.current.suggestedNextType).toBe('descanso_curto')
+    })
+
+    it('em foco, com o total já múltiplo de 4, sugere pausa longa', () => {
+      // Mesma regra de `nextSuggestedType`/`skip`: não soma +1 (trocar manualmente não conta como
+      // concluir o foco atual) — por isso o total aqui já precisa estar em 4, e não em 3.
+      const { result } = renderHook(() => useTimer({ totalFociCompleted: 4, onSessionReady: vi.fn() }))
+
+      expect(result.current.suggestedNextType).toBe('descanso_longo')
+    })
+
+    it('em pausa curta ou longa, sempre sugere foco', () => {
+      const { result: curta } = renderHook(() => useTimer({ totalFociCompleted: 1, onSessionReady: vi.fn() }))
+      act(() => curta.current.selectType('descanso_curto'))
+      expect(curta.current.suggestedNextType).toBe('foco')
+
+      const { result: longa } = renderHook(() => useTimer({ totalFociCompleted: 3, onSessionReady: vi.fn() }))
+      act(() => longa.current.selectType('descanso_longo'))
+      expect(longa.current.suggestedNextType).toBe('foco')
+    })
+  })
+
   describe('selectType (US-33)', () => {
     it('parado, troca na hora sem registrar nada', () => {
       const onSessionReady = vi.fn()

@@ -5,6 +5,8 @@ export interface SegmentedOption<T extends string> {
   label: string
   icon?: ReactNode
   disabled?: boolean
+  /** Texto do tooltip quando `disabled` — default: "Bloqueado durante a sessão". */
+  disabledReason?: string
 }
 
 interface SegmentedControlProps<T extends string> {
@@ -30,7 +32,7 @@ export function SegmentedControl<T extends string>({ options, value, onChange, a
             role="tab"
             aria-selected={isActive}
             disabled={option.disabled}
-            title={option.disabled ? 'Bloqueado durante a sessão' : undefined}
+            title={option.disabled ? (option.disabledReason ?? 'Bloqueado durante a sessão') : undefined}
             className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-4 py-2.5 max-[480px]:px-3 text-style-label-md max-[480px]:text-style-label-sm text-text-muted transition-colors hover:text-text-h disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:text-text-muted ${
               isActive ? 'bg-surface-raised text-style-label-lg max-[480px]:text-style-label-md text-primary-dark' : 'bg-transparent'
             } ${option.disabled ? '' : 'cursor-pointer'}`}

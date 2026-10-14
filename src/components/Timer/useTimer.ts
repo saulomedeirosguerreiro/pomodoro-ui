@@ -165,12 +165,17 @@ export function useTimer({ totalFociCompleted, onSessionReady, durations }: UseT
     return () => clearInterval(intervalId)
   }, [onSessionReady, phase, resetToType, type])
 
+  const suggestedNextType = nextSuggestedType(type, totalFociCompleted)
+
   return {
     type,
     phase,
     remainingSeconds,
     totalSeconds,
     canFinalize: phase !== 'parado',
+    /** Único próximo tipo válido na sequência clássica (US-33b) — usado pelo `ModeSwitcher` para
+     *  travar a troca manual fora de ordem, além de orientar o avanço automático/"Pular". */
+    suggestedNextType,
     start,
     pause,
     resume,
