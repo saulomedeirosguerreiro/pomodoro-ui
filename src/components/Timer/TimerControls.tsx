@@ -4,8 +4,6 @@ import { Dialog } from '../common/Dialog'
 import type { SessionType } from '../../types/api'
 import type { TimerPhase } from './useTimer'
 
-type PendingAction = 'finalizar' | 'pular'
-
 const ICON_BUTTON_CLASSES =
   'flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border-2 border-border bg-surface text-[22px] text-text-muted transition-[background-color,transform] duration-150 ease-out hover:bg-bg-subtle active:scale-95'
 
@@ -18,7 +16,6 @@ interface TimerControlsProps {
   onResume: () => void
   onRestart: () => void
   onFinalize: () => void
-  onSkip: () => void
 }
 
 const START_LABEL: Record<SessionType, string> = {
@@ -36,26 +33,12 @@ export function TimerControls({
   onResume,
   onRestart,
   onFinalize,
-  onSkip,
 }: TimerControlsProps) {
-  const [pendingAction, setPendingAction] = useState<PendingAction | null>(null)
+  const [confirmingFinalize, setConfirmingFinalize] = useState(false)
 
-  function handleFinalize() {
-    setPendingAction('finalizar')
-  }
-
-  function handleSkip() {
-    if (phase !== 'parado') {
-      setPendingAction('pular')
-      return
-    }
-    onSkip()
-  }
-
-  function handleConfirmPendingAction() {
-    if (pendingAction === 'finalizar') onFinalize()
-    if (pendingAction === 'pular') onSkip()
-    setPendingAction(null)
+  function handleConfirmFinalize() {
+    onFinalize()
+    setConfirmingFinalize(false)
   }
 
   return (
@@ -78,35 +61,20 @@ export function TimerControls({
         <Button onClick={onStart}>{START_LABEL[type]}</Button>
       )}
 
-      <button
-        type="button"
-        className={ICON_BUTTON_CLASSES}
-        onClick={handleSkip}
-        title="Pular período"
-        aria-label="Pular período"
-      >
-        ⏭
-      </button>
-
-      <Button variant="ghost" onClick={handleFinalize} disabled={!canFinalize}>
-        Encerrar sessão
+      <Button variant="ghost" onClick={() => setConfirmingFinalize(true)} disabled={!canFinalize}>
+        Finalizar tempo
       </Button>
 
-      {pendingAction && (
-        <Dialog
-          titleText={pendingAction === 'finalizar' ? 'Encerrar sessão?' : 'Pular este período?'}
-          onDismiss={() => setPendingAction(null)}
-        >
+      {confirmingFinalize && (
+        <Dialog titleText="Finalizar tempo?" onDismiss={() => setConfirmingFinalize(false)}>
           <p className="mb-4 text-style-body-sm text-text-muted">
-            {pendingAction === 'finalizar'
-              ? 'Tudo bem fazer uma pausa — o tempo focado até aqui já vai para o seu histórico.'
-              : 'O tempo decorrido será registrado como interrompido.'}
+            Tudo bem fazer uma pausa — o tempo focado até aqui já vai para o seu histórico.
           </p>
           <div className="flex justify-end gap-2">
-            <Button variant="ghost" onClick={() => setPendingAction(null)}>
+            <Button variant="ghost" onClick={() => setConfirmingFinalize(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleConfirmPendingAction}>{pendingAction === 'finalizar' ? 'Encerrar' : 'Pular'}</Button>
+            <Button onClick={handleConfirmFinalize}>Finalizar</Button>
           </div>
         </Dialog>
       )}

@@ -132,7 +132,7 @@ describe('useTimer', () => {
     })
 
     it('em foco, com o total já múltiplo de 4, sugere pausa longa', () => {
-      // Mesma regra de `nextSuggestedType`/`skip`: não soma +1 (trocar manualmente não conta como
+      // Mesma regra de `nextSuggestedType`: não soma +1 (trocar manualmente não conta como
       // concluir o foco atual) — por isso o total aqui já precisa estar em 4, e não em 3.
       const { result } = renderHook(() => useTimer({ totalFociCompleted: 4, onSessionReady: vi.fn() }))
 
@@ -179,105 +179,6 @@ describe('useTimer', () => {
 
       expect(result.current.type).toBe('descanso_curto')
       expect(result.current.phase).toBe('parado')
-    })
-  })
-
-  describe('skip (US-34, G-Q4)', () => {
-    it('parado, avança para o tipo sugerido sem registrar', () => {
-      const onSessionReady = vi.fn()
-      const { result } = renderHook(() => useTimer({ totalFociCompleted: 0, onSessionReady }))
-
-      act(() => result.current.skip())
-
-      expect(onSessionReady).not.toHaveBeenCalled()
-      expect(result.current.type).toBe('descanso_curto')
-      expect(result.current.phase).toBe('parado')
-    })
-
-    it('iniciado, registra como interrompido e avança para o tipo sugerido', () => {
-      const onSessionReady = vi.fn<(r: SessionRegistration) => void>()
-      const { result } = renderHook(() => useTimer({ totalFociCompleted: 0, onSessionReady }))
-
-      act(() => result.current.start())
-      act(() => vi.advanceTimersByTime(2 * 60 * 1000))
-      act(() => result.current.skip())
-
-      expect(onSessionReady).toHaveBeenCalledTimes(1)
-      const registration = onSessionReady.mock.calls[0][0]
-      expect(registration.status).toBe('interrompido')
-      expect(registration.durationSeconds).toBeCloseTo(2 * 60, 0)
-
-      expect(result.current.type).toBe('descanso_curto')
-      expect(result.current.phase).toBe('parado')
-    })
-
-    it('um foco pulado não avança o ciclo (não conta como concluído)', () => {
-      const onSessionReady = vi.fn()
-      const { result } = renderHook(() => useTimer({ totalFociCompleted: 3, onSessionReady }))
-
-      act(() => result.current.start())
-      act(() => vi.advanceTimersByTime(60_000))
-      act(() => result.current.skip())
-
-      // totalFociCompleted continua 3 (não incrementou), então a sugestão é pausa curta, não longa.
-      expect(result.current.type).toBe('descanso_curto')
-    })
-  })
-
-  describe('lastAbandonedType — trava contra ping-pong sem foco de verdade (US-33b)', () => {
-    it('parado, trocar de tipo marca o tipo deixado para trás como abandonado', () => {
-      const { result } = renderHook(() => useTimer({ totalFociCompleted: 0, onSessionReady: vi.fn() }))
-
-      expect(result.current.lastAbandonedType).toBeNull()
-
-      act(() => result.current.selectType('descanso_curto'))
-
-      expect(result.current.type).toBe('descanso_curto')
-      expect(result.current.lastAbandonedType).toBe('foco')
-    })
-
-    it('parado, tentar voltar pro tipo abandonado (selectType) não faz nada', () => {
-      const onSessionReady = vi.fn()
-      const { result } = renderHook(() => useTimer({ totalFociCompleted: 0, onSessionReady }))
-
-      act(() => result.current.selectType('descanso_curto')) // abandona 'foco' sem iniciar
-      act(() => result.current.selectType('foco')) // tenta voltar pro tipo abandonado
-
-      expect(onSessionReady).not.toHaveBeenCalled()
-      expect(result.current.type).toBe('descanso_curto')
-      expect(result.current.lastAbandonedType).toBe('foco')
-    })
-
-    it('parado, tentar voltar pro tipo abandonado via skip também não faz nada', () => {
-      const { result } = renderHook(() => useTimer({ totalFociCompleted: 0, onSessionReady: vi.fn() }))
-
-      act(() => result.current.selectType('descanso_curto')) // abandona 'foco' sem iniciar
-      act(() => result.current.skip()) // skip sugeriria 'foco' de volta — deve ficar travado
-
-      expect(result.current.type).toBe('descanso_curto')
-    })
-
-    it('iniciar o novo tipo de verdade libera a volta pro tipo abandonado', () => {
-      const { result } = renderHook(() => useTimer({ totalFociCompleted: 0, onSessionReady: vi.fn() }))
-
-      act(() => result.current.selectType('descanso_curto')) // abandona 'foco' sem iniciar
-      act(() => result.current.start())
-
-      expect(result.current.lastAbandonedType).toBeNull()
-
-      act(() => result.current.selectType('foco'))
-
-      expect(result.current.type).toBe('foco')
-    })
-
-    it('trocar a partir de uma sessão rodando (com registro real) não marca abandono', () => {
-      const { result } = renderHook(() => useTimer({ totalFociCompleted: 0, onSessionReady: vi.fn() }))
-
-      act(() => result.current.start())
-      act(() => vi.advanceTimersByTime(60_000))
-      act(() => result.current.selectType('descanso_curto'))
-
-      expect(result.current.lastAbandonedType).toBeNull()
     })
   })
 

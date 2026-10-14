@@ -155,7 +155,12 @@ export function FlexibleDurationPicker({
 
   return (
     <section className="flex w-full flex-col items-center gap-4 rounded-2xl border border-border bg-surface p-6 shadow-card">
-      <FlexibleModeToggle value={context} onSwitch={onSwitchContext} />
+      <FlexibleModeToggle
+        value={context}
+        onChange={(next) => {
+          if (next !== context) onSwitchContext()
+        }}
+      />
       <h2 className="text-center text-style-headline-sm text-text-h">{TITLES[context]}</h2>
 
       <div className="flex w-full items-center justify-center gap-3 rounded-2xl border border-border p-4 max-[480px]:gap-2 max-[480px]:p-2">

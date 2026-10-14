@@ -101,7 +101,6 @@ export function ClassicTimerView() {
           type={timer.type}
           phase={timer.phase}
           suggestedNextType={timer.suggestedNextType}
-          lastAbandonedType={timer.lastAbandonedType}
           onSelectType={timer.selectType}
         />
 
@@ -121,7 +120,6 @@ export function ClassicTimerView() {
           onResume={timer.resume}
           onRestart={timer.restart}
           onFinalize={timer.finalize}
-          onSkip={timer.skip}
         />
 
         {timer.registrationError && (

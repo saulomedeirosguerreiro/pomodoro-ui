@@ -4,24 +4,20 @@ import { speciesForIndex } from '../../lib/gardenSpecies'
 
 const ADD_TIME_OPTIONS_MINUTES = [5, 10] as const
 
-const CARD_BASE_CLASSES =
-  'flex flex-1 min-w-[140px] cursor-pointer flex-col items-start gap-2 rounded-2xl p-4 text-left transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0'
-
-const ICON_CIRCLE_CLASSES = 'flex h-9 w-9 items-center justify-center rounded-full text-[18px]'
-
 const PILL_BUTTON_CLASSES =
   'cursor-pointer rounded-full bg-secondary-bg px-4 py-2 text-style-label-md text-secondary-dark transition-colors duration-150 ease-out hover:bg-secondary hover:text-on-secondary'
 
 /**
- * As 4 opções explícitas após um bloco de foco concluir (Parte 5 do plano, redesenhada a pedido do
- * usuário) — sem avanço automático. Cada ação dispara só a transição correspondente na máquina de
- * estados; a tela seguinte é decidida por `FlexibleTimerView` a partir do `phase.kind` resultante.
+ * Decisão pós-foco (Parte 5 do plano, redesenhada a pedido do usuário) — sem avanço automático.
+ * Dois botões lado a lado (não um toggle/segmented control): aqui não existe "modo atual" pra
+ * destacar como ativo — é uma escolha nova a cada vez, então os dois lados têm o mesmo peso visual.
+ * "Finalizar tempo" saiu daqui e mora na tela de escolher duração (`FlexibleDurationPicker`).
  * A espécie exibida é a que acabou de "nascer": `focusBlocksCompleted` já foi incrementado no
  * momento da conclusão natural (`useFlexibleTimer`), então o índice do bloco recém-concluído é
  * `focusBlocksCompleted - 1`.
  */
 export function FlexiblePostFocusChoices() {
-  const { startBreak, startAnotherFocus, addTime, endSession, focusBlocksCompleted } = useFlexibleTimerContext()
+  const { startBreak, startAnotherFocus, addTime, focusBlocksCompleted } = useFlexibleTimerContext()
   const species = speciesForIndex(Math.max(0, focusBlocksCompleted - 1))
 
   return (
@@ -40,32 +36,11 @@ export function FlexiblePostFocusChoices() {
         </p>
       </div>
 
-      <div className="flex w-full flex-wrap gap-3">
-        <button
-          type="button"
-          aria-label="Fazer uma pausa"
-          className={`${CARD_BASE_CLASSES} bg-primary text-on-primary shadow-bevel-primary`}
-          onClick={startBreak}
-        >
-          <span className={`${ICON_CIRCLE_CLASSES} bg-black/10`} aria-hidden="true">
-            ☕
-          </span>
-          <span className="text-style-label-lg">Fazer uma pausa</span>
-          <span className="text-style-body-sm opacity-90">Descansa antes do próximo</span>
-        </button>
-
-        <button
-          type="button"
-          aria-label="Começar outro foco"
-          className={`${CARD_BASE_CLASSES} border-2 border-border bg-bg-subtle text-text-h`}
-          onClick={startAnotherFocus}
-        >
-          <span className={`${ICON_CIRCLE_CLASSES} bg-secondary-bg text-secondary-dark`} aria-hidden="true">
-            🌱
-          </span>
-          <span className="text-style-label-lg">Começar outro foco</span>
-          <span className="text-style-body-sm text-text-muted">Plantar mais um</span>
-        </button>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <Button onClick={startAnotherFocus}>🌱 Foco</Button>
+        <Button variant="secondary" onClick={startBreak}>
+          ☕ Pausa
+        </Button>
       </div>
 
       <div className="flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-bg-subtle p-4 text-left">
@@ -81,10 +56,6 @@ export function FlexiblePostFocusChoices() {
           ))}
         </div>
       </div>
-
-      <Button variant="ghost" onClick={endSession}>
-        Encerrar sessão
-      </Button>
     </section>
   )
 }

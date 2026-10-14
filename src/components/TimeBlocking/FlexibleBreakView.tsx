@@ -20,7 +20,12 @@ export function FlexibleBreakView() {
 
   return (
     <section className="flex w-full flex-col items-center gap-4 rounded-2xl border border-border bg-calm-bg p-6 shadow-card">
-      <FlexibleModeToggle value="pausa" onSwitch={backToFocusNow} />
+      <FlexibleModeToggle
+        value="pausa"
+        onChange={(next) => {
+          if (next === 'foco') backToFocusNow()
+        }}
+      />
 
       <div className="relative h-[min(320px,calc(100vw-80px))] w-[min(320px,calc(100vw-80px))]">
         <svg className="block h-full w-full -rotate-90" viewBox="0 0 260 260" aria-hidden="true">
@@ -51,7 +56,7 @@ export function FlexibleBreakView() {
         {isPaused ? <Button onClick={resume}>Continuar</Button> : <Button onClick={pause}>Pausar</Button>}
 
         <Button variant="ghost" onClick={endCurrentBlockNow}>
-          Encerrar agora
+          Finalizar tempo
         </Button>
       </div>
     </section>

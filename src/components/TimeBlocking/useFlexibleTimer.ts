@@ -204,13 +204,17 @@ export function useFlexibleTimer({ onSessionReady }: UseFlexibleTimerOptions) {
 
   /**
    * Fluxo de iniciar uma pausa — duas etapas reaproveitando o mesmo nome (espelha o plano):
-   * a partir de `foco_concluido` OU direto de `selecionando_foco` (pessoa prefere começar pela
-   * pausa, sem simular um foco antes — o modo é "personalizável", não só a duração) abre a tela
-   * de seleção de duração; a partir de `selecionando_descanso` confirma a duração escolhida e já
-   * põe a pausa para rodar.
+   * a partir de `foco_concluido`, `descanso_concluido` (toggle da tela de decisão, pra "mais uma
+   * pausa") OU direto de `selecionando_foco` (pessoa prefere começar pela pausa, sem simular um
+   * foco antes — o modo é "personalizável", não só a duração) abre a tela de seleção de duração; a
+   * partir de `selecionando_descanso` confirma a duração escolhida e já põe a pausa para rodar.
    */
   const startBreak = useCallback(() => {
-    if (phase.kind === 'foco_concluido' || phase.kind === 'selecionando_foco') {
+    if (
+      phase.kind === 'foco_concluido' ||
+      phase.kind === 'selecionando_foco' ||
+      phase.kind === 'descanso_concluido'
+    ) {
       setDraftMinutes(DEFAULT_BREAK_DRAFT_MINUTES)
       setPhase({ kind: 'selecionando_descanso' })
       return
@@ -237,9 +241,14 @@ export function useFlexibleTimer({ onSessionReady }: UseFlexibleTimerOptions) {
     resetToSelectingFocus()
   }, [phase.kind, resetToSelectingFocus])
 
-  /** Encerra a sessão a partir de uma decisão pós-bloco — o bloco já foi registrado como `concluido` ao chegar a zero, então só fecha a tela. */
+  /**
+   * "Finalizar tempo": fecha a sessão a partir de QUALQUER tela sem bloco rodando/pausado —
+   * decisão pós-bloco (o bloco já foi registrado como `concluido` ao chegar a zero) ou direto da
+   * tela de escolher duração (nada rodando ainda, nada a registrar). Durante um bloco ativo, quem
+   * fecha a sessão é `endCurrentBlockNow` (registra o tempo real decorrido primeiro).
+   */
   const endSession = useCallback(() => {
-    if (phase.kind !== 'foco_concluido' && phase.kind !== 'descanso_concluido') return
+    if (ACTIVE_BLOCK_KINDS.includes(phase.kind)) return
     setPhase({ kind: 'encerrado' })
   }, [phase.kind])
 

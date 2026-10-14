@@ -7,7 +7,7 @@ import { FlexiblePostBreakChoices } from './FlexiblePostBreakChoices'
 function mockFlexibleTimer(overrides: Partial<ReturnType<typeof FlexibleTimerContextModule.useFlexibleTimerContext>> = {}) {
   vi.spyOn(FlexibleTimerContextModule, 'useFlexibleTimerContext').mockReturnValue({
     backToFocus: vi.fn(),
-    endSession: vi.fn(),
+    startBreak: vi.fn(),
     ...overrides,
   } as ReturnType<typeof FlexibleTimerContextModule.useFlexibleTimerContext>)
 }
@@ -17,31 +17,31 @@ describe('FlexiblePostBreakChoices', () => {
     vi.restoreAllMocks()
   })
 
-  it('renderiza as 2 opções', () => {
+  it('renderiza os dois botões (Foco/Pausa)', () => {
     mockFlexibleTimer()
     render(<FlexiblePostBreakChoices />)
 
-    expect(screen.getByRole('button', { name: 'Voltar ao foco' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Encerrar sessão' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '🌱 Foco' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '☕ Pausa' })).toBeInTheDocument()
   })
 
-  it('"Voltar ao foco" chama backToFocus', async () => {
+  it('clicar em "Foco" chama backToFocus', async () => {
     const backToFocus = vi.fn()
     mockFlexibleTimer({ backToFocus })
     render(<FlexiblePostBreakChoices />)
 
-    await userEvent.click(screen.getByRole('button', { name: 'Voltar ao foco' }))
+    await userEvent.click(screen.getByRole('button', { name: '🌱 Foco' }))
 
     expect(backToFocus).toHaveBeenCalledTimes(1)
   })
 
-  it('"Encerrar sessão" chama endSession', async () => {
-    const endSession = vi.fn()
-    mockFlexibleTimer({ endSession })
+  it('clicar em "Pausa" chama startBreak', async () => {
+    const startBreak = vi.fn()
+    mockFlexibleTimer({ startBreak })
     render(<FlexiblePostBreakChoices />)
 
-    await userEvent.click(screen.getByRole('button', { name: 'Encerrar sessão' }))
+    await userEvent.click(screen.getByRole('button', { name: '☕ Pausa' }))
 
-    expect(endSession).toHaveBeenCalledTimes(1)
+    expect(startBreak).toHaveBeenCalledTimes(1)
   })
 })

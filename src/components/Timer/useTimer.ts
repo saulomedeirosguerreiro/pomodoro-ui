@@ -33,13 +33,6 @@ export function useTimer({ totalFociCompleted, onSessionReady, durations }: UseT
   const [phase, setPhase] = useState<TimerPhase>('parado')
   const [totalSeconds, setTotalSeconds] = useState(() => durationsRef.current.foco)
   const [remainingSeconds, setRemainingSeconds] = useState(() => durationsRef.current.foco)
-  /**
-   * Tipo abandonado parado, sem nunca ter dado play nele (US-33b) — enquanto não inicia o tipo
-   * atual, não dá pra voltar pra este. Sem isso, trocar de tipo parado é de graça (não registra
-   * nada), então dava pra "fingir" a sequência ping-pongando Foco↔Pausa sem nenhum foco de verdade
-   * no meio. `null` sempre que a troca anterior veio de uma sessão real (rodando/pausada).
-   */
-  const [lastAbandonedType, setLastAbandonedType] = useState<SessionType | null>(null)
 
   const startedAtMsRef = useRef<number | null>(null)
   const pausedAccumulatedMsRef = useRef(0)
@@ -75,8 +68,6 @@ export function useTimer({ totalFociCompleted, onSessionReady, durations }: UseT
     startedAtMsRef.current = Date.now()
     pausedAccumulatedMsRef.current = 0
     setPhase('rodando')
-    // Comprometeu com o tipo atual de verdade — a volta pro tipo abandonado deixa de estar travada.
-    setLastAbandonedType(null)
   }, [phase])
 
   const pause = useCallback(() => {
@@ -120,31 +111,13 @@ export function useTimer({ totalFociCompleted, onSessionReady, durations }: UseT
   }, [phase, registerInterrupted, resetToType, type])
 
   /**
-   * Ponto único de troca de tipo (US-33b): recusa (no-op) trocar PARADO para `lastAbandonedType` —
-   * mesma trava que o `ModeSwitcher` já reflete nas abas, aqui replicada na fonte para também
-   * valer pro "Pular" e para quem chamar `selectType` direto (defesa em profundidade).
-   */
-  const changeType = useCallback(
-    (nextType: SessionType) => {
-      if (phase === 'parado' && nextType === lastAbandonedType) return
-      setLastAbandonedType(phase === 'parado' ? type : null)
-      registerInterrupted()
-      resetToType(nextType)
-    },
-    [phase, type, lastAbandonedType, registerInterrupted, resetToType],
-  )
-
-  /**
    * Escolha manual de modo (US-33, G-Q5/G-Q5a): parado troca na hora; rodando/pausado registra
    * o período atual como interrompido antes de trocar. A confirmação é responsabilidade de quem chama.
    */
-  const selectType = useCallback((nextType: SessionType) => changeType(nextType), [changeType])
-
-  /**
-   * Pular (US-34, G-Q4): parado avança sem registrar; iniciado registra como interrompido e avança.
-   * Em ambos os casos o próximo tipo é o sugerido, nunca uma escolha manual.
-   */
-  const skip = useCallback(() => changeType(nextSuggestedType(type, totalFociRef.current)), [changeType, type])
+  const selectType = useCallback((nextType: SessionType) => {
+    registerInterrupted()
+    resetToType(nextType)
+  }, [registerInterrupted, resetToType])
 
   useEffect(() => {
     if (phase !== 'rodando' || startedAtMsRef.current === null) {
@@ -192,17 +165,13 @@ export function useTimer({ totalFociCompleted, onSessionReady, durations }: UseT
     totalSeconds,
     canFinalize: phase !== 'parado',
     /** Único próximo tipo válido na sequência clássica (US-33b) — usado pelo `ModeSwitcher` para
-     *  travar a troca manual fora de ordem, além de orientar o avanço automático/"Pular". */
+     *  travar a troca manual fora de ordem, além de orientar o avanço automático. */
     suggestedNextType,
-    /** Tipo que foi abandonado parado sem nunca ter iniciado — `ModeSwitcher` trava a volta até
-     *  `start()` ser chamado de verdade no tipo atual. `null` quando não há essa trava ativa. */
-    lastAbandonedType,
     start,
     pause,
     resume,
     restart,
     finalize,
     selectType,
-    skip,
   }
 }

@@ -404,6 +404,40 @@ describe('useFlexibleTimer', () => {
       act(() => result.current.endSession())
       expect(result.current.phase).toEqual({ kind: 'encerrado' })
     })
+
+    it('startBreak abre a seleção de mais uma pausa (toggle "Pausa" na tela de decisão)', () => {
+      const result = reachBreakCompleted()
+      act(() => result.current.startBreak())
+      expect(result.current.phase).toEqual({ kind: 'selecionando_descanso' })
+    })
+  })
+
+  describe('endSession a partir das telas de escolher duração (sem bloco rodando ainda)', () => {
+    it('a partir de selecionando_foco, fecha a sessão direto', () => {
+      const { result } = renderHook(() => useFlexibleTimer({ onSessionReady: vi.fn() }))
+
+      act(() => result.current.endSession())
+
+      expect(result.current.phase).toEqual({ kind: 'encerrado' })
+    })
+
+    it('a partir de selecionando_descanso, fecha a sessão direto', () => {
+      const { result } = renderHook(() => useFlexibleTimer({ onSessionReady: vi.fn() }))
+
+      act(() => result.current.startBreak())
+      act(() => result.current.endSession())
+
+      expect(result.current.phase).toEqual({ kind: 'encerrado' })
+    })
+
+    it('durante um bloco rodando ou pausado, não faz nada (use endCurrentBlockNow nesse caso)', () => {
+      const { result } = renderHook(() => useFlexibleTimer({ onSessionReady: vi.fn() }))
+
+      act(() => result.current.startFocus())
+      act(() => result.current.endSession())
+
+      expect(result.current.phase).toEqual({ kind: 'foco_rodando' })
+    })
   })
 
   describe('encerramento antecipado', () => {
