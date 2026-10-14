@@ -173,10 +173,6 @@ export function AppShell() {
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false)
   const [isSwitchPersonDialogOpen, setIsSwitchPersonDialogOpen] = useState(false)
 
-  // "Foco ativo" (Tweaks) força a prévia do esmaecimento; uma sessão de foco de verdade já em
-  // andamento esmaece sozinha, sem precisar do toggle manual.
-  const isPromoDimmed = (timer.type === 'foco' && timer.phase === 'rodando') || settings.promoFocusPreview
-
   // Conta tem precedência sobre um perfil guest residual (mesma regra de `DataSourceContext`) — evita
   // mostrar o nome do guest antigo para quem já fez upgrade para conta.
   const isAccount = Boolean(user)
@@ -244,7 +240,7 @@ export function AppShell() {
           isAccount={isAccount}
           progress={progress}
           onLogout={handleLogout}
-          promoSlot={<PromoCard secondsPerAd={settings.promoSecondsPerAd} isDimmed={isPromoDimmed} />}
+          promoSlot={<PromoCard secondsPerAd={settings.promoSecondsPerAd} />}
         />
       </aside>
 
@@ -352,7 +348,7 @@ export function AppShell() {
           fica só na largura da coluna de conteúdo, como pedido ("não ocupar 100% da tela"). */}
       <div className="fixed inset-x-0 bottom-0 z-20 flex flex-col bg-surface lg:left-[280px]">
         <div className="lg:hidden">
-          <PromoBar secondsPerAd={settings.promoSecondsPerAd} isDimmed={isPromoDimmed} />
+          <PromoBar secondsPerAd={settings.promoSecondsPerAd} />
         </div>
         <LofiPlayerBar />
       </div>

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Checkbox } from '../components/common/Checkbox'
 import { FormField } from '../components/common/FormField'
 import { useSettings } from '../context/SettingsContext'
 
@@ -49,15 +48,6 @@ export function TweaksPage() {
           onChange={(e) => setPromoSecondsInput(e.target.value)}
           onBlur={handlePromoSecondsBlur}
         />
-        <Checkbox
-          checked={settings.promoFocusPreview}
-          onChange={(checked) => updateSettings({ promoFocusPreview: checked })}
-          label="Foco ativo"
-        />
-        <p className="text-style-body-sm text-text-muted">
-          Esmaece o card/barra de divulgação, só para pré-visualizar como fica durante uma sessão de foco — uma sessão
-          de foco de verdade já esmaece sozinha, sem precisar deste toggle.
-        </p>
       </section>
     </div>
   )

@@ -4,7 +4,6 @@ import { PromoIcon } from './PromoIcon'
 
 interface PromoBarProps {
   secondsPerAd: number
-  isDimmed: boolean
 }
 
 /**
@@ -12,15 +11,11 @@ interface PromoBarProps {
  * empilha, sem espaço, bem acima da barra do mini-player, as duas dentro do mesmo bloco fixo no
  * rodapé (um `border-t` entre elas faz de divisor).
  */
-export function PromoBar({ secondsPerAd, isDimmed }: PromoBarProps) {
+export function PromoBar({ secondsPerAd }: PromoBarProps) {
   const { current, dots } = usePromoRotation(secondsPerAd, PROMOS)
 
   return (
-    <section
-      aria-label="Divulgação"
-      className="flex flex-col gap-2 p-3 pb-2 transition-opacity duration-300"
-      style={{ opacity: isDimmed ? 0.45 : 1 }}
-    >
+    <section aria-label="Divulgação" className="flex flex-col gap-2 p-3 pb-2">
       <div className="flex items-center gap-3">
         <PromoIcon kind={current.kind} size={42} />
         <div className="min-w-0 flex-1">

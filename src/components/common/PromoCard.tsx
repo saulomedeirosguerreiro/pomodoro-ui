@@ -4,18 +4,16 @@ import { PromoIcon } from './PromoIcon'
 
 interface PromoCardProps {
   secondsPerAd: number
-  isDimmed: boolean
 }
 
 /** Card de divulgação cruzada na sidebar desktop, logo acima de Configurações. */
-export function PromoCard({ secondsPerAd, isDimmed }: PromoCardProps) {
+export function PromoCard({ secondsPerAd }: PromoCardProps) {
   const { current, index, dots } = usePromoRotation(secondsPerAd, PROMOS)
 
   return (
     <section
       aria-label="Divulgação"
-      className="flex flex-col gap-3 rounded-lg border border-border bg-bg-subtle p-4 transition-opacity duration-300"
-      style={{ opacity: isDimmed ? 0.45 : 1 }}
+      className="flex flex-col gap-3 rounded-lg border border-border bg-bg-subtle p-4"
     >
       <div className="flex items-center justify-end">
         <span className="text-style-label-sm text-text-muted">

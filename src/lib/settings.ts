@@ -11,7 +11,6 @@ export interface Settings {
   shortBreakMinutes: number
   longBreakMinutes: number
   promoSecondsPerAd: number
-  promoFocusPreview: boolean
   /** Opt-out do Google Analytics (ligado por padrão — ver Política de Privacidade). */
   analyticsEnabled: boolean
   /** Última aba escolhida em `TimerPage.tsx` (Clássico/Customizado) — sem isso, navegar pra outra
@@ -30,7 +29,6 @@ export const DEFAULT_SETTINGS: Settings = {
   shortBreakMinutes: DEFAULT_SESSION_DURATIONS_SECONDS.descanso_curto / 60,
   longBreakMinutes: DEFAULT_SESSION_DURATIONS_SECONDS.descanso_longo / 60,
   promoSecondsPerAd: 8,
-  promoFocusPreview: false,
   analyticsEnabled: true,
   lastTimerMode: 'classico',
 }
