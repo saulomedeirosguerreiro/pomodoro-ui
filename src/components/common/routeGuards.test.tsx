@@ -55,12 +55,17 @@ function mockAuth(
   })
 }
 
-function mockGuest(guest: { id: string; name: string; createdAt: string } | null) {
+function mockGuest(
+  guest: { id: string; name: string; createdAt: string } | null,
+  overrides: { isGuestSessionConfirmed?: boolean; clearGuestData?: ReturnType<typeof vi.fn>; confirmGuestSession?: ReturnType<typeof vi.fn> } = {},
+) {
   vi.spyOn(GuestContext, 'useGuest').mockReturnValue({
     guest,
     isLoading: false,
+    isGuestSessionConfirmed: overrides.isGuestSessionConfirmed ?? true,
     startGuest: vi.fn(),
-    clearGuestData: vi.fn(),
+    clearGuestData: overrides.clearGuestData ?? vi.fn(),
+    confirmGuestSession: overrides.confirmGuestSession ?? vi.fn(),
   })
 }
 
@@ -105,12 +110,7 @@ describe('ProtectedRoute', () => {
   it('sessão de conta expirada também limpa dados guest residuais do dispositivo, pra não vazar pra próxima pessoa', () => {
     const clearGuestData = vi.fn()
     mockAuth(null, true)
-    vi.spyOn(GuestContext, 'useGuest').mockReturnValue({
-      guest: null,
-      isLoading: false,
-      startGuest: vi.fn(),
-      clearGuestData,
-    })
+    mockGuest(null, { clearGuestData })
 
     renderProtected('/dashboard')
 
@@ -120,16 +120,32 @@ describe('ProtectedRoute', () => {
   it('sessão de conta ATIVA não mexe nos dados guest', () => {
     const clearGuestData = vi.fn()
     mockAuth({ id: 1, name: 'João', email: 'joao@email.com', completedSessions: 0 })
-    vi.spyOn(GuestContext, 'useGuest').mockReturnValue({
-      guest: null,
-      isLoading: false,
-      startGuest: vi.fn(),
-      clearGuestData,
-    })
+    mockGuest(null, { clearGuestData })
 
     renderProtected('/dashboard')
 
     expect(clearGuestData).not.toHaveBeenCalled()
+  })
+
+  it('guest carregado do localStorage que esta aba ainda não confirmou mostra o GuestIdentityConfirmModal por cima do dashboard', () => {
+    mockAuth(null)
+    mockGuest({ id: 'guest-1', name: 'Visitante', createdAt: '2026-01-01T00:00:00Z' }, { isGuestSessionConfirmed: false })
+
+    renderProtected('/dashboard')
+
+    expect(screen.getByRole('dialog', { name: 'Você está como convidado' })).toBeInTheDocument()
+    expect(screen.getByText('Tela do dashboard')).toBeInTheDocument()
+    expect(screen.queryByRole('dialog', { name: 'Boas-vindas ao Guardião Pomodoro' })).not.toBeInTheDocument()
+  })
+
+  it('guest já confirmado nesta sessão de navegador NÃO mostra o GuestIdentityConfirmModal', () => {
+    mockAuth(null)
+    mockGuest({ id: 'guest-1', name: 'Visitante', createdAt: '2026-01-01T00:00:00Z' }, { isGuestSessionConfirmed: true })
+
+    renderProtected('/dashboard')
+
+    expect(screen.queryByRole('dialog', { name: 'É você, Visitante?' })).not.toBeInTheDocument()
+    expect(screen.getByText('Tela do dashboard')).toBeInTheDocument()
   })
 })
 

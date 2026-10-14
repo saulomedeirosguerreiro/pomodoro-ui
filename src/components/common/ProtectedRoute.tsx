@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
+import { GuestIdentityConfirmModal } from '../welcome/GuestIdentityConfirmModal'
 import { WelcomeModal } from '../welcome/WelcomeModal'
 import { useAuth } from '../../context/AuthContext'
 import { useGuest } from '../../context/GuestContext'
@@ -10,10 +11,16 @@ import { useGuest } from '../../context/GuestContext'
  * página em branco à parte — EXCETO quando a ausência é por sessão de CONTA expirada (US-82, 401 do
  * `UNAUTHORIZED_EVENT`): aí vai para `/login` com um aviso, não mostra o modal (que pareceria que a
  * pessoa nunca teve conta). `LoginPage` limpa a flag ao montar via `acknowledgeSessionExpired()`.
+ *
+ * Quando há um `guest` carregado do `localStorage` mas esta aba ainda não confirmou que é a mesma
+ * pessoa (`!isGuestSessionConfirmed` — ver `GuestContext`), mostra o `GuestIdentityConfirmModal` em vez
+ * de seguir direto: é o caso de alguém ter fechado o navegador e outra pessoa ter aberto depois no
+ * mesmo dispositivo. As duas condições de overlay são mutuamente exclusivas (uma exige `guest` nulo, a
+ * outra `guest` presente), então nunca aparecem os dois modais ao mesmo tempo.
  */
 export function ProtectedRoute() {
   const { user, isLoading: authLoading, sessionExpired } = useAuth()
-  const { guest, isLoading: guestLoading, clearGuestData } = useGuest()
+  const { guest, isLoading: guestLoading, isGuestSessionConfirmed, clearGuestData } = useGuest()
 
   useEffect(() => {
     // Mesmo motivo do `clearGuestData()` no logout explícito (AppShell.confirmLogout): sem isso, um
@@ -32,10 +39,13 @@ export function ProtectedRoute() {
     return <Navigate to="/login" replace state={{ message: 'Sua sessão expirou. Entre novamente.' }} />
   }
 
+  const needsGuestIdentityConfirm = !user && Boolean(guest) && !isGuestSessionConfirmed
+
   return (
     <>
       <Outlet />
       {!user && !guest && <WelcomeModal />}
+      {needsGuestIdentityConfirm && <GuestIdentityConfirmModal />}
     </>
   )
 }

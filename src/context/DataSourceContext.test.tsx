@@ -40,8 +40,10 @@ function mockGuest(guest: GuestProfile | null) {
   vi.spyOn(GuestContext, 'useGuest').mockReturnValue({
     guest,
     isLoading: false,
+    isGuestSessionConfirmed: true,
     startGuest: vi.fn(),
     clearGuestData: vi.fn(),
+    confirmGuestSession: vi.fn(),
   })
 }
 

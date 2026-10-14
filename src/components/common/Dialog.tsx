@@ -3,6 +3,10 @@ import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode } from 're
 interface DialogProps {
   titleText: string
   children: ReactNode
+  /** Conteúdo decorativo (avatar, badge) renderizado acima do título — ex.: `GuestIdentityConfirmModal`. */
+  header?: ReactNode
+  /** Centraliza o título (e o `header`, se houver) — padrão `false` (alinhado à esquerda). */
+  centerTitle?: boolean
   /** Chamado ao fechar via `Escape` — omitir junto com `dismissible={false}` quando a ação exigir uma escolha explícita. */
   onDismiss?: () => void
   /** Quando `false`, `Escape` não fecha o diálogo. Padrão `true`. */
@@ -15,7 +19,7 @@ interface DialogProps {
  * interativo, devolução de foco ao elemento que abriu o diálogo ao desmontar, fechar com `Escape`
  * quando a ação permitir cancelamento. Reutilizável além da migração (ex.: confirmações destrutivas).
  */
-export function Dialog({ titleText, children, onDismiss, dismissible = true }: DialogProps) {
+export function Dialog({ titleText, children, header, centerTitle = false, onDismiss, dismissible = true }: DialogProps) {
   const titleId = useId()
   const dialogRef = useRef<HTMLDivElement>(null)
   const previouslyFocusedElementRef = useRef<HTMLElement | null>(null)
@@ -51,7 +55,8 @@ export function Dialog({ titleText, children, onDismiss, dismissible = true }: D
         aria-labelledby={titleId}
         className="w-full max-w-[420px] rounded-4xl border border-border bg-surface p-6 shadow-popover"
       >
-        <h2 id={titleId} className="mb-4 text-style-headline-sm text-text-h">
+        {header}
+        <h2 id={titleId} className={`mb-4 text-style-headline-sm text-text-h ${centerTitle ? 'text-center' : ''}`}>
           {titleText}
         </h2>
         {children}

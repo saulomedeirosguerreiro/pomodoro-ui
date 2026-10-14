@@ -28,8 +28,10 @@ function mockGuest(guest: { id: string; name: string; createdAt: string } | null
   const mock = {
     guest,
     isLoading: false,
+    isGuestSessionConfirmed: true,
     startGuest: vi.fn(),
     clearGuestData: vi.fn(),
+    confirmGuestSession: vi.fn(),
   }
   vi.spyOn(GuestContext, 'useGuest').mockReturnValue(mock)
   return mock

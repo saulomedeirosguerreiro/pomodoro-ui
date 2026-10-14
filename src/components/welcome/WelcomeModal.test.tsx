@@ -21,8 +21,10 @@ function mockGuest(startGuest = vi.fn()) {
   vi.spyOn(GuestContext, 'useGuest').mockReturnValue({
     guest: null,
     isLoading: false,
+    isGuestSessionConfirmed: false,
     startGuest,
     clearGuestData: vi.fn(),
+    confirmGuestSession: vi.fn(),
   })
   return startGuest
 }

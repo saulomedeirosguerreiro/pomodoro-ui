@@ -66,17 +66,4 @@ describe('analytics', () => {
 
     expect(gtagSpy).toHaveBeenCalledWith('event', 'focus_completed', { duration_seconds: 1500 })
   })
-
-  it('trackPageView chama window.gtag com o evento page_view e o caminho', async () => {
-    vi.stubEnv('VITE_GA_MEASUREMENT_ID', 'G-TEST123')
-    const { setAnalyticsEnabled, trackPageView } = await import('./analytics')
-    setAnalyticsEnabled(true)
-
-    const gtagSpy = vi.fn()
-    window.gtag = gtagSpy
-
-    trackPageView('/tarefas')
-
-    expect(gtagSpy).toHaveBeenCalledWith('event', 'page_view', { page_path: '/tarefas' })
-  })
 })

@@ -24,8 +24,10 @@ function mockGuest(clearGuestData = vi.fn()) {
   vi.spyOn(GuestContextModule, 'useGuest').mockReturnValue({
     guest: { id: 'guest-1', name: 'Visitante', createdAt: '2026-01-01T00:00:00Z' },
     isLoading: false,
+    isGuestSessionConfirmed: true,
     startGuest: vi.fn(),
     clearGuestData,
+    confirmGuestSession: vi.fn(),
   })
   return clearGuestData
 }
