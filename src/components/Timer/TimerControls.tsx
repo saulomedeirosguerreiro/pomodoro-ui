@@ -1,6 +1,10 @@
+import { useState } from 'react'
 import { Button } from '../common/Button'
+import { Dialog } from '../common/Dialog'
 import type { SessionType } from '../../types/api'
 import type { TimerPhase } from './useTimer'
+
+type PendingAction = 'finalizar' | 'pular'
 
 const ICON_BUTTON_CLASSES =
   'flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border-2 border-border bg-surface text-[22px] text-text-muted transition-[background-color,transform] duration-150 ease-out hover:bg-bg-subtle active:scale-95'
@@ -34,21 +38,24 @@ export function TimerControls({
   onFinalize,
   onSkip,
 }: TimerControlsProps) {
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(null)
+
   function handleFinalize() {
-    const confirmed = window.confirm(
-      'Encerrar esta sessão agora? Tudo bem fazer uma pausa — o tempo focado até aqui já vai para o seu histórico.',
-    )
-    if (confirmed) {
-      onFinalize()
-    }
+    setPendingAction('finalizar')
   }
 
   function handleSkip() {
     if (phase !== 'parado') {
-      const confirmed = window.confirm('Pular este período? O tempo decorrido será registrado como interrompido.')
-      if (!confirmed) return
+      setPendingAction('pular')
+      return
     }
     onSkip()
+  }
+
+  function handleConfirmPendingAction() {
+    if (pendingAction === 'finalizar') onFinalize()
+    if (pendingAction === 'pular') onSkip()
+    setPendingAction(null)
   }
 
   return (
@@ -84,6 +91,25 @@ export function TimerControls({
       <Button variant="ghost" onClick={handleFinalize} disabled={!canFinalize}>
         Encerrar sessão
       </Button>
+
+      {pendingAction && (
+        <Dialog
+          titleText={pendingAction === 'finalizar' ? 'Encerrar sessão?' : 'Pular este período?'}
+          onDismiss={() => setPendingAction(null)}
+        >
+          <p className="mb-4 text-style-body-sm text-text-muted">
+            {pendingAction === 'finalizar'
+              ? 'Tudo bem fazer uma pausa — o tempo focado até aqui já vai para o seu histórico.'
+              : 'O tempo decorrido será registrado como interrompido.'}
+          </p>
+          <div className="flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setPendingAction(null)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleConfirmPendingAction}>{pendingAction === 'finalizar' ? 'Encerrar' : 'Pular'}</Button>
+          </div>
+        </Dialog>
+      )}
     </div>
   )
 }

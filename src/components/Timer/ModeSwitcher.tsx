@@ -71,7 +71,7 @@ export function ModeSwitcher({ type, phase, onSelectType }: ModeSwitcherProps) {
 
       {pendingType && (
         <Dialog titleText="Trocar de modo?" onDismiss={() => setPendingType(null)}>
-          <p className="text-style-body-sm text-text-muted">
+          <p className="mb-4 text-style-body-sm text-text-muted">
             Trocar de modo vai encerrar a sessão atual. O tempo já focado será salvo.
           </p>
           <div className="flex justify-end gap-2">
