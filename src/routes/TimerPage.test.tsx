@@ -51,6 +51,7 @@ function mockTimer(overrides?: Partial<ReturnType<typeof TimerContextModule.useT
     totalSeconds: 1500,
     canFinalize: false,
     suggestedNextType: 'descanso_curto',
+    cycleCount: 0,
     start: vi.fn(),
     pause: vi.fn(),
     resume: vi.fn(),
@@ -133,8 +134,6 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
 
     expect(screen.getByText('25:00')).toBeInTheDocument()
     expect(screen.getByText('Foco')).toBeInTheDocument()
-
-    await waitFor(() => expect(dataSource.listSessions).toHaveBeenCalled())
   })
 
   it('clicar em "Começar Foco" aciona o início do timer', async () => {

@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import type { PomodoroSession } from '../types/api'
 import {
-  computeCycleCount,
   computeRemainingSeconds,
+  cycleFocusCount,
   DEFAULT_SESSION_DURATIONS_SECONDS,
   flexibleBreakSessionType,
   formatMMSS,
   nextSuggestedType,
+  predictedNextType,
   sessionDurationsSecondsFrom,
 } from './timerLogic'
 
@@ -40,6 +40,20 @@ describe('nextSuggestedType', () => {
   })
 })
 
+describe('predictedNextType', () => {
+  it('após foco NÃO concluído, sugere pausa curta — nunca pausa longa', () => {
+    // Não recebe o total de propósito: diferente de `nextSuggestedType` (que soma +1 antes de
+    // perguntar "foi o 4º?"), aqui o foco atual nunca foi concluído, então o total "cru" não pode
+    // decidir pausa longa — senão o 1º foco de um ciclo novo (total global já múltiplo de 4 por
+    // causa de ciclos anteriores) seria erradamente marcado como merecendo outra pausa longa.
+    expect(predictedNextType('foco')).toBe('descanso_curto')
+  })
+
+  it.each(['descanso_curto', 'descanso_longo'] as const)('após %s, sugere foco', (type) => {
+    expect(predictedNextType(type)).toBe('foco')
+  })
+})
+
 describe('formatMMSS', () => {
   it('formata minutos e segundos com dois dígitos', () => {
     expect(formatMMSS(DEFAULT_SESSION_DURATIONS_SECONDS.foco)).toBe('25:00')
@@ -52,59 +66,22 @@ describe('formatMMSS', () => {
   })
 })
 
-describe('computeCycleCount', () => {
-  const session = (overrides: Partial<PomodoroSession>): PomodoroSession => ({
-    id: 1,
-    type: 'foco',
-    status: 'concluido',
-    durationSeconds: 1500,
-    startedAt: '2026-01-01T10:00:00Z',
-    completedAt: '2026-01-01T10:25:00Z',
-    createdAt: '2026-01-01T10:25:00Z',
-    ...overrides,
+describe('cycleFocusCount', () => {
+  it.each([
+    [0, 0],
+    [1, 1],
+    [2, 2],
+    [3, 3],
+    [4, 0],
+    [5, 1],
+    [8, 0],
+  ] as const)('com %i focos concluídos no total, posição no ciclo é %i', (total, expected) => {
+    expect(cycleFocusCount(total)).toBe(expected)
   })
 
-  it('sem sessões, conta 0', () => {
-    expect(computeCycleCount([])).toBe(0)
-  })
-
-  it('conta focos concluídos, mais recente primeiro', () => {
-    const sessions = [
-      session({ id: 3 }),
-      session({ id: 2, type: 'descanso_curto' }),
-      session({ id: 1 }),
-    ]
-
-    expect(computeCycleCount(sessions)).toBe(2)
-  })
-
-  it('para de contar ao achar uma pausa longa concluída', () => {
-    const sessions = [
-      session({ id: 4 }),
-      session({ id: 3, type: 'descanso_longo' }),
-      session({ id: 2 }),
-      session({ id: 1 }),
-    ]
-
-    expect(computeCycleCount(sessions)).toBe(1)
-  })
-
-  it('foco interrompido não conta, mas não quebra a contagem', () => {
-    const sessions = [
-      session({ id: 2 }),
-      session({ id: 1, status: 'interrompido' }),
-    ]
-
-    expect(computeCycleCount(sessions)).toBe(1)
-  })
-
-  it('pausa longa interrompida não reseta o ciclo', () => {
-    const sessions = [
-      session({ id: 2 }),
-      session({ id: 1, type: 'descanso_longo', status: 'interrompido' }),
-    ]
-
-    expect(computeCycleCount(sessions)).toBe(1)
+  it('mesmo contador de nextSuggestedType — a cada 4º foco, ciclo zera junto com a pausa longa sugerida', () => {
+    expect(cycleFocusCount(4)).toBe(0)
+    expect(nextSuggestedType('foco', 4)).toBe('descanso_longo')
   })
 })
 

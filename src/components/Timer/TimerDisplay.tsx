@@ -17,6 +17,20 @@ interface TimerDisplayProps {
   cycleCount: number
 }
 
+/**
+ * "Ciclo N de 4": durante o foco, `cycleCount` (0–3, focos já concluídos no ciclo) conta este foco
+ * em andamento como o próximo da sequência, daí o `+1` ("fazendo o 3º foco" → mostra "3"). Numa
+ * pausa, não existe "+1" — a pausa não é um foco novo, é o intervalo DEPOIS do foco Nº `cycleCount`;
+ * mostrar `cycleCount + 1` ali adiantaria o rótulo um passo (ex.: pausa curta após o 3º foco
+ * mostrando "4 de 4", como se a pausa longa já devesse ter liberado). O caso `cycleCount === 0`
+ * numa pausa é a pausa logo depois do 4º foco (o contador já girou pra um novo ciclo) — mostra "4",
+ * não "0".
+ */
+function cycleLabel(type: SessionType, cycleCount: number): number {
+  if (type === 'foco') return cycleCount + 1
+  return cycleCount === 0 ? 4 : cycleCount
+}
+
 export function TimerDisplay({ type, remainingSeconds, totalSeconds, cycleCount }: TimerDisplayProps) {
   const fractionRemaining = totalSeconds > 0 ? Math.min(1, Math.max(0, remainingSeconds / totalSeconds)) : 0
   const dashOffset = CIRCUMFERENCE * (1 - fractionRemaining)
@@ -58,7 +72,7 @@ export function TimerDisplay({ type, remainingSeconds, totalSeconds, cycleCount 
             {formatMMSS(remainingSeconds)}
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg-subtle px-2 py-1 text-style-label-sm text-secondary-dark">
-            Ciclo {Math.min(cycleCount + 1, 4)} de 4
+            Ciclo {cycleLabel(type, cycleCount)} de 4
           </span>
         </div>
       </div>

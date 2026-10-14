@@ -131,12 +131,16 @@ describe('useTimer', () => {
       expect(result.current.suggestedNextType).toBe('descanso_curto')
     })
 
-    it('em foco, com o total já múltiplo de 4, sugere pausa longa', () => {
-      // Mesma regra de `nextSuggestedType`: não soma +1 (trocar manualmente não conta como
-      // concluir o foco atual) — por isso o total aqui já precisa estar em 4, e não em 3.
+    it('em foco, mesmo com o total global já múltiplo de 4 (ex.: 1º foco de um ciclo novo), nunca sugere pausa longa', () => {
+      // Bug corrigido: o foco atual ainda não foi concluído, então não pode "herdar" o % 4 === 0
+      // do total global (que só reflete ciclos JÁ fechados antes dele) — senão o 1º foco de um
+      // ciclo novo (0 focos feitos NESTE ciclo, `cycleCount` zerado) seria marcado como já
+      // merecendo outra pausa longa. Pausa longa só vem pela conclusão real (ver `nextSuggestedType`
+      // com o total incrementado, usado só no handler de conclusão natural).
       const { result } = renderHook(() => useTimer({ totalFociCompleted: 4, onSessionReady: vi.fn() }))
 
-      expect(result.current.suggestedNextType).toBe('descanso_longo')
+      expect(result.current.cycleCount).toBe(0)
+      expect(result.current.suggestedNextType).toBe('descanso_curto')
     })
 
     it('em pausa curta ou longa, sempre sugere foco', () => {
@@ -147,6 +151,29 @@ describe('useTimer', () => {
       const { result: longa } = renderHook(() => useTimer({ totalFociCompleted: 3, onSessionReady: vi.fn() }))
       act(() => longa.current.selectType('descanso_longo'))
       expect(longa.current.suggestedNextType).toBe('foco')
+    })
+  })
+
+  describe('cycleCount — mesmo contador global de suggestedNextType, nunca uma janela de histórico', () => {
+    it.each([
+      [0, 0],
+      [3, 3],
+      [4, 0],
+      [7, 3],
+    ] as const)('com totalFociCompleted=%i, cycleCount é %i', (totalFociCompleted, expected) => {
+      const { result } = renderHook(() => useTimer({ totalFociCompleted, onSessionReady: vi.fn() }))
+
+      expect(result.current.cycleCount).toBe(expected)
+    })
+
+    it('cycleCount volta a 0 no 1º foco de um ciclo novo, mas suggestedNextType continua pausa curta (nunca prevê pausa longa)', () => {
+      // `cycleCount` é só a posição no ciclo pra exibição (sempre acompanha o total global); já
+      // `suggestedNextType`, enquanto o foco atual não foi concluído, nunca pode "adiantar" a pausa
+      // longa — ver `predictedNextType`. Os dois usam o mesmo total, mas respondem perguntas diferentes.
+      const { result } = renderHook(() => useTimer({ totalFociCompleted: 4, onSessionReady: vi.fn() }))
+
+      expect(result.current.cycleCount).toBe(0)
+      expect(result.current.suggestedNextType).toBe('descanso_curto')
     })
   })
 

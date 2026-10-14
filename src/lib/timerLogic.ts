@@ -1,4 +1,4 @@
-import type { PomodoroSession, SessionType } from '../types/api'
+import type { SessionType } from '../types/api'
 
 /** Valores de fábrica — ponto de partida de `DEFAULT_SETTINGS` e alvo do "Restaurar padrões". */
 export const DEFAULT_SESSION_DURATIONS_SECONDS: Record<SessionType, number> = {
@@ -54,7 +54,13 @@ export function sessionDurationsSecondsFrom(
   }
 }
 
-/** Espelha Pomodoro.Domain.Services.PomodoroCycleAdvisor do backend (US-12 RN-02, D-Q5). */
+/**
+ * Espelha Pomodoro.Domain.Services.PomodoroCycleAdvisor do backend (US-12 RN-02, D-Q5). USO
+ * RESTRITO a uma conclusão DE VERDADE: `totalFociCompletedSoFar` tem que já estar incrementado pra
+ * contar o foco que acabou de terminar (ver o handler de conclusão natural em `useTimer.ts`, que
+ * soma +1 antes de chamar). Nunca chamar com o total "cru" (não incrementado) pra prever o próximo
+ * tipo sem ter concluído nada — ver `predictedNextType` pra esse caso.
+ */
 export function nextSuggestedType(completedType: SessionType, totalFociCompletedSoFar: number): SessionType {
   if (completedType !== 'foco') {
     return 'foco'
@@ -65,20 +71,28 @@ export function nextSuggestedType(completedType: SessionType, totalFociCompleted
 }
 
 /**
- * "Ciclo N de 4" (US-36, G-Q5b): conta focos concluídos desde a última pausa longa concluída.
- * `sessions` deve vir ordenada da mais recente para a mais antiga (como `GET /api/pomodoros` já retorna).
+ * Prevê o "próximo tipo" SEM contar a sessão atual como concluída — usado por "Pular" (US-34) e
+ * pelo `ModeSwitcher` pra travar a troca manual ANTES de o foco atual sequer começar/terminar
+ * (US-33b). Diferente de `nextSuggestedType`, nunca sugere `descanso_longo`: a pausa longa só é
+ * ganha de verdade completando o 4º foco (via `nextSuggestedType` com o total já incrementado) —
+ * prever a partir do total NÃO incrementado não pode usar o mesmo `% 4 === 0`, senão um foco recém
+ * iniciado de um ciclo novo (total global já múltiplo de 4 por causa de ciclos anteriores,
+ * `cycleFocusCount` voltando a 0) seria erradamente marcado como já merecendo outra pausa longa.
  */
-export function computeCycleCount(sessions: readonly PomodoroSession[]): number {
-  let count = 0
-  for (const session of sessions) {
-    if (session.type === 'descanso_longo' && session.status === 'concluido') {
-      break
-    }
-    if (session.type === 'foco' && session.status === 'concluido') {
-      count += 1
-    }
-  }
-  return count
+export function predictedNextType(completedType: SessionType): SessionType {
+  return completedType === 'foco' ? 'descanso_curto' : 'foco'
+}
+
+/**
+ * "Ciclo N de 4" (US-36, G-Q5b): quantos focos já foram concluídos no ciclo atual (0–3). Antes
+ * (`computeCycleCount`) contava a partir de uma janela de até 10 sessões buscadas do histórico,
+ * parando ao achar uma pausa longa concluída — divergia de `nextSuggestedType` (que decide a trava
+ * de sequência a partir do total GLOBAL) sempre que o histórico tinha mais de 10 itens desde a
+ * última pausa longa de verdade (ex.: muita sessão interrompida/pulada no meio). Agora deriva do
+ * MESMO contador global (`totalFociCompletedSoFar`), então os dois nunca mais destoam.
+ */
+export function cycleFocusCount(totalFociCompletedSoFar: number): number {
+  return totalFociCompletedSoFar % FOCI_PER_LONG_BREAK
 }
 
 export function formatMMSS(totalSeconds: number): string {

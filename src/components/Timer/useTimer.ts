@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { computeRemainingSeconds, DEFAULT_SESSION_DURATIONS_SECONDS, nextSuggestedType } from '../../lib/timerLogic'
+import {
+  computeRemainingSeconds,
+  cycleFocusCount,
+  DEFAULT_SESSION_DURATIONS_SECONDS,
+  nextSuggestedType,
+  predictedNextType,
+} from '../../lib/timerLogic'
 import type { SessionStatus, SessionType } from '../../types/api'
 
 export type TimerPhase = 'parado' | 'rodando' | 'pausado'
@@ -156,7 +162,14 @@ export function useTimer({ totalFociCompleted, onSessionReady, durations }: UseT
     return () => clearInterval(intervalId)
   }, [onSessionReady, phase, resetToType, type])
 
-  const suggestedNextType = nextSuggestedType(type, totalFociCompleted)
+  /** Nunca usa `nextSuggestedType` aqui: o foco atual ainda não foi concluído, então o total não
+   *  está incrementado — ver `predictedNextType` pra entender por que isso nunca pode sugerir
+   *  pausa longa (senão o 1º foco de um ciclo novo, com o total global já múltiplo de 4 por causa
+   *  de ciclos anteriores, seria erradamente marcado como merecendo outra pausa longa). */
+  const suggestedNextType = predictedNextType(type)
+  /** "Ciclo N de 4" (`TimerDisplay` faz `Math.min(cycleCount + 1, 4)`) — mesmo contador global que
+   *  decide `suggestedNextType`, nunca uma janela de histórico (ver `cycleFocusCount`). */
+  const cycleCount = cycleFocusCount(totalFociCompleted)
 
   return {
     type,
@@ -167,6 +180,7 @@ export function useTimer({ totalFociCompleted, onSessionReady, durations }: UseT
     /** Único próximo tipo válido na sequência clássica (US-33b) — usado pelo `ModeSwitcher` para
      *  travar a troca manual fora de ordem, além de orientar o avanço automático. */
     suggestedNextType,
+    cycleCount,
     start,
     pause,
     resume,

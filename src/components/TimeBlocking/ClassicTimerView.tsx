@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Button } from '../common/Button'
 import { TodaysGardenCard } from '../Garden/TodaysGardenCard'
 import { Mascot } from '../Mascot/Mascot'
@@ -7,8 +7,7 @@ import { MissionCard } from '../Tasks/MissionCard'
 import { useDataSource } from '../../context/DataSourceContext'
 import { useTimerContext } from '../../context/TimerContext'
 import type { TaskPayload } from '../../lib/tasksService'
-import { computeCycleCount } from '../../lib/timerLogic'
-import type { PomodoroSession, TaskItem } from '../../types/api'
+import type { TaskItem } from '../../types/api'
 import { ModeSwitcher } from '../Timer/ModeSwitcher'
 import { TimerControls } from '../Timer/TimerControls'
 import { TimerDisplay } from '../Timer/TimerDisplay'
@@ -17,24 +16,17 @@ import { TimerDisplay } from '../Timer/TimerDisplay'
  * Tela do Pomodoro Clássico — extração mecânica do corpo que antes vivia em `TimerPage.tsx`
  * (Parte 5 do plano): mesmas props via `useTimerContext()`/`useDataSource()`, zero lógica nova.
  * `TimerPage` agora só escolhe entre esta view e `FlexibleTimerView` a partir do `TimerModeToggle`.
+ *
+ * "Ciclo N de 4" vem direto de `timer.cycleCount` (contador global do `useTimer`) — não busca mais
+ * histórico de sessões pra isso (era `computeCycleCount`, removido: divergia do contador real da
+ * trava de sequência sempre que o histórico tinha mais de 10 itens desde a última pausa longa).
  */
 export function ClassicTimerView() {
   const timer = useTimerContext()
   const { dataSource } = useDataSource()
 
-  const [history, setHistory] = useState<PomodoroSession[] | null>(null)
   const [tasks, setTasks] = useState<TaskItem[] | null>(null)
   const [taskError, setTaskError] = useState<string | null>(null)
-
-  const loadHistory = useCallback(async () => {
-    if (!dataSource) return
-    try {
-      const page = await dataSource.listSessions(10, 0)
-      setHistory(page.items)
-    } catch {
-      // "Ciclo N de 4" só fica impreciso até a próxima tentativa; não bloqueia o timer.
-    }
-  }, [dataSource])
 
   const loadTasks = useCallback(async () => {
     if (!dataSource) return
@@ -48,26 +40,18 @@ export function ClassicTimerView() {
   }, [dataSource])
 
   useEffect(() => {
-    loadHistory()
     loadTasks()
-  }, [loadHistory, loadTasks])
+  }, [loadTasks])
 
   useEffect(() => {
     const session = timer.lastRegisteredSession
     if (!session) return
-
-    setHistory((prev) => {
-      if (!prev) return prev
-      if (prev.some((s) => s.id === session.id)) return prev
-      return [session, ...prev].slice(0, 10)
-    })
 
     if (session.type === 'foco') {
       loadTasks()
     }
   }, [timer.lastRegisteredSession, loadTasks])
 
-  const cycleCount = useMemo(() => computeCycleCount(history ?? []), [history])
   const focusedTask = tasks?.find((t) => t.status === 'em_curso') ?? null
 
   async function handleCreateTask(payload: TaskPayload) {
@@ -108,7 +92,7 @@ export function ClassicTimerView() {
           type={timer.type}
           remainingSeconds={timer.remainingSeconds}
           totalSeconds={timer.totalSeconds}
-          cycleCount={cycleCount}
+          cycleCount={timer.cycleCount}
         />
 
         <TimerControls
