@@ -44,6 +44,7 @@ function mockTimer(progress: ProgressSummary | null = null) {
     lastRegisteredSession: null,
     registrationError: null,
     retryRegistration: vi.fn(),
+    dismissRegistrationError: vi.fn(),
     canRetryRegistration: true,
     progress,
     focusedTask: null,

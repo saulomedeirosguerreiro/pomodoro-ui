@@ -6,6 +6,7 @@ import { useSessionRegistrationContext } from './SessionRegistrationContext'
 interface FlexibleTimerContextValue extends ReturnType<typeof useFlexibleTimer> {
   registrationError: string | null
   retryRegistration: () => void
+  dismissRegistrationError: () => void
   canRetryRegistration: boolean
   progress: ProgressSummary | null
 }
@@ -28,6 +29,7 @@ export function FlexibleTimerProvider({ children }: { children: ReactNode }) {
     ...flexibleTimer,
     registrationError: sessionRegistration.registrationError,
     retryRegistration: sessionRegistration.retryRegistration,
+    dismissRegistrationError: sessionRegistration.dismissRegistrationError,
     canRetryRegistration: sessionRegistration.canRetryRegistration,
     progress: sessionRegistration.progress,
   }

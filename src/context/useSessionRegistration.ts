@@ -246,12 +246,18 @@ export function useSessionRegistration() {
     }
   }, [pendingRegistration, registerSession])
 
+  const dismissRegistrationError = useCallback(() => {
+    setRegistrationError(null)
+    setPendingRegistration(null)
+  }, [])
+
   return {
     totalFociCompleted,
     registerSession,
     lastRegisteredSession,
     registrationError,
     retryRegistration,
+    dismissRegistrationError,
     canRetryRegistration: pendingRegistration !== null,
     progress,
     focusedTask,

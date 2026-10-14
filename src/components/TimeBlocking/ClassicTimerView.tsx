@@ -119,7 +119,15 @@ export function ClassicTimerView() {
         />
 
         {timer.registrationError && (
-          <div className="flex w-full flex-col items-center gap-2 rounded-lg bg-danger-bg p-4 text-center text-danger">
+          <div className="relative flex w-full flex-col items-center gap-2 rounded-lg bg-danger-bg p-4 pr-10 text-center text-danger">
+            <button
+              type="button"
+              onClick={timer.dismissRegistrationError}
+              className="absolute right-2 top-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-danger"
+              aria-label="Fechar aviso"
+            >
+              ✕
+            </button>
             <p>{timer.registrationError}</p>
             {timer.canRetryRegistration && (
               <Button variant="ghost" onClick={timer.retryRegistration}>

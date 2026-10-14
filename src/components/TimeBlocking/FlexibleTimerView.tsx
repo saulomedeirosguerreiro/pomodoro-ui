@@ -40,7 +40,7 @@ function EndedSummary() {
  */
 export function FlexibleTimerView() {
   const flexible = useFlexibleTimerContext()
-  const { phase, progress, registrationError, retryRegistration, canRetryRegistration } = flexible
+  const { phase, progress, registrationError, retryRegistration, dismissRegistrationError, canRetryRegistration } = flexible
 
   return (
     <>
@@ -81,7 +81,15 @@ export function FlexibleTimerView() {
       {phase.kind === 'encerrado' && <EndedSummary />}
 
       {registrationError && (
-        <div className="flex w-full flex-col items-center gap-2 rounded-lg bg-danger-bg p-4 text-center text-danger">
+        <div className="relative flex w-full flex-col items-center gap-2 rounded-lg bg-danger-bg p-4 pr-10 text-center text-danger">
+          <button
+            type="button"
+            onClick={dismissRegistrationError}
+            className="absolute right-2 top-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-danger"
+            aria-label="Fechar aviso"
+          >
+            ✕
+          </button>
           <p>{registrationError}</p>
           {canRetryRegistration && (
             <Button variant="ghost" onClick={retryRegistration}>

@@ -33,6 +33,7 @@ function Probe() {
       <button onClick={flexible.startFocus}>iniciar foco</button>
       <button onClick={flexible.endCurrentBlockNow}>encerrar agora</button>
       <button onClick={flexible.retryRegistration}>tentar novamente</button>
+      <button onClick={flexible.dismissRegistrationError}>fechar aviso</button>
       <button onClick={markEventsSeen}>marcar eventos como vistos</button>
     </div>
   )
@@ -178,6 +179,31 @@ describe('FlexibleTimerContext', () => {
     })
 
     expect(dataSource.createSession).toHaveBeenCalledTimes(1)
+  })
+
+  it('dismissRegistrationError: fecha o aviso sem precisar de uma nova sessão', async () => {
+    vi.mocked(dataSource.createSession).mockRejectedValue(
+      new ApiError(422, {
+        code: 'validation_error',
+        message: 'Dados inválidos.',
+        fields: [{ field: 'DurationSeconds', message: 'Duração fora da faixa permitida para o tipo informado.' }],
+      }),
+    )
+
+    renderProbe()
+    fireEvent.click(screen.getByRole('button', { name: 'iniciar foco' }))
+
+    await act(async () => {
+      vi.advanceTimersByTime(1000)
+      fireEvent.click(screen.getByRole('button', { name: 'encerrar agora' }))
+      await vi.advanceTimersByTimeAsync(0)
+    })
+
+    expect(screen.getByText('erro: Esse bloco de foco durou menos que o mínimo de 5 min e por isso não entra no seu histórico. Não é um erro — pode seguir normalmente.')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'fechar aviso' }))
+
+    expect(screen.getByText('erro: nenhum')).toBeInTheDocument()
   })
 
   it('conquista: uma conquista recém-desbloqueada após o registro vira um evento de notificação', async () => {
