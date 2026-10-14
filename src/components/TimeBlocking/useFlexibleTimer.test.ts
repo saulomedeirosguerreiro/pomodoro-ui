@@ -246,6 +246,53 @@ describe('useFlexibleTimer', () => {
     })
   })
 
+  describe('iniciar pausa direto da tela inicial, sem fazer foco antes', () => {
+    it('startBreak de selecionando_foco abre a seleção de pausa', () => {
+      const { result } = renderHook(() => useFlexibleTimer({ onSessionReady: vi.fn() }))
+
+      expect(result.current.phase).toEqual({ kind: 'selecionando_foco' })
+      act(() => result.current.startBreak())
+
+      expect(result.current.phase).toEqual({ kind: 'selecionando_descanso' })
+      expect(result.current.draftMinutes).toBe(5)
+    })
+
+    it('confirmando em seguida, inicia a pausa sem nenhum foco ter acontecido', () => {
+      const { result } = renderHook(() => useFlexibleTimer({ onSessionReady: vi.fn() }))
+
+      act(() => result.current.startBreak())
+      act(() => result.current.chooseBreakPreset(20))
+      act(() => result.current.startBreak())
+
+      expect(result.current.phase).toEqual({ kind: 'descanso_rodando' })
+      expect(result.current.breakType).toBe('descanso_curto')
+      expect(result.current.totalSeconds).toBe(20 * 60)
+      expect(result.current.focusBlocksCompleted).toBe(0)
+      expect(result.current.totalFocusSecondsCompleted).toBe(0)
+    })
+
+    it('cancelBreakSelection volta para selecionando_foco sem registrar nada', () => {
+      const onSessionReady = vi.fn()
+      const { result } = renderHook(() => useFlexibleTimer({ onSessionReady }))
+
+      act(() => result.current.startBreak())
+      act(() => result.current.chooseBreakPreset(20))
+      act(() => result.current.cancelBreakSelection())
+
+      expect(onSessionReady).not.toHaveBeenCalled()
+      expect(result.current.phase).toEqual({ kind: 'selecionando_foco' })
+      expect(result.current.draftMinutes).toBe(5)
+    })
+
+    it('cancelBreakSelection fora de selecionando_descanso não faz nada', () => {
+      const { result } = renderHook(() => useFlexibleTimer({ onSessionReady: vi.fn() }))
+
+      act(() => result.current.cancelBreakSelection())
+
+      expect(result.current.phase).toEqual({ kind: 'selecionando_foco' })
+    })
+  })
+
   describe('durante a pausa', () => {
     function startRunningBreak(onSessionReady = vi.fn()) {
       const { result } = renderHook(() => useFlexibleTimer({ onSessionReady }))

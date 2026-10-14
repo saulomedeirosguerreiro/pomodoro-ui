@@ -54,6 +54,7 @@ export function FlexibleTimerView() {
           onChoosePreset={flexible.chooseFocusPreset}
           onChooseCustom={flexible.chooseFocusCustom}
           onConfirm={flexible.startFocus}
+          onSwitchContext={flexible.startBreak}
         />
       )}
 
@@ -71,6 +72,7 @@ export function FlexibleTimerView() {
           onChoosePreset={flexible.chooseBreakPreset}
           onChooseCustom={flexible.chooseBreakCustom}
           onConfirm={flexible.startBreak}
+          onSwitchContext={flexible.cancelBreakSelection}
         />
       )}
 

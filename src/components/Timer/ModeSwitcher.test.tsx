@@ -14,6 +14,7 @@ function renderSwitcher(props: Partial<Parameters<typeof ModeSwitcher>[0]> = {})
           type="foco"
           phase="parado"
           suggestedNextType="descanso_curto"
+          lastAbandonedType={null}
           onSelectType={onSelectType}
           {...props}
         />
@@ -66,6 +67,35 @@ describe('ModeSwitcher', () => {
     renderSwitcher({ phase: 'parado', type: 'foco', suggestedNextType: 'descanso_curto' })
 
     expect(screen.getByRole('tab', { name: /^Foco/ })).not.toBeDisabled()
+    expect(screen.getByRole('tab', { name: /Pausa Curta/ })).not.toBeDisabled()
+  })
+
+  it('parado trava a volta para o tipo abandonado sem ter iniciado, mesmo sendo o tipo sugerido', async () => {
+    const { onSelectType } = renderSwitcher({
+      phase: 'parado',
+      type: 'foco',
+      suggestedNextType: 'descanso_curto',
+      lastAbandonedType: 'descanso_curto',
+    })
+
+    const pausaCurta = screen.getByRole('tab', { name: /Pausa Curta/ })
+    expect(pausaCurta).toBeDisabled()
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Inicie o período atual antes de voltar para Pausa curta.',
+    )
+
+    await userEvent.click(pausaCurta)
+    expect(onSelectType).not.toHaveBeenCalled()
+  })
+
+  it('parado não trava a volta se o tipo abandonado não é nenhuma das abas atuais', () => {
+    renderSwitcher({
+      phase: 'parado',
+      type: 'foco',
+      suggestedNextType: 'descanso_curto',
+      lastAbandonedType: 'descanso_longo',
+    })
+
     expect(screen.getByRole('tab', { name: /Pausa Curta/ })).not.toBeDisabled()
   })
 

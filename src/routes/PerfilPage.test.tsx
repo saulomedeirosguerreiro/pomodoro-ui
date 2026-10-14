@@ -34,6 +34,8 @@ function mockTimer(progress: ProgressSummary | null = null) {
     remainingSeconds: 1500,
     totalSeconds: 1500,
     canFinalize: false,
+    suggestedNextType: 'descanso_curto',
+    lastAbandonedType: null,
     start: vi.fn(),
     pause: vi.fn(),
     resume: vi.fn(),

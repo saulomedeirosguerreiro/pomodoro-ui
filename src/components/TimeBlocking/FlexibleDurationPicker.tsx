@@ -14,6 +14,13 @@ interface FlexibleDurationPickerProps {
   onChoosePreset: (minutes: number) => void
   onChooseCustom: (minutes: number) => void
   onConfirm: () => void
+  /**
+   * Troca pro outro contexto (foco↔pausa) antes de confirmar — o modo é "personalizável", então a
+   * pessoa pode mudar de ideia livremente enquanto só está escolhendo a duração. Quando presente,
+   * vira um segmented control Foco/Pausa no lugar do selo estático; sem ele (nenhum call site usa
+   * hoje), mantém o selo de antes.
+   */
+  onSwitchContext?: () => void
 }
 
 const RADIUS = 100
@@ -36,6 +43,11 @@ const CONFIRM_VERBS: Record<FlexibleDurationContext, string> = {
   foco: 'Começar foco de',
   pausa: 'Começar pausa de',
 }
+
+const CONTEXT_OPTIONS: SegmentedOption<FlexibleDurationContext>[] = [
+  { value: 'foco', label: '🌱 Foco' },
+  { value: 'pausa', label: '☕ Pausa' },
+]
 
 const RING_CLASSES: Record<FlexibleDurationContext, { badge: string; stroke: string; handle: string }> = {
   foco: { badge: 'bg-primary-bg text-primary-dark', stroke: 'var(--color-primary)', handle: 'bg-primary' },
@@ -78,6 +90,7 @@ export function FlexibleDurationPicker({
   onChoosePreset,
   onChooseCustom,
   onConfirm,
+  onSwitchContext,
 }: FlexibleDurationPickerProps) {
   const ringContainerRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -155,9 +168,20 @@ export function FlexibleDurationPicker({
 
   return (
     <section className="flex w-full flex-col items-center gap-4 rounded-2xl border border-border bg-surface p-6 shadow-card">
-      <p className={`rounded-full px-3.5 py-1 text-style-label-md uppercase tracking-[0.04em] ${colors.badge}`}>
-        {BADGE_LABELS[context]}
-      </p>
+      {onSwitchContext ? (
+        <SegmentedControl
+          options={CONTEXT_OPTIONS}
+          value={context}
+          onChange={(value) => {
+            if (value !== context) onSwitchContext()
+          }}
+          ariaLabel="Foco ou pausa"
+        />
+      ) : (
+        <p className={`rounded-full px-3.5 py-1 text-style-label-md uppercase tracking-[0.04em] ${colors.badge}`}>
+          {BADGE_LABELS[context]}
+        </p>
+      )}
       <h2 className="text-center text-style-headline-sm text-text-h">{TITLES[context]}</h2>
 
       <div className="flex w-full items-center justify-center gap-3 rounded-2xl border border-border p-4 max-[480px]:gap-2 max-[480px]:p-2">

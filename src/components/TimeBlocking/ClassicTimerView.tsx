@@ -101,6 +101,7 @@ export function ClassicTimerView() {
           type={timer.type}
           phase={timer.phase}
           suggestedNextType={timer.suggestedNextType}
+          lastAbandonedType={timer.lastAbandonedType}
           onSelectType={timer.selectType}
         />
 

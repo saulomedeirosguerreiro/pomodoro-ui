@@ -201,11 +201,13 @@ export function useFlexibleTimer({ onSessionReady }: UseFlexibleTimerOptions) {
 
   /**
    * Fluxo de iniciar uma pausa — duas etapas reaproveitando o mesmo nome (espelha o plano):
-   * a partir de `foco_concluido` abre a tela de seleção de duração; a partir de
-   * `selecionando_descanso` confirma a duração escolhida e já põe a pausa para rodar.
+   * a partir de `foco_concluido` OU direto de `selecionando_foco` (pessoa prefere começar pela
+   * pausa, sem simular um foco antes — o modo é "personalizável", não só a duração) abre a tela
+   * de seleção de duração; a partir de `selecionando_descanso` confirma a duração escolhida e já
+   * põe a pausa para rodar.
    */
   const startBreak = useCallback(() => {
-    if (phase.kind === 'foco_concluido') {
+    if (phase.kind === 'foco_concluido' || phase.kind === 'selecionando_foco') {
       setDraftMinutes(DEFAULT_BREAK_DRAFT_MINUTES)
       setPhase({ kind: 'selecionando_descanso' })
       return
@@ -215,6 +217,17 @@ export function useFlexibleTimer({ onSessionReady }: UseFlexibleTimerOptions) {
       beginBlock(flexibleBreakSessionType(draftMinutes), draftMinutes * 60)
     }
   }, [phase.kind, draftMinutes, beginBlock])
+
+  /**
+   * Desiste da seleção de pausa e volta para a seleção de foco — simétrico à entrada de `startBreak`
+   * a partir de `selecionando_foco`. Nada foi registrado ainda em `selecionando_descanso` (o bloco só
+   * começa de verdade no segundo branch de `startBreak`), então não há nada pra interromper aqui;
+   * só reaproveita `resetToSelectingFocus`, igual às outras voltas pro início.
+   */
+  const cancelBreakSelection = useCallback(() => {
+    if (phase.kind !== 'selecionando_descanso') return
+    resetToSelectingFocus()
+  }, [phase.kind, resetToSelectingFocus])
 
   const startAnotherFocus = useCallback(() => {
     if (phase.kind !== 'foco_concluido') return
@@ -329,6 +342,7 @@ export function useFlexibleTimer({ onSessionReady }: UseFlexibleTimerOptions) {
     addTime,
     endCurrentBlockNow,
     startBreak,
+    cancelBreakSelection,
     startAnotherFocus,
     endSession,
     chooseBreakPreset,

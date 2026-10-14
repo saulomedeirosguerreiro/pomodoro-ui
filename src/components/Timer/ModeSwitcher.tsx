@@ -13,10 +13,14 @@ interface ModeSwitcherProps {
   /** Único próximo tipo válido na sequência clássica (vindo de `useTimer`) — a troca manual só pode
    *  ir para ele (ou ficar no atual), nunca pular a sequência Foco → Pausa curta ×3 → Pausa longa. */
   suggestedNextType: SessionType
+  /** Tipo abandonado parado sem ter iniciado (vindo de `useTimer`) — a volta pra ele fica travada
+   *  até o tipo atual ser realmente iniciado, senão dava pra "fingir" a sequência sem foco nenhum. */
+  lastAbandonedType: SessionType | null
   onSelectType: (type: SessionType) => void
 }
 
 const SEQUENCE_DISABLED_REASON = 'Fora de ordem — siga a sequência do Pomodoro Clássico'
+const ABANDONED_DISABLED_REASON = 'Inicie o período atual antes de voltar'
 
 /**
  * Seleção manual de tipo de período (US-33, G-Q5/G-Q5a) — trava durante sessão ativa ("Seletor de
@@ -28,7 +32,7 @@ const SEQUENCE_DISABLED_REASON = 'Fora de ordem — siga a sequência do Pomodor
  * tipo atual e `suggestedNextType` ficam clicáveis, as demais abas mostram cadeado + aviso — o
  * Clássico não permite pular etapas nem repetir a pausa longa fora do 4º ciclo.
  */
-export function ModeSwitcher({ type, phase, suggestedNextType, onSelectType }: ModeSwitcherProps) {
+export function ModeSwitcher({ type, phase, suggestedNextType, lastAbandonedType, onSelectType }: ModeSwitcherProps) {
   const { settings } = useSettings()
   const [pendingType, setPendingType] = useState<SessionType | null>(null)
 
@@ -40,6 +44,9 @@ export function ModeSwitcher({ type, phase, suggestedNextType, onSelectType }: M
       if (isLocked) {
         return { value, label, disabled: type !== value }
       }
+      if (value !== type && value === lastAbandonedType) {
+        return { value, label, disabled: true, disabledReason: ABANDONED_DISABLED_REASON }
+      }
       const outOfSequence = value !== type && value !== suggestedNextType
       return { value, label, disabled: outOfSequence, disabledReason: SEQUENCE_DISABLED_REASON }
     }
@@ -49,9 +56,19 @@ export function ModeSwitcher({ type, phase, suggestedNextType, onSelectType }: M
       buildOption('descanso_curto', `Pausa Curta ${settings.shortBreakMinutes}m`),
       buildOption('descanso_longo', `Pausa Longa ${settings.longBreakMinutes}m`),
     ]
-  }, [settings.focusMinutes, settings.shortBreakMinutes, settings.longBreakMinutes, isLocked, type, suggestedNextType])
+  }, [
+    settings.focusMinutes,
+    settings.shortBreakMinutes,
+    settings.longBreakMinutes,
+    isLocked,
+    type,
+    suggestedNextType,
+    lastAbandonedType,
+  ])
 
-  const hasSequenceLock = !isLocked && options.some((option) => option.disabled)
+  const hasAbandonedLock = !isLocked && options.some((option) => option.disabledReason === ABANDONED_DISABLED_REASON)
+  const hasSequenceLock =
+    !isLocked && !hasAbandonedLock && options.some((option) => option.disabledReason === SEQUENCE_DISABLED_REASON)
 
   function handleChange(nextType: SessionType) {
     if (nextType === type) return
@@ -77,6 +94,12 @@ export function ModeSwitcher({ type, phase, suggestedNextType, onSelectType }: M
       {isLocked && (
         <p role="status" className="text-style-label-sm text-text-muted">
           Modo bloqueado durante a sessão. Pause ou encerre para trocar.
+        </p>
+      )}
+
+      {hasAbandonedLock && (
+        <p role="status" className="text-style-label-sm text-text-muted">
+          Inicie o período atual antes de voltar para {SESSION_LABELS[lastAbandonedType as SessionType]}.
         </p>
       )}
 

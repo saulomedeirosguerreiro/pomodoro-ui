@@ -179,4 +179,70 @@ describe('FlexibleDurationPicker', () => {
 
     expect(onConfirm).toHaveBeenCalledTimes(1)
   })
+
+  it('contexto foco, com onSwitchContext: mostra o tab Foco/Pausa e clicar em Pausa chama o handler', async () => {
+    const user = userEvent.setup()
+    const onSwitchContext = vi.fn()
+    render(
+      <FlexibleDurationPicker
+        context="foco"
+        presets={[5, 25, 45]}
+        minMinutes={5}
+        maxMinutes={120}
+        draftMinutes={25}
+        onChoosePreset={vi.fn()}
+        onChooseCustom={vi.fn()}
+        onConfirm={vi.fn()}
+        onSwitchContext={onSwitchContext}
+      />,
+    )
+
+    expect(screen.getByRole('tab', { name: '🌱 Foco' })).toHaveAttribute('aria-selected', 'true')
+
+    await user.click(screen.getByRole('tab', { name: '☕ Pausa' }))
+
+    expect(onSwitchContext).toHaveBeenCalledTimes(1)
+  })
+
+  it('clicar no tab já ativo não chama onSwitchContext', async () => {
+    const user = userEvent.setup()
+    const onSwitchContext = vi.fn()
+    render(
+      <FlexibleDurationPicker
+        context="pausa"
+        presets={[5, 10, 15, 20]}
+        minMinutes={1}
+        maxMinutes={60}
+        draftMinutes={5}
+        onChoosePreset={vi.fn()}
+        onChooseCustom={vi.fn()}
+        onConfirm={vi.fn()}
+        onSwitchContext={onSwitchContext}
+      />,
+    )
+
+    expect(screen.getByRole('tab', { name: '☕ Pausa' })).toHaveAttribute('aria-selected', 'true')
+
+    await user.click(screen.getByRole('tab', { name: '☕ Pausa' }))
+
+    expect(onSwitchContext).not.toHaveBeenCalled()
+  })
+
+  it('sem onSwitchContext, mostra o selo estático em vez do tab Foco/Pausa', () => {
+    render(
+      <FlexibleDurationPicker
+        context="pausa"
+        presets={[5, 10, 15, 20]}
+        minMinutes={1}
+        maxMinutes={60}
+        draftMinutes={5}
+        onChoosePreset={vi.fn()}
+        onChooseCustom={vi.fn()}
+        onConfirm={vi.fn()}
+      />,
+    )
+
+    expect(screen.getByText('Nova pausa')).toBeInTheDocument()
+    expect(screen.queryByRole('tab', { name: '🌱 Foco' })).not.toBeInTheDocument()
+  })
 })

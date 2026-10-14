@@ -37,6 +37,8 @@ describe.each(DATA_SOURCE_MODES)('TarefasPage (mode: %s)', (mode) => {
       remainingSeconds: 1500,
       totalSeconds: 1500,
       canFinalize: false,
+      suggestedNextType: 'descanso_curto',
+      lastAbandonedType: null,
       start: vi.fn(),
       pause: vi.fn(),
       resume: vi.fn(),
