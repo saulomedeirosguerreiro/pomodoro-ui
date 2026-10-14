@@ -12,20 +12,28 @@ import { useSettings } from './SettingsContext'
 
 const GENERIC_REGISTRATION_ERROR = 'Não foi possível registrar a sessão. Seus dados não foram perdidos.'
 
-interface RegistrationErrorDescription {
+export interface RegistrationErrorDescription {
   message: string
   /** `false` para o caso de duração fora da faixa: reenviar o mesmo payload falha sempre do mesmo jeito. */
   retryable: boolean
 }
 
 /**
- * Detecta o caso de duração fora da faixa permitida pro tipo (422 `validation_error` no campo
- * `DurationSeconds`) — típico de "Encerrar agora"/"Voltar ao foco agora" num bloco com poucos
- * segundos decorridos — e explica isso em vez do texto genérico, marcando como não reenviável
- * (já que tentar de novo reenvia a mesma duração e falha do mesmo jeito).
+ * Detecta o caso de duração fora da faixa permitida pro tipo — típico de "Encerrar agora"/"Voltar
+ * ao foco agora"/trocar de aba no toggle flexível num bloco com poucos segundos decorridos — e
+ * explica isso em vez do texto genérico, marcando como não reenviável (já que tentar de novo
+ * reenvia a mesma duração e falha do mesmo jeito). Dois backends, dois formatos de erro pro MESMO
+ * caso: o remoto manda 422 `validation_error` com `fieldMessage('DurationSeconds')`; o local
+ * (`localDataSource.ts`, modo guest) manda 422 `invalid_duration` sem detalhe de campo. Reconhecer
+ * só o primeiro formato (como era antes) faz o modo guest cair sempre no texto genérico
+ * "tente novamente" — que nunca ajuda aqui, porque reenviar falha de novo com a mesma duração.
  */
-function describeRegistrationError(error: unknown, registration: SessionRegistration): RegistrationErrorDescription {
-  if (error instanceof ApiError && error.code === 'validation_error' && error.fieldMessage('DurationSeconds')) {
+export function describeRegistrationError(error: unknown, registration: SessionRegistration): RegistrationErrorDescription {
+  const isDurationError =
+    error instanceof ApiError &&
+    ((error.code === 'validation_error' && error.fieldMessage('DurationSeconds')) || error.code === 'invalid_duration')
+
+  if (isDurationError) {
     const range = SESSION_DURATION_RANGE_MINUTES[registration.type]
     const label = SESSION_LABELS[registration.type].toLowerCase()
 
