@@ -1,21 +1,17 @@
 import { useFlexibleTimerContext } from '../../context/FlexibleTimerContext'
 import { formatMMSS } from '../../lib/timerLogic'
 import { Button } from '../common/Button'
+import { FlexibleModeToggle } from './FlexibleModeToggle'
 
 const RADIUS = 115
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
-
-const BREAK_LABEL = {
-  descanso_curto: 'Pausa curta',
-  descanso_longo: 'Pausa longa',
-} as const
 
 /**
  * Tela de pausa rodando/pausada do modo flexível (Parte 5 do plano) — "banco de descanso" com a
  * paleta calma (`--color-calm`), sem o mascote (que continua espelhando só o timer clássico).
  */
 export function FlexibleBreakView() {
-  const { phase, breakType, totalSeconds, remainingSeconds, pause, resume, endCurrentBlockNow, backToFocusNow } =
+  const { phase, totalSeconds, remainingSeconds, pause, resume, endCurrentBlockNow, backToFocusNow } =
     useFlexibleTimerContext()
 
   const fractionElapsed = totalSeconds > 0 ? Math.min(1, Math.max(0, 1 - remainingSeconds / totalSeconds)) : 0
@@ -24,9 +20,7 @@ export function FlexibleBreakView() {
 
   return (
     <section className="flex w-full flex-col items-center gap-4 rounded-2xl border border-border bg-calm-bg p-6 shadow-card">
-      <p className="rounded-full bg-calm-bg px-3.5 py-1 text-style-label-md uppercase tracking-[0.04em] text-calm-dark">
-        {breakType ? BREAK_LABEL[breakType] : 'Pausa'}
-      </p>
+      <FlexibleModeToggle value="pausa" onSwitch={backToFocusNow} />
 
       <div className="relative h-[min(320px,calc(100vw-80px))] w-[min(320px,calc(100vw-80px))]">
         <svg className="block h-full w-full -rotate-90" viewBox="0 0 260 260" aria-hidden="true">
@@ -55,10 +49,6 @@ export function FlexibleBreakView() {
 
       <div className="flex flex-wrap items-center justify-center gap-4">
         {isPaused ? <Button onClick={resume}>Continuar</Button> : <Button onClick={pause}>Pausar</Button>}
-
-        <Button variant="ghost" onClick={backToFocusNow}>
-          Voltar ao foco agora
-        </Button>
 
         <Button variant="ghost" onClick={endCurrentBlockNow}>
           Encerrar agora

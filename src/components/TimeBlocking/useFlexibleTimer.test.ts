@@ -82,6 +82,45 @@ describe('useFlexibleTimer', () => {
     })
   })
 
+  describe('goToBreakNow — simétrico a backToFocusNow, a partir do foco', () => {
+    it('durante foco_rodando, registra o foco como interrompido e pula direto para selecionando_descanso', () => {
+      const onSessionReady = vi.fn<(r: FlexibleSessionRegistration) => void>()
+      const { result } = renderHook(() => useFlexibleTimer({ onSessionReady }))
+
+      act(() => result.current.startFocus())
+      act(() => vi.advanceTimersByTime(3000))
+      act(() => result.current.goToBreakNow())
+
+      expect(onSessionReady).toHaveBeenCalledTimes(1)
+      const registration = onSessionReady.mock.calls[0][0]
+      expect(registration.status).toBe('interrompido')
+      expect(registration.type).toBe('foco')
+      expect(registration.durationSeconds).toBeCloseTo(3, 0)
+
+      expect(result.current.phase).toEqual({ kind: 'selecionando_descanso' })
+      expect(result.current.draftMinutes).toBe(5)
+    })
+
+    it('durante foco_pausado, também funciona', () => {
+      const { result } = renderHook(() => useFlexibleTimer({ onSessionReady: vi.fn() }))
+
+      act(() => result.current.startFocus())
+      act(() => vi.advanceTimersByTime(3000))
+      act(() => result.current.pause())
+      act(() => result.current.goToBreakNow())
+
+      expect(result.current.phase).toEqual({ kind: 'selecionando_descanso' })
+    })
+
+    it('fora de foco_rodando/foco_pausado não faz nada', () => {
+      const { result } = renderHook(() => useFlexibleTimer({ onSessionReady: vi.fn() }))
+
+      act(() => result.current.goToBreakNow())
+
+      expect(result.current.phase).toEqual({ kind: 'selecionando_foco' })
+    })
+  })
+
   describe('addTime durante o foco', () => {
     it('durante foco_rodando, soma a totalSeconds sem reiniciar o progresso já feito', () => {
       const { result } = renderHook(() => useFlexibleTimer({ onSessionReady: vi.fn() }))

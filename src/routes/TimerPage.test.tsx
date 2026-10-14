@@ -97,6 +97,7 @@ function mockFlexibleTimer(overrides?: Partial<ReturnType<typeof FlexibleTimerCo
     chooseBreakPreset: vi.fn(),
     chooseBreakCustom: vi.fn(),
     backToFocusNow: vi.fn(),
+    goToBreakNow: vi.fn(),
     backToFocus: vi.fn(),
     startNewSession: vi.fn(),
     registrationError: null,
@@ -343,9 +344,9 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
 
       await userEvent.click(classicoTab)
 
-      // Continua na visão flexível (clique no card travado não fez nada) — "Foco flexível" é o
-      // selo de `FlexibleFocusView`, não existe na tela clássica.
-      expect(screen.getByText('Foco flexível')).toBeInTheDocument()
+      // Continua na visão flexível (clique no card travado não fez nada) — o toggle "🌱 Foco" é
+      // de `FlexibleFocusView`/`FlexibleModeToggle`, não existe na tela clássica.
+      expect(screen.getByRole('tab', { name: '🌱 Foco' })).toBeInTheDocument()
       expect(screen.queryByText('25:00')).not.toBeInTheDocument()
     })
 
@@ -357,7 +358,7 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
       renderTimerPage()
 
       expect(screen.getByRole('tab', { name: 'Pomodoro Clássico' })).toHaveAttribute('aria-disabled', 'true')
-      expect(screen.getByText('Foco flexível')).toBeInTheDocument()
+      expect(screen.getByRole('tab', { name: '🌱 Foco' })).toBeInTheDocument()
     })
 
     it('com um foco flexível pausado, o card "Pomodoro Clássico" continua travado — pausar não libera a troca', async () => {
@@ -387,5 +388,22 @@ describe.each(DATA_SOURCE_MODES)('TimerPage (mode: %s)', (mode) => {
       expect(screen.getByRole('tab', { name: 'Pomodoro Clássico' })).not.toHaveAttribute('aria-disabled')
       expect(screen.getByRole('tab', { name: 'Personalizado' })).not.toHaveAttribute('aria-disabled')
     })
+
+    it.each([
+      ['selecionando_descanso' as const, 'escolhendo a duração da pausa'],
+      ['foco_concluido' as const, 'na decisão pós-foco'],
+      ['descanso_concluido' as const, 'na decisão pós-pausa'],
+    ])(
+      'nenhum bloco rodando/pausado de verdade (%s, %s): o card "Pomodoro Clássico" não trava',
+      (kind, _description) => {
+        mockTimer()
+        mockFlexibleTimer({ phase: { kind } })
+        localStorage.setItem('pomogarden:settings', JSON.stringify({ lastTimerMode: 'flexivel' }))
+
+        renderTimerPage()
+
+        expect(screen.getByRole('tab', { name: 'Pomodoro Clássico' })).not.toHaveAttribute('aria-disabled')
+      },
+    )
   })
 })

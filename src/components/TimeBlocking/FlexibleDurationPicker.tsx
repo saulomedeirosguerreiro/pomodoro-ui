@@ -2,6 +2,7 @@ import { useCallback, useId, useRef, useState, type KeyboardEvent, type PointerE
 import { Button } from '../common/Button'
 import { SegmentedControl, type SegmentedOption } from '../common/SegmentedControl'
 import { pluralizeCount } from '../../lib/format'
+import { FlexibleModeToggle } from './FlexibleModeToggle'
 
 export type FlexibleDurationContext = 'foco' | 'pausa'
 
@@ -14,13 +15,9 @@ interface FlexibleDurationPickerProps {
   onChoosePreset: (minutes: number) => void
   onChooseCustom: (minutes: number) => void
   onConfirm: () => void
-  /**
-   * Troca pro outro contexto (foco↔pausa) antes de confirmar — o modo é "personalizável", então a
-   * pessoa pode mudar de ideia livremente enquanto só está escolhendo a duração. Quando presente,
-   * vira um segmented control Foco/Pausa no lugar do selo estático; sem ele (nenhum call site usa
-   * hoje), mantém o selo de antes.
-   */
-  onSwitchContext?: () => void
+  /** Troca pro outro contexto (foco↔pausa) antes de confirmar — o modo é "personalizável", então a
+   *  pessoa pode mudar de ideia livremente enquanto só está escolhendo a duração. */
+  onSwitchContext: () => void
 }
 
 const RADIUS = 100
@@ -28,11 +25,6 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 const STEP_MINUTES = 5
 const ICON_BUTTON_CLASSES =
   'flex h-11 w-11 shrink-0 max-[480px]:h-9 max-[480px]:w-9 cursor-pointer items-center justify-center rounded-full border-2 border-border bg-surface text-[20px] text-text-h transition-[background-color,transform] duration-150 ease-out hover:bg-bg-subtle active:scale-95'
-
-const BADGE_LABELS: Record<FlexibleDurationContext, string> = {
-  foco: 'Novo foco',
-  pausa: 'Nova pausa',
-}
 
 const TITLES: Record<FlexibleDurationContext, string> = {
   foco: 'Quanto tempo você quer plantar?',
@@ -44,14 +36,9 @@ const CONFIRM_VERBS: Record<FlexibleDurationContext, string> = {
   pausa: 'Começar pausa de',
 }
 
-const CONTEXT_OPTIONS: SegmentedOption<FlexibleDurationContext>[] = [
-  { value: 'foco', label: '🌱 Foco' },
-  { value: 'pausa', label: '☕ Pausa' },
-]
-
-const RING_CLASSES: Record<FlexibleDurationContext, { badge: string; stroke: string; handle: string }> = {
-  foco: { badge: 'bg-primary-bg text-primary-dark', stroke: 'var(--color-primary)', handle: 'bg-primary' },
-  pausa: { badge: 'bg-calm-bg text-calm-dark', stroke: 'var(--color-calm)', handle: 'bg-calm' },
+const RING_CLASSES: Record<FlexibleDurationContext, { stroke: string; handle: string }> = {
+  foco: { stroke: 'var(--color-primary)', handle: 'bg-primary' },
+  pausa: { stroke: 'var(--color-calm)', handle: 'bg-calm' },
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -78,8 +65,8 @@ function formatEndsAt(minutesFromNow: number): string {
  * para um anel arrastável — mesma técnica de anel SVG de `TimerDisplay`/`FlexibleFocusView`, agora
  * também interativo). Arrastar o anel ou usar as setas do teclado escolhe qualquer minuto entre
  * `minMinutes` e `maxMinutes`; os botões −/+ andam de 5 em 5; os atalhos (`presets`) ficam numa
- * única barra segmentada (reaproveita `SegmentedControl`). Props inalteradas em relação à versão
- * anterior — `FlexibleTimerView`/`useFlexibleTimer` não precisam mudar.
+ * única barra segmentada (reaproveita `SegmentedControl`). O topo usa `FlexibleModeToggle` — mesmo
+ * controle Foco/Pausa das telas de bloco rodando/pausado — no lugar de um selo estático.
  */
 export function FlexibleDurationPicker({
   context,
@@ -168,20 +155,7 @@ export function FlexibleDurationPicker({
 
   return (
     <section className="flex w-full flex-col items-center gap-4 rounded-2xl border border-border bg-surface p-6 shadow-card">
-      {onSwitchContext ? (
-        <SegmentedControl
-          options={CONTEXT_OPTIONS}
-          value={context}
-          onChange={(value) => {
-            if (value !== context) onSwitchContext()
-          }}
-          ariaLabel="Foco ou pausa"
-        />
-      ) : (
-        <p className={`rounded-full px-3.5 py-1 text-style-label-md uppercase tracking-[0.04em] ${colors.badge}`}>
-          {BADGE_LABELS[context]}
-        </p>
-      )}
+      <FlexibleModeToggle value={context} onSwitch={onSwitchContext} />
       <h2 className="text-center text-style-headline-sm text-text-h">{TITLES[context]}</h2>
 
       <div className="flex w-full items-center justify-center gap-3 rounded-2xl border border-border p-4 max-[480px]:gap-2 max-[480px]:p-2">

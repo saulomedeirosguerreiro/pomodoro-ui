@@ -1,13 +1,11 @@
 import { ClassicTimerView } from '../components/TimeBlocking/ClassicTimerView'
 import { FlexibleTimerView } from '../components/TimeBlocking/FlexibleTimerView'
 import { TimerModeToggle, type TimerMode } from '../components/TimeBlocking/TimerModeToggle'
+import { ACTIVE_BLOCK_KINDS } from '../components/TimeBlocking/useFlexibleTimer'
 import { useFlexibleTimerContext } from '../context/FlexibleTimerContext'
 import { useSettings } from '../context/SettingsContext'
 import { useTimerContext } from '../context/TimerContext'
 import { trackEvent } from '../lib/analytics'
-
-/** Estados do timer flexível sem nenhuma sessão em andamento (ver `useFlexibleTimer.ts`). */
-const IDLE_FLEXIBLE_KINDS = ['selecionando_foco', 'encerrado']
 
 /**
  * `TimerPage` (Parte 5 do plano) vira só o switch entre os dois modos — a tela clássica inteira foi
@@ -29,7 +27,7 @@ export function TimerPage() {
   const flexible = useFlexibleTimerContext()
 
   const isLocked =
-    activeMode === 'classico' ? timer.phase !== 'parado' : !IDLE_FLEXIBLE_KINDS.includes(flexible.phase.kind)
+    activeMode === 'classico' ? timer.phase !== 'parado' : ACTIVE_BLOCK_KINDS.includes(flexible.phase.kind)
 
   function handleModeChange(nextMode: TimerMode) {
     updateSettings({ lastTimerMode: nextMode })

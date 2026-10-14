@@ -52,7 +52,10 @@ const DEFAULT_BREAK_DRAFT_MINUTES = FLEXIBLE_BREAK_PRESETS_MINUTES[0]
 
 const RUNNING_KINDS: readonly FlexiblePhase['kind'][] = ['foco_rodando', 'descanso_rodando']
 const PAUSED_KINDS: readonly FlexiblePhase['kind'][] = ['foco_pausado', 'descanso_pausado']
-const ACTIVE_BLOCK_KINDS: readonly FlexiblePhase['kind'][] = [...RUNNING_KINDS, ...PAUSED_KINDS]
+/** Fases com um bloco de verdade em execução (rodando OU pausado) — único critério pra travar a
+ *  troca de modo em `TimerPage`; as telas de escolha/decisão (selecionando_*, *_concluido,
+ *  encerrado) não têm nada contando, então não devem travar nada. */
+export const ACTIVE_BLOCK_KINDS: readonly FlexiblePhase['kind'][] = [...RUNNING_KINDS, ...PAUSED_KINDS]
 
 function clampMinutes(minutes: number, minMinutes: number, maxMinutes: number): number {
   return Math.min(maxMinutes, Math.max(minMinutes, minutes))
@@ -263,6 +266,21 @@ export function useFlexibleTimer({ onSessionReady }: UseFlexibleTimerOptions) {
     resetToSelectingFocus()
   }, [phase.kind, registerInterrupted, resetToSelectingFocus])
 
+  /**
+   * Simétrico a `backToFocusNow`, disparado pelo `FlexibleModeToggle` durante um foco rodando ou
+   * pausado: registra o tempo decorrido como interrompido e vai direto pra seleção de duração da
+   * pausa — mesmo destino de `startBreak` a partir de `foco_concluido`/`selecionando_foco`.
+   */
+  const goToBreakNow = useCallback(() => {
+    if (phase.kind !== 'foco_rodando' && phase.kind !== 'foco_pausado') return
+    registerInterrupted()
+    startedAtMsRef.current = null
+    pausedAccumulatedMsRef.current = 0
+    pauseStartedAtMsRef.current = null
+    setDraftMinutes(DEFAULT_BREAK_DRAFT_MINUTES)
+    setPhase({ kind: 'selecionando_descanso' })
+  }, [phase.kind, registerInterrupted])
+
   /** A partir de `descanso_concluido`: a pausa já foi registrada como `concluido`, só volta para a seleção de foco. */
   const backToFocus = useCallback(() => {
     if (phase.kind !== 'descanso_concluido') return
@@ -348,6 +366,7 @@ export function useFlexibleTimer({ onSessionReady }: UseFlexibleTimerOptions) {
     chooseBreakPreset,
     chooseBreakCustom,
     backToFocusNow,
+    goToBreakNow,
     backToFocus,
     startNewSession,
   }

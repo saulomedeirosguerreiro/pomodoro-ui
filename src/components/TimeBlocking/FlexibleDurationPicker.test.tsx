@@ -21,7 +21,7 @@ function mockRingRect() {
 }
 
 describe('FlexibleDurationPicker', () => {
-  it('renderiza o selo, o título e o botão de confirmação com a duração escolhida', () => {
+  it('renderiza o toggle Foco/Pausa, o título e o botão de confirmação com a duração escolhida', () => {
     render(
       <FlexibleDurationPicker
         context="foco"
@@ -32,10 +32,11 @@ describe('FlexibleDurationPicker', () => {
         onChoosePreset={vi.fn()}
         onChooseCustom={vi.fn()}
         onConfirm={vi.fn()}
+        onSwitchContext={vi.fn()}
       />,
     )
 
-    expect(screen.getByText('Novo foco')).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: '🌱 Foco' })).toHaveAttribute('aria-selected', 'true')
     expect(screen.getByText('Quanto tempo você quer plantar?')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Começar foco de 25 min/ })).toBeInTheDocument()
     expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '25')
@@ -55,6 +56,7 @@ describe('FlexibleDurationPicker', () => {
         onChoosePreset={vi.fn()}
         onChooseCustom={vi.fn()}
         onConfirm={vi.fn()}
+        onSwitchContext={vi.fn()}
       />,
     )
 
@@ -76,6 +78,7 @@ describe('FlexibleDurationPicker', () => {
         onChoosePreset={onChoosePreset}
         onChooseCustom={vi.fn()}
         onConfirm={vi.fn()}
+        onSwitchContext={vi.fn()}
       />,
     )
 
@@ -97,6 +100,7 @@ describe('FlexibleDurationPicker', () => {
         onChoosePreset={vi.fn()}
         onChooseCustom={onChooseCustom}
         onConfirm={vi.fn()}
+        onSwitchContext={vi.fn()}
       />,
     )
 
@@ -120,6 +124,7 @@ describe('FlexibleDurationPicker', () => {
         onChoosePreset={vi.fn()}
         onChooseCustom={onChooseCustom}
         onConfirm={vi.fn()}
+        onSwitchContext={vi.fn()}
       />,
     )
 
@@ -149,6 +154,7 @@ describe('FlexibleDurationPicker', () => {
         onChoosePreset={vi.fn()}
         onChooseCustom={onChooseCustom}
         onConfirm={vi.fn()}
+        onSwitchContext={vi.fn()}
       />,
     )
 
@@ -172,6 +178,7 @@ describe('FlexibleDurationPicker', () => {
         onChoosePreset={vi.fn()}
         onChooseCustom={vi.fn()}
         onConfirm={onConfirm}
+        onSwitchContext={vi.fn()}
       />,
     )
 
@@ -180,7 +187,7 @@ describe('FlexibleDurationPicker', () => {
     expect(onConfirm).toHaveBeenCalledTimes(1)
   })
 
-  it('contexto foco, com onSwitchContext: mostra o tab Foco/Pausa e clicar em Pausa chama o handler', async () => {
+  it('contexto foco: mostra o tab Foco/Pausa e clicar em Pausa chama onSwitchContext', async () => {
     const user = userEvent.setup()
     const onSwitchContext = vi.fn()
     render(
@@ -226,23 +233,5 @@ describe('FlexibleDurationPicker', () => {
     await user.click(screen.getByRole('tab', { name: '☕ Pausa' }))
 
     expect(onSwitchContext).not.toHaveBeenCalled()
-  })
-
-  it('sem onSwitchContext, mostra o selo estático em vez do tab Foco/Pausa', () => {
-    render(
-      <FlexibleDurationPicker
-        context="pausa"
-        presets={[5, 10, 15, 20]}
-        minMinutes={1}
-        maxMinutes={60}
-        draftMinutes={5}
-        onChoosePreset={vi.fn()}
-        onChooseCustom={vi.fn()}
-        onConfirm={vi.fn()}
-      />,
-    )
-
-    expect(screen.getByText('Nova pausa')).toBeInTheDocument()
-    expect(screen.queryByRole('tab', { name: '🌱 Foco' })).not.toBeInTheDocument()
   })
 })

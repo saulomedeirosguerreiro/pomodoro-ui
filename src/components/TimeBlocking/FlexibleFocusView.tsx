@@ -3,6 +3,7 @@ import { useFlexibleTimerContext } from '../../context/FlexibleTimerContext'
 import { speciesForIndex } from '../../lib/gardenSpecies'
 import { formatMMSS } from '../../lib/timerLogic'
 import { Button } from '../common/Button'
+import { FlexibleModeToggle } from './FlexibleModeToggle'
 
 const RADIUS = 115
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
@@ -28,8 +29,18 @@ export function FlexibleFocusView() {
   const flexible = useFlexibleTimerContext()
   const { settings } = useSettings()
 
-  const { phase, totalSeconds, remainingSeconds, addedSeconds, focusBlocksCompleted, pause, resume, addTime, endCurrentBlockNow } =
-    flexible
+  const {
+    phase,
+    totalSeconds,
+    remainingSeconds,
+    addedSeconds,
+    focusBlocksCompleted,
+    pause,
+    resume,
+    addTime,
+    endCurrentBlockNow,
+    goToBreakNow,
+  } = flexible
 
   const fractionElapsed = totalSeconds > 0 ? Math.min(1, Math.max(0, 1 - remainingSeconds / totalSeconds)) : 0
   const dashOffset = CIRCUMFERENCE * fractionElapsed
@@ -39,9 +50,7 @@ export function FlexibleFocusView() {
 
   return (
     <section className="flex w-full flex-col items-center gap-4 rounded-2xl border border-border bg-surface p-6 shadow-card">
-      <p className="rounded-full bg-primary-bg px-3.5 py-1 text-style-label-md uppercase tracking-[0.04em] text-primary-dark">
-        Foco flexível
-      </p>
+      <FlexibleModeToggle value="foco" onSwitch={goToBreakNow} />
 
       <div className="relative h-[min(320px,calc(100vw-80px))] w-[min(320px,calc(100vw-80px))]">
         <svg className="block h-full w-full -rotate-90" viewBox="0 0 260 260" aria-hidden="true">
