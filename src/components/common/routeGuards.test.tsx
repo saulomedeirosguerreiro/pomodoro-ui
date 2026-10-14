@@ -101,6 +101,36 @@ describe('ProtectedRoute', () => {
 
     expect(screen.getByText('Tela de login — Sua sessão expirou. Entre novamente.')).toBeInTheDocument()
   })
+
+  it('sessão de conta expirada também limpa dados guest residuais do dispositivo, pra não vazar pra próxima pessoa', () => {
+    const clearGuestData = vi.fn()
+    mockAuth(null, true)
+    vi.spyOn(GuestContext, 'useGuest').mockReturnValue({
+      guest: null,
+      isLoading: false,
+      startGuest: vi.fn(),
+      clearGuestData,
+    })
+
+    renderProtected('/dashboard')
+
+    expect(clearGuestData).toHaveBeenCalledTimes(1)
+  })
+
+  it('sessão de conta ATIVA não mexe nos dados guest', () => {
+    const clearGuestData = vi.fn()
+    mockAuth({ id: 1, name: 'João', email: 'joao@email.com', completedSessions: 0 })
+    vi.spyOn(GuestContext, 'useGuest').mockReturnValue({
+      guest: null,
+      isLoading: false,
+      startGuest: vi.fn(),
+      clearGuestData,
+    })
+
+    renderProtected('/dashboard')
+
+    expect(clearGuestData).not.toHaveBeenCalled()
+  })
 })
 
 describe('PublicOnlyRoute', () => {

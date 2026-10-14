@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 import { WelcomeModal } from '../welcome/WelcomeModal'
 import { useAuth } from '../../context/AuthContext'
@@ -12,7 +13,16 @@ import { useGuest } from '../../context/GuestContext'
  */
 export function ProtectedRoute() {
   const { user, isLoading: authLoading, sessionExpired } = useAuth()
-  const { guest, isLoading: guestLoading } = useGuest()
+  const { guest, isLoading: guestLoading, clearGuestData } = useGuest()
+
+  useEffect(() => {
+    // Mesmo motivo do `clearGuestData()` no logout explícito (AppShell.confirmLogout): sem isso, um
+    // perfil guest residual no dispositivo (de antes de criar conta, ou de outra pessoa) ficaria
+    // pronto pra "vazar" pra quem usar o aparelho em seguida, assim que a sessão de conta cair.
+    if (sessionExpired) {
+      clearGuestData()
+    }
+  }, [sessionExpired, clearGuestData])
 
   if (authLoading || guestLoading) {
     return null

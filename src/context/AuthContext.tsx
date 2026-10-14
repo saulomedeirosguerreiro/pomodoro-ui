@@ -55,6 +55,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized)
   }, [])
 
+  useEffect(() => {
+    // Sem isso, uma sessão com refresh token já expirado (ex.: aba esquecida em segundo plano por
+    // dias) só é detectada quando o usuário tenta fazer algo — até lá a tela segue mostrando "logado"
+    // porque nada chamou a API pra descobrir o contrário. Revalidar ao voltar à aba fecha esse buraco.
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && tokenStorage.get()) {
+        refreshProfile().catch(() => {})
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [refreshProfile])
+
   const login = useCallback(async (email: string, password: string) => {
     const { token } = await authService.login({ email, password })
     tokenStorage.set(token)

@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { UNAUTHORIZED_EVENT } from '../lib/apiClient'
@@ -116,5 +116,28 @@ describe('AuthContext', () => {
     expect(await screen.findByText('user: nenhum')).toBeInTheDocument()
     expect(tokenStorage.get()).toBeNull()
     expect(authService.logout).toHaveBeenCalled()
+  })
+
+  it('ao voltar a ficar visível, revalida a sessão (pega refresh token já morto mesmo sem nenhuma ação do usuário)', async () => {
+    tokenStorage.set('tok-123')
+    vi.mocked(usersService.getMe).mockResolvedValue({
+      id: 1,
+      name: 'João',
+      email: 'joao@email.com',
+      completedSessions: 0,
+    })
+
+    renderProbe()
+    await screen.findByText('user: João')
+    expect(usersService.getMe).toHaveBeenCalledTimes(1)
+
+    Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true })
+    act(() => document.dispatchEvent(new Event('visibilitychange')))
+    expect(usersService.getMe).toHaveBeenCalledTimes(1)
+
+    Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true })
+    act(() => document.dispatchEvent(new Event('visibilitychange')))
+
+    await waitFor(() => expect(usersService.getMe).toHaveBeenCalledTimes(2))
   })
 })
