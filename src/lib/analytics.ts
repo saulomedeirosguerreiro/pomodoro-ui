@@ -29,8 +29,10 @@ function loadGtagScript(measurementId: string): void {
   document.head.appendChild(script)
 
   window.dataLayer = window.dataLayer || []
-  function gtag(...args: unknown[]) {
-    window.dataLayer!.push(args)
+  function gtag(..._args: unknown[]) {
+  // gtag.js só reconhece comandos enviados como objeto Arguments (não Array)
+  // eslint-disable-next-line prefer-rest-params
+  window.dataLayer!.push(arguments)
   }
   window.gtag = gtag
 
@@ -55,7 +57,10 @@ export function setAnalyticsEnabled(nextEnabled: boolean): void {
 
 export function trackPageView(path: string): void {
   if (!enabled || !window.gtag) return
-  window.gtag('event', 'page_view', { page_path: path })
+  window.gtag('event', 'page_view', {
+    page_location: window.location.origin + path,
+    page_title: document.title,
+  })
 }
 
 export function trackEvent(name: string, params?: Record<string, unknown>): void {
