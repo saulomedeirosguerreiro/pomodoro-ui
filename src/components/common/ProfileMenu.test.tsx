@@ -33,6 +33,16 @@ describe('ProfileMenu', () => {
     expect(screen.getByRole('menuitem', { name: 'Sair' })).toBeInTheDocument()
   })
 
+  it('ordem do menu: Perfil, Configurações, Sair', async () => {
+    const user = userEvent.setup()
+    renderMenu()
+
+    await user.click(screen.getByRole('button', { name: 'Menu da conta' }))
+
+    const items = screen.getAllByRole('menuitem')
+    expect(items.map((item) => item.textContent)).toEqual(['Perfil', 'Configurações', 'Sair'])
+  })
+
   it('fecha ao clicar fora', async () => {
     const user = userEvent.setup()
     renderMenu()

@@ -13,9 +13,10 @@ const MENU_ITEM_CLASSES =
 /**
  * Equivalente ao `ProfileMenu` pra quem está no modo visitante (sem conta) — mesmo avatar como
  * gatilho, mesmo popover (fecha com clique-fora/Escape), mesmo link de Configurações (Ajuda, Termos
- * e Privacidade moram dentro dela — ver doc do `ProfileMenu`), + "Trocar de pessoa". "Acessar minha
- * conta" é um botão à parte no header (CTA mais importante pra quem é visitante, merece destaque
- * próprio, não só um item de menu) — ver `AppShell.tsx`.
+ * e Privacidade moram dentro dela — ver doc do `ProfileMenu`), + "Trocar de pessoa". Configurações
+ * fica sempre por último (depois do separador), igual no `ProfileMenu` — última opção fixa em
+ * qualquer modo (conta ou visitante). "Acessar minha conta" é um botão à parte no header (CTA mais
+ * importante pra quem é visitante, merece destaque próprio, não só um item de menu) — ver `AppShell.tsx`.
  */
 export function VisitorMenu({ firstName, onSwitchPerson }: VisitorMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
@@ -47,13 +48,13 @@ export function VisitorMenu({ firstName, onSwitchPerson }: VisitorMenuProps) {
           aria-label="Menu do visitante"
           className="absolute right-0 top-[calc(100%+8px)] z-30 w-[200px] rounded-2xl border border-border bg-surface p-2 shadow-popover"
         >
-          <Link role="menuitem" to="/configuracoes" onClick={() => setIsOpen(false)} className={MENU_ITEM_CLASSES}>
-            Configurações
-          </Link>
-          <div role="separator" className="my-1 border-t border-border" />
           <button type="button" role="menuitem" onClick={handleSwitchPersonClick} className={MENU_ITEM_CLASSES}>
             Trocar de pessoa
           </button>
+          <div role="separator" className="my-1 border-t border-border" />
+          <Link role="menuitem" to="/configuracoes" onClick={() => setIsOpen(false)} className={MENU_ITEM_CLASSES}>
+            Configurações
+          </Link>
         </div>
       )}
     </div>

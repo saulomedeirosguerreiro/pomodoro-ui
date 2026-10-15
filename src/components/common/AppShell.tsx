@@ -200,7 +200,7 @@ export function AppShell() {
 
   return (
     <div className="flex min-h-svh w-full flex-col lg:flex-row">
-      <aside className="hidden lg:sticky lg:top-0 lg:z-auto lg:flex lg:h-svh lg:w-[280px] lg:flex-col lg:gap-4 lg:overflow-y-auto lg:border-r lg:border-border lg:bg-surface lg:p-4">
+      <aside className="scroll-thin hidden lg:sticky lg:top-0 lg:z-auto lg:flex lg:h-svh lg:w-[280px] lg:flex-col lg:gap-4 lg:overflow-y-auto lg:border-r lg:border-border lg:bg-surface lg:p-4">
         <SidebarContent
           displayName={displayName}
           isAccount={isAccount}
@@ -222,7 +222,7 @@ export function AppShell() {
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            className="absolute inset-y-0 left-0 flex w-[280px] max-w-[85vw] flex-col gap-4 overflow-y-auto bg-surface p-4 shadow-popover"
+            className="scroll-thin absolute inset-y-0 left-0 flex w-[280px] max-w-[85vw] flex-col gap-4 overflow-y-auto bg-surface p-4 shadow-popover"
           >
             <div className="flex items-center justify-between">
               <span className="text-style-headline-sm text-text-h">Menu</span>

@@ -33,6 +33,16 @@ describe('VisitorMenu', () => {
     expect(screen.queryByRole('menuitem', { name: 'Acessar minha conta' })).not.toBeInTheDocument()
   })
 
+  it('"Configurações" é sempre a última opção do menu', async () => {
+    const user = userEvent.setup()
+    renderMenu()
+
+    await user.click(screen.getByRole('button', { name: 'Menu do visitante' }))
+
+    const items = screen.getAllByRole('menuitem')
+    expect(items[items.length - 1]).toHaveTextContent('Configurações')
+  })
+
   it('fecha ao clicar fora', async () => {
     const user = userEvent.setup()
     renderMenu()
