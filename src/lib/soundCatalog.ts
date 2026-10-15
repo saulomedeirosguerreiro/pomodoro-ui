@@ -6,7 +6,7 @@ export interface LofiTrackMeta {
 }
 
 /**
- * 19 faixas lo-fi reais (licença Pixabay Content License — uso livre, atribuição não obrigatória,
+ * 24 faixas lo-fi reais (licença Pixabay Content License — uso livre, atribuição não obrigatória,
  * crédito exibido mesmo assim por transparência com quem ouve), arquivos em
  * `public/audio/lofi/<arquivo>`, baixados manualmente de https://pixabay.com/pt/music/search/lofi/
  * (US-57 RN-01 — débito do README resolvido para lo-fi; o ambiente sonoro continua como placeholder).
@@ -67,4 +67,21 @@ export const LOFI_TRACKS: readonly LofiTrackMeta[] = [
   },
   { title: 'Moon Light', src: '/audio/lofi/ornave-lofi-moon-light-553399.mp3', credit: 'Ornave · Pixabay' },
   { title: 'Lofi Night', src: '/audio/lofi/pulsebox-lofi-night-522890.mp3', credit: 'Pulsebox · Pixabay' },
+  {
+    title: 'Corporate Lofi Flute Presentation',
+    src: '/audio/lofi/alex-morgan-corporate-lofi-flute-presentation-560069.mp3',
+    credit: 'alex-morgan · Pixabay',
+  },
+  {
+    title: 'Coffee Lofi Chill Ambient',
+    src: '/audio/lofi/lofi_music_library-coffee-lofi-chill-lofi-ambient-458901.mp3',
+    credit: 'Lofi Music Library · Pixabay',
+  },
+  { title: 'Lofi Lullaby', src: '/audio/lofi/marlowemusic-lofi-lullaby-581721.mp3', credit: 'MarloweMusic · Pixabay' },
+  { title: 'Lofi Jazz', src: '/audio/lofi/velariomusic-lofi-jazz-596980.mp3', credit: 'VelarioMusic · Pixabay' },
+  {
+    title: 'Nostalgic Lofi',
+    src: '/audio/lofi/zephiramusic-nostalgic-lofi-587549.mp3',
+    credit: 'ZephiraMusic · Pixabay',
+  },
 ]
