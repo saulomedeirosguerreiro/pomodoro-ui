@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" shape-rendering="geometricPrecision">
+<defs><radialGradient id="v" cx="50%" cy="50%" r="70%"><stop offset="60%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".35"/></radialGradient></defs>
+<rect width="128" height="128" fill="#606c38"/>
+<g transform="rotate(-30 64 64)"><rect x="60" y="4" width="8" height="54" fill="#5e3023"/><rect x="57" y="-2" width="14" height="10" rx="2" fill="#3b1f15"/><circle cx="64" cy="70" r="20" fill="#d4a373"/><circle cx="64" cy="98" r="25" fill="#d4a373"/><rect x="48" y="70" width="32" height="28" fill="#d4a373"/><circle cx="64" cy="80" r="7" fill="#3b1f15"/><rect x="56" y="102" width="16" height="4" fill="#3b1f15"/><line x1="61" y1="4" x2="61" y2="104" stroke="#f1e3d3" stroke-width=".5"/><line x1="63" y1="4" x2="63" y2="104" stroke="#f1e3d3" stroke-width=".5"/><line x1="65" y1="4" x2="65" y2="104" stroke="#f1e3d3" stroke-width=".5"/><line x1="67" y1="4" x2="67" y2="104" stroke="#f1e3d3" stroke-width=".5"/></g><path d="M14 24 v-10 l8 -2 v10" stroke="#fefae0" stroke-width="2" fill="none"/><circle cx="12" cy="24" r="2.5" fill="#fefae0"/><circle cx="20" cy="22" r="2.5" fill="#fefae0"/>
+<rect width="128" height="128" fill="url(#v)"/>
+</svg>

@@ -56,12 +56,12 @@ export function LofiPlayerBar() {
       <div className="flex items-center gap-3 px-3 py-2 lg:gap-6 lg:px-6 lg:py-3">
         {/* Esquerda: "capa" + faixa + crédito */}
         <div className="flex min-w-0 flex-1 items-center gap-3 lg:w-[260px] lg:flex-none">
-          <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-bg text-[20px] lg:h-14 lg:w-14 lg:rounded-xl lg:text-[28px]"
+          <img
+            src={track.cover}
+            alt=""
             aria-hidden="true"
-          >
-            🎧
-          </div>
+            className="h-10 w-10 shrink-0 rounded-lg object-cover lg:h-14 lg:w-14 lg:rounded-xl"
+          />
           <div className="min-w-0 flex-1">
             <label htmlFor={trackSelectId} className="sr-only">
               Escolher faixa lo-fi
