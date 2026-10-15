@@ -132,6 +132,23 @@ describe('ConfiguracoesPage', () => {
     })
   })
 
+  describe('seção Ajuda e Legal', () => {
+    beforeEach(() => {
+      mockDataSourceMode('account')
+      mockGuest()
+    })
+
+    it('traz links para Ajuda, Termos de Uso e Privacidade', () => {
+      renderPage()
+
+      expect(screen.getByRole('link', { name: 'Ajuda' })).toHaveAttribute('href', '/ajuda')
+      expect(screen.getByRole('link', { name: 'Termos de Uso' })).toHaveAttribute('href', '/termos-de-uso')
+      // "Privacidade" aqui (seção Ajuda e Legal) é distinto do link inline "Política de Privacidade"
+      // na seção de Analytics mais abaixo — mesmo destino (/privacidade), nomes diferentes de propósito.
+      expect(screen.getByRole('link', { name: 'Privacidade' })).toHaveAttribute('href', '/privacidade')
+    })
+  })
+
   describe('mode: account', () => {
     beforeEach(() => {
       mockDataSourceMode('account')

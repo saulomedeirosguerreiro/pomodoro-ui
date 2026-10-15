@@ -106,7 +106,7 @@ function renderShellOnTarefasRoute() {
 
 /** Só pra testar o fechamento do menu ao navegar — precisa de uma 2ª rota de verdade pra não
  *  desmontar o `AppShell` inteiro (rota sem correspondência faria o `Routes` não renderizar nada). */
-function renderShellWithAjudaRoute() {
+function renderShellWithTarefasRoute() {
   return render(
     <MemoryRouter initialEntries={['/timer']}>
       <ThemeProvider>
@@ -115,7 +115,7 @@ function renderShellWithAjudaRoute() {
             <Routes>
               <Route element={<AppShell />}>
                 <Route path="/timer" element={<p>Conteúdo da página</p>} />
-                <Route path="/ajuda" element={<p>Conteúdo da ajuda</p>} />
+                <Route path="/tarefas" element={<p>Conteúdo de tarefas</p>} />
               </Route>
             </Routes>
           </LofiPlayerProvider>
@@ -283,7 +283,7 @@ describe('AppShell', () => {
       expect(screen.getByRole('dialog', { name: 'Menu' })).toBeInTheDocument()
     })
 
-    it('o menu traz o mesmo conteúdo da sidebar desktop: perfil, navegação e links secundários', async () => {
+    it('o menu traz o mesmo conteúdo da sidebar desktop: perfil, navegação e copyright (Configurações/Ajuda/Termos/Privacidade moraram no menu do avatar, não aqui)', async () => {
       mockAuth({ id: 1, name: 'João Silva', email: 'joao@email.com', completedSessions: 0 })
       mockGuest(null)
       mockTimer()
@@ -295,8 +295,8 @@ describe('AppShell', () => {
       const dialog = within(screen.getByRole('dialog', { name: 'Menu' }))
       expect(dialog.getByText('João Silva')).toBeInTheDocument()
       expect(dialog.getByRole('link', { name: /Timer/ })).toBeInTheDocument()
-      expect(dialog.getByRole('link', { name: 'Configurações' })).toBeInTheDocument()
-      expect(dialog.getByRole('link', { name: 'Ajuda' })).toBeInTheDocument()
+      expect(dialog.queryByRole('link', { name: 'Configurações' })).not.toBeInTheDocument()
+      expect(dialog.queryByRole('link', { name: 'Ajuda' })).not.toBeInTheDocument()
       expect(dialog.getByText('© 2026 Guardião Pomodoro — Saulo Guerreiro')).toBeInTheDocument()
       expect(dialog.getByRole('button', { name: 'Sair' })).toBeInTheDocument()
     })
@@ -333,12 +333,12 @@ describe('AppShell', () => {
       mockTimer()
       const user = userEvent.setup()
 
-      renderShellWithAjudaRoute()
+      renderShellWithTarefasRoute()
       await user.click(screen.getByRole('button', { name: 'Abrir menu' }))
       const dialog = within(screen.getByRole('dialog', { name: 'Menu' }))
-      await user.click(dialog.getByRole('link', { name: 'Ajuda' }))
+      await user.click(dialog.getByRole('link', { name: /Tarefas/ }))
 
-      expect(await screen.findByText('Conteúdo da ajuda')).toBeInTheDocument()
+      expect(await screen.findByText('Conteúdo de tarefas')).toBeInTheDocument()
       expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument()
     })
   })

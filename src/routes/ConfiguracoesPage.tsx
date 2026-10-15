@@ -213,6 +213,23 @@ export function ConfiguracoesPage() {
 
       <section className={CARD_CLASSES}>
         <h2 className="flex items-center gap-2 text-style-headline-sm">
+          <span aria-hidden="true">❓</span> Ajuda e Legal
+        </h2>
+        <div className="flex flex-col gap-1">
+          <Link to="/ajuda" className="text-style-body-md text-primary-dark no-underline hover:underline">
+            Ajuda
+          </Link>
+          <Link to="/termos-de-uso" className="text-style-body-md text-primary-dark no-underline hover:underline">
+            Termos de Uso
+          </Link>
+          <Link to="/privacidade" className="text-style-body-md text-primary-dark no-underline hover:underline">
+            Privacidade
+          </Link>
+        </div>
+      </section>
+
+      <section className={CARD_CLASSES}>
+        <h2 className="flex items-center gap-2 text-style-headline-sm">
           <span aria-hidden="true">🔒</span> Privacidade
         </h2>
         <Checkbox

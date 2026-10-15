@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useDismissOnOutsideClick } from '../../hooks/useDismissOnOutsideClick'
 
 interface VisitorMenuProps {
@@ -11,7 +12,8 @@ const MENU_ITEM_CLASSES =
 
 /**
  * Equivalente ao `ProfileMenu` pra quem está no modo visitante (sem conta) — mesmo avatar como
- * gatilho, mesmo popover (fecha com clique-fora/Escape). Só "Trocar de pessoa" aqui: "Acessar minha
+ * gatilho, mesmo popover (fecha com clique-fora/Escape), mesmo link de Configurações (Ajuda, Termos
+ * e Privacidade moram dentro dela — ver doc do `ProfileMenu`), + "Trocar de pessoa". "Acessar minha
  * conta" é um botão à parte no header (CTA mais importante pra quem é visitante, merece destaque
  * próprio, não só um item de menu) — ver `AppShell.tsx`.
  */
@@ -45,6 +47,10 @@ export function VisitorMenu({ firstName, onSwitchPerson }: VisitorMenuProps) {
           aria-label="Menu do visitante"
           className="absolute right-0 top-[calc(100%+8px)] z-30 w-[200px] rounded-2xl border border-border bg-surface p-2 shadow-popover"
         >
+          <Link role="menuitem" to="/configuracoes" onClick={() => setIsOpen(false)} className={MENU_ITEM_CLASSES}>
+            Configurações
+          </Link>
+          <div role="separator" className="my-1 border-t border-border" />
           <button type="button" role="menuitem" onClick={handleSwitchPersonClick} className={MENU_ITEM_CLASSES}>
             Trocar de pessoa
           </button>

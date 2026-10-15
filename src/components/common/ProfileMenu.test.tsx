@@ -21,7 +21,7 @@ describe('ProfileMenu', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('abre ao clicar no avatar, mostrando "Perfil" e "Sair"', async () => {
+  it('abre ao clicar no avatar, mostrando "Perfil", "Configurações" e "Sair"', async () => {
     const user = userEvent.setup()
     renderMenu()
 
@@ -29,6 +29,7 @@ describe('ProfileMenu', () => {
 
     expect(screen.getByRole('menu')).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: 'Perfil' })).toHaveAttribute('href', '/perfil')
+    expect(screen.getByRole('menuitem', { name: 'Configurações' })).toHaveAttribute('href', '/configuracoes')
     expect(screen.getByRole('menuitem', { name: 'Sair' })).toBeInTheDocument()
   })
 

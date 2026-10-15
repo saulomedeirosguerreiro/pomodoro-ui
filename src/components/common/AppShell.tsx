@@ -42,16 +42,19 @@ interface SidebarContentProps {
   onAccessAccount?: () => void
   /** Fecha o menu hambúrguer ao navegar — `undefined` na sidebar desktop, que não tem o que fechar. */
   onNavigate?: () => void
-  /** Card de divulgação, logo acima de Configurações — só a sidebar desktop passa; o menu hambúrguer
+  /** Card de divulgação, no fim da sidebar — só a sidebar desktop passa; o menu hambúrguer
       do mobile não, porque o mobile já tem a própria `PromoBar` fixa no rodapé (evita duplicar). */
   promoSlot?: ReactNode
 }
 
 /**
- * Conteúdo do menu (marca, perfil, navegação principal, CTA de foco, links secundários +
- * copyright) — compartilhado entre a sidebar fixa do desktop e o menu hambúrguer do mobile
- * (responsividade mobile). Sem nenhuma classe `hidden`/`lg:` aqui dentro: quem decide se aparece é
- * sempre o contêiner que o usa, nunca este componente.
+ * Conteúdo do menu (marca, perfil, navegação principal, frase do dia + copyright) — compartilhado
+ * entre a sidebar fixa do desktop e o menu hambúrguer do mobile (responsividade mobile). Links de
+ * baixa frequência (Configurações, Ajuda, Termos, Privacidade) não ficam aqui: moraram pro menu do
+ * avatar (`ProfileMenu`/`VisitorMenu`, no header, sempre visível) pra não competir por altura com
+ * nav principal e promo numa sidebar sem scroll — ver `ProfileMenu.tsx`. Sem nenhuma classe
+ * `hidden`/`lg:` aqui dentro: quem decide se aparece é sempre o contêiner que o usa, nunca este
+ * componente.
  */
 function SidebarContent({
   displayName,
@@ -115,48 +118,11 @@ function SidebarContent({
 
       <SidebarFraseDoDia />
 
-      {promoSlot && <div className="mt-auto">{promoSlot}</div>}
+      {promoSlot}
 
-      <div className={`flex flex-col gap-1 border-t border-border pt-3 ${promoSlot ? '' : 'mt-auto'}`}>
-        <NavLink
-          to="/configuracoes"
-          onClick={onNavigate}
-          className={({ isActive }) =>
-            `flex items-center gap-2 rounded-lg px-4 py-2 text-style-label-lg text-text-h no-underline transition-colors duration-150 hover:bg-bg-subtle ${
-              isActive ? LINK_ACTIVE_CLASSES : ''
-            }`
-          }
-        >
-          <span aria-hidden="true">⚙️</span>
-          Configurações
-        </NavLink>
-
-        <div className="flex flex-col gap-0.5 pt-1">
-          <NavLink
-            to="/ajuda"
-            onClick={onNavigate}
-            className="px-4 py-1 text-style-label-sm text-text-muted no-underline hover:text-text-h"
-          >
-            Ajuda
-          </NavLink>
-          <NavLink
-            to="/termos-de-uso"
-            onClick={onNavigate}
-            className="px-4 py-1 text-style-label-sm text-text-muted no-underline hover:text-text-h"
-          >
-            Termos de Uso
-          </NavLink>
-          <NavLink
-            to="/privacidade"
-            onClick={onNavigate}
-            className="px-4 py-1 text-style-label-sm text-text-muted no-underline hover:text-text-h"
-          >
-            Privacidade
-          </NavLink>
-        </div>
-
-        <p className="px-4 pt-2 text-style-label-sm text-text-muted">© 2026 Guardião Pomodoro — Saulo Guerreiro</p>
-      </div>
+      <p className="mt-auto border-t border-border px-4 pt-3 text-style-label-sm text-text-muted">
+        © 2026 Guardião Pomodoro — Saulo Guerreiro
+      </p>
     </>
   )
 }
@@ -234,7 +200,7 @@ export function AppShell() {
 
   return (
     <div className="flex min-h-svh w-full flex-col lg:flex-row">
-      <aside className="hidden lg:sticky lg:top-0 lg:z-auto lg:flex lg:h-svh lg:w-[280px] lg:flex-col lg:gap-4 lg:border-r lg:border-border lg:bg-surface lg:p-4">
+      <aside className="hidden lg:sticky lg:top-0 lg:z-auto lg:flex lg:h-svh lg:w-[280px] lg:flex-col lg:gap-4 lg:overflow-y-auto lg:border-r lg:border-border lg:bg-surface lg:p-4">
         <SidebarContent
           displayName={displayName}
           isAccount={isAccount}
