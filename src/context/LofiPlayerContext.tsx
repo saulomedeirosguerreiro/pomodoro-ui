@@ -8,6 +8,7 @@ interface LofiPlayerContextValue {
   track: LofiTrackMeta
   trackIndex: number
   isPlaying: boolean
+  isLoopEnabled: boolean
   message: string | null
   volume: number
   currentTime: number
@@ -15,6 +16,7 @@ interface LofiPlayerContextValue {
   handlePlayPause: () => void
   handleNext: () => void
   handlePrevious: () => void
+  toggleLoop: () => void
   selectTrack: (index: number) => void
   setVolume: (volume: number) => void
   seek: (time: number) => void
@@ -31,6 +33,7 @@ export function LofiPlayerProvider({ children }: { children: ReactNode }) {
   const { settings, updateSettings } = useSettings()
   const [trackIndex, setTrackIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [isLoopEnabled, setIsLoopEnabled] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
@@ -94,6 +97,25 @@ export function LofiPlayerProvider({ children }: { children: ReactNode }) {
     setIsPlaying(false)
   }
 
+  /** Com o loop ativo, reinicia a mesma faixa em vez de avançar; senão segue pra próxima normalmente. */
+  function handleEnded() {
+    if (isLoopEnabled) {
+      const audio = audioRef.current
+      if (!audio) return
+      audio.currentTime = 0
+      audio.play().catch(() => {
+        setMessage(UNAVAILABLE_MESSAGE)
+        setIsPlaying(false)
+      })
+      return
+    }
+    handleNext()
+  }
+
+  function toggleLoop() {
+    setIsLoopEnabled((prev) => !prev)
+  }
+
   function handleNext() {
     selectTrack((trackIndex + 1) % LOFI_TRACKS.length)
   }
@@ -131,6 +153,7 @@ export function LofiPlayerProvider({ children }: { children: ReactNode }) {
     track,
     trackIndex,
     isPlaying,
+    isLoopEnabled,
     message,
     volume: settings.lofiVolume,
     currentTime,
@@ -138,6 +161,7 @@ export function LofiPlayerProvider({ children }: { children: ReactNode }) {
     handlePlayPause,
     handleNext,
     handlePrevious,
+    toggleLoop,
     selectTrack,
     setVolume,
     seek,
@@ -150,7 +174,7 @@ export function LofiPlayerProvider({ children }: { children: ReactNode }) {
         src={track.src}
         preload="none"
         onError={handleAudioError}
-        onEnded={handleNext}
+        onEnded={handleEnded}
         onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
         onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
       />

@@ -213,6 +213,39 @@ describe('LofiPlayerBar', () => {
     expect(await screen.findByRole('button', { name: 'Pausar música de fundo' })).toBeInTheDocument()
   })
 
+  it('com o loop ativado, ao terminar a faixa ela reinicia em vez de avançar', async () => {
+    const user = userEvent.setup()
+    renderPlayerBar()
+
+    await user.click(screen.getByRole('button', { name: 'Tocar música de fundo' }))
+    await user.click(screen.getByRole('button', { name: 'Repetir a faixa atual' }))
+    const audio = document.querySelector('audio') as HTMLAudioElement
+    audio.currentTime = 42
+
+    act(() => {
+      audio.dispatchEvent(new Event('ended'))
+    })
+
+    expect(screen.getByRole('combobox', { name: 'Escolher faixa lo-fi' })).toHaveValue('0')
+    expect(audio.currentTime).toBe(0)
+    expect(playSpy).toHaveBeenCalledTimes(2)
+  })
+
+  it('o botão de loop indica visualmente quando a repetição está ativa', async () => {
+    const user = userEvent.setup()
+    renderPlayerBar()
+
+    const loopButton = screen.getByRole('button', { name: 'Repetir a faixa atual' })
+    expect(loopButton).toHaveAttribute('aria-pressed', 'false')
+
+    await user.click(loopButton)
+
+    expect(screen.getByRole('button', { name: 'Desativar repetição da faixa atual' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+  })
+
   it('ao terminar a última faixa, dá a volta pro início do catálogo', () => {
     renderPlayerBar()
 

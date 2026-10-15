@@ -10,6 +10,28 @@ function volumeIcon(value: number): string {
   return '🔊'
 }
 
+/** Ícone de repetição em SVG (não emoji), pra herdar `currentColor` e ficar no mesmo estilo visual
+    dos outros ícones do app (ex.: `ThemeToggle`) em vez de destoar dos glifos de transporte. */
+function LoopIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M17 1l4 4-4 4" />
+      <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+      <path d="M7 23l-4-4 4-4" />
+      <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+    </svg>
+  )
+}
+
 const TRANSPORT_BUTTON_CLASSES =
   'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-text-h transition-colors hover:bg-bg-subtle lg:h-9 lg:w-9'
 
@@ -25,6 +47,7 @@ export function LofiPlayerBar() {
     track,
     trackIndex,
     isPlaying,
+    isLoopEnabled,
     message,
     volume,
     currentTime,
@@ -32,6 +55,7 @@ export function LofiPlayerBar() {
     handlePlayPause,
     handleNext,
     handlePrevious,
+    toggleLoop,
     selectTrack,
     setVolume,
     seek,
@@ -113,6 +137,17 @@ export function LofiPlayerBar() {
               aria-label="Próxima música de fundo"
             >
               ⏭
+            </button>
+            <button
+              type="button"
+              className={`${TRANSPORT_BUTTON_CLASSES} ${
+                isLoopEnabled ? 'border-primary-border bg-primary-bg text-primary' : ''
+              }`}
+              onClick={toggleLoop}
+              aria-pressed={isLoopEnabled}
+              aria-label={isLoopEnabled ? 'Desativar repetição da faixa atual' : 'Repetir a faixa atual'}
+            >
+              <LoopIcon className="h-4 w-4" />
             </button>
           </div>
 
