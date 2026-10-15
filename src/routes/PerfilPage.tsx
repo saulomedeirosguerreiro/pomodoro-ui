@@ -4,7 +4,9 @@ import { Badge } from '../components/common/Badge'
 import { Banner } from '../components/common/Banner'
 import { Button } from '../components/common/Button'
 import { FormField } from '../components/common/FormField'
+import { LevelProgressSkeleton } from '../components/common/LevelProgressSkeleton'
 import { ProgressBar } from '../components/common/ProgressBar'
+import { Skeleton } from '../components/common/Skeleton'
 import { useAuth } from '../context/AuthContext'
 import { useTimerContext } from '../context/TimerContext'
 import { streakLabel } from '../lib/format'
@@ -125,7 +127,7 @@ export function PerfilPage() {
           </div>
         </div>
 
-        {progress && (
+        {progress ? (
           <div className="flex flex-col gap-2 border-t border-border pt-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-style-label-sm text-primary-dark">
@@ -143,6 +145,15 @@ export function PerfilPage() {
                 {progress.xpInLevel}/{progress.xpForNextLevel} XP
               </span>
             </div>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2 border-t border-border pt-3" role="status" aria-live="polite" aria-busy="true">
+            <span className="sr-only">Carregando progresso…</span>
+            <div className="flex items-center justify-between gap-2">
+              <Skeleton variant="text" className="w-40" />
+              <Skeleton variant="rect" className="h-5 w-20 rounded-full" />
+            </div>
+            <LevelProgressSkeleton />
           </div>
         )}
       </section>

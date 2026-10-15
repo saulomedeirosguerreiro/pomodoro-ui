@@ -9,6 +9,9 @@ import { useAuth } from '../../context/AuthContext'
 export function PublicOnlyRoute() {
   const { user, isLoading } = useAuth()
 
+  // `return null` intencional, sem skeleton: a checagem de `isLoading` resolve rápido e de forma
+  // binária (sem token → síncrono; com token → uma chamada curta pra confirmar /me) e não tem uma
+  // "forma de conteúdo" pra espelhar — é decisão de roteamento, não a página em si.
   if (isLoading) {
     return null
   }

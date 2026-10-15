@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { AchievementRowSkeleton } from '../components/Achievements/AchievementRowSkeleton'
 import { ProgressBar } from '../components/common/ProgressBar'
 import { useDataSource } from '../context/DataSourceContext'
 import { formatDateTime } from '../lib/format'
@@ -37,7 +38,14 @@ export function ConquistasPage() {
 
       <section className={CARD_CLASSES}>
         <h2 className="text-style-headline-sm">Desbloqueadas</h2>
-        {unlocked.length === 0 ? (
+        {achievements === null ? (
+          <ul className="flex list-none flex-col gap-2 m-0 p-0" role="status" aria-live="polite" aria-busy="true">
+            <span className="sr-only">Carregando conquistas…</span>
+            {Array.from({ length: 2 }, (_, index) => (
+              <AchievementRowSkeleton key={index} />
+            ))}
+          </ul>
+        ) : unlocked.length === 0 ? (
           <p className="text-style-body-sm text-text-muted">Continue focando — sua primeira conquista está logo ali.</p>
         ) : (
           <ul className="flex list-none flex-col gap-2 m-0 p-0">
@@ -64,7 +72,14 @@ export function ConquistasPage() {
 
       <section className={CARD_CLASSES}>
         <h2 className="text-style-headline-sm">Em progresso</h2>
-        {locked.length === 0 ? (
+        {achievements === null ? (
+          <ul className="flex list-none flex-col gap-2 m-0 p-0" role="status" aria-live="polite" aria-busy="true">
+            <span className="sr-only">Carregando conquistas…</span>
+            {Array.from({ length: 2 }, (_, index) => (
+              <AchievementRowSkeleton key={index} locked />
+            ))}
+          </ul>
+        ) : locked.length === 0 ? (
           <p className="text-style-body-sm text-text-muted">Você desbloqueou todas as conquistas disponíveis!</p>
         ) : (
           <ul className="flex list-none flex-col gap-2 m-0 p-0">

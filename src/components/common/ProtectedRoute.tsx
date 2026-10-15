@@ -31,6 +31,9 @@ export function ProtectedRoute() {
     }
   }, [sessionExpired, clearGuestData])
 
+  // `return null` intencional, sem skeleton: mesma razão do PublicOnlyRoute — é guard de roteamento
+  // (sem forma de conteúdo própria), e empilhar um skeleton de guard antes do skeleton de conteúdo de
+  // cada página pioraria a percepção de carregamento em vez de melhorar.
   if (authLoading || guestLoading) {
     return null
   }

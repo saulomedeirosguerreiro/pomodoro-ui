@@ -13,10 +13,12 @@ import { BrandLogo } from './BrandLogo'
 import { Button } from './Button'
 import { Dialog } from './Dialog'
 import { EventsBell } from './EventsBell'
+import { LevelProgressSkeleton } from './LevelProgressSkeleton'
 import { ProfileMenu } from './ProfileMenu'
 import { ProgressBar } from './ProgressBar'
 import { PromoBar } from './PromoBar'
 import { PromoCard } from './PromoCard'
+import { Skeleton } from './Skeleton'
 import { SidebarFraseDoDia } from './SidebarFraseDoDia'
 import { ThemeToggle } from './ThemeToggle'
 import { VisitorMenu } from './VisitorMenu'
@@ -74,7 +76,7 @@ function SidebarContent({
 
       <div className="flex flex-col gap-2 rounded-lg border border-border bg-bg-subtle p-4">
         <p className="overflow-hidden text-ellipsis whitespace-nowrap text-style-label-lg text-text-h">{displayName}</p>
-        {progress && (
+        {progress ? (
           <>
             <p className="text-style-label-sm text-primary-dark">
               Nível {progress.level} • {progress.title}
@@ -88,6 +90,11 @@ function SidebarContent({
               </span>
             </div>
           </>
+        ) : (
+          <div className="flex flex-col gap-2" aria-busy="true">
+            <Skeleton variant="text" className="w-40" />
+            <LevelProgressSkeleton />
+          </div>
         )}
         {isAccount ? (
           <Button variant="ghost" fullWidth onClick={onLogout}>
@@ -269,7 +276,7 @@ export function AppShell() {
               <p className="hidden overflow-hidden text-ellipsis whitespace-nowrap text-style-label-lg text-text-h lg:block lg:text-style-headline-sm">
                 Olá, {firstName}! Vamos florescer hoje? 🌱
               </p>
-              {progress && (
+              {progress ? (
                 <div className="hidden flex-wrap items-center gap-2 lg:flex">
                   <Badge variant={progress.streakDays > 0 ? 'highlight' : 'neutral'}>
                     🔥 {streakLabel(progress.streakDays)}
@@ -279,6 +286,11 @@ export function AppShell() {
                       🍅 {pluralizeCount(progress.todayFocusCount, 'pomodoro')} ({formatHoursAndMinutes(progress.todayFocusSeconds)})
                     </Badge>
                   )}
+                </div>
+              ) : (
+                <div className="hidden items-center gap-2 lg:flex" aria-busy="true">
+                  <Skeleton variant="rect" className="h-6 w-24 rounded-full" />
+                  <Skeleton variant="rect" className="h-6 w-32 rounded-full" />
                 </div>
               )}
             </div>

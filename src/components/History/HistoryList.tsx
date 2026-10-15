@@ -2,6 +2,7 @@ import { Button } from '../common/Button'
 import { formatDateTime, formatDurationMinutes, statusLabel } from '../../lib/format'
 import { SESSION_LABELS } from '../../lib/timerLogic'
 import type { PomodoroSession } from '../../types/api'
+import { HistoryRowSkeleton } from './HistoryRowSkeleton'
 
 interface HistoryListProps {
   items: PomodoroSession[] | null
@@ -24,7 +25,16 @@ export function HistoryList({ items, error, onRetry }: HistoryListProps) {
   }
 
   if (items === null) {
-    return <p className={STATE_CLASSES}>Carregando histórico…</p>
+    return (
+      <div role="status" aria-live="polite" aria-busy="true">
+        <span className="sr-only">Carregando histórico…</span>
+        <ul className="m-0 flex list-none flex-col gap-1 p-0">
+          {Array.from({ length: 4 }, (_, index) => (
+            <HistoryRowSkeleton key={index} />
+          ))}
+        </ul>
+      </div>
+    )
   }
 
   if (items.length === 0) {

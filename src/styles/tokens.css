@@ -247,3 +247,15 @@
     transform: rotate(6deg);
   }
 }
+
+/* Pulse dos placeholders de carregamento (Skeleton.tsx) — em opacidade, não posição, pra não mexer
+   no layout enquanto o conteúdo real ainda não chegou. */
+@keyframes skeletonPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}

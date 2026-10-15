@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Badge } from '../components/common/Badge'
 import { Button } from '../components/common/Button'
 import { SegmentedControl } from '../components/common/SegmentedControl'
+import { TaskCardSkeleton } from '../components/Tasks/TaskCardSkeleton'
 import { TaskForm } from '../components/Tasks/TaskForm'
 import { useDataSource } from '../context/DataSourceContext'
 import { useTimerContext } from '../context/TimerContext'
@@ -100,65 +101,76 @@ export function TarefasPage() {
 
       {isCreating && <TaskForm onSubmit={handleCreate} onCancel={() => setIsCreating(false)} />}
 
-      {tasks !== null && tasks.length === 0 && !isCreating && (
-        <p className="text-style-body-sm text-text-muted">Nenhuma tarefa encontrada.</p>
-      )}
+      {tasks === null ? (
+        <ul className="flex list-none flex-col gap-2 m-0 p-0" role="status" aria-live="polite" aria-busy="true">
+          <span className="sr-only">Carregando tarefas…</span>
+          {Array.from({ length: 3 }, (_, index) => (
+            <TaskCardSkeleton key={index} />
+          ))}
+        </ul>
+      ) : (
+        <>
+          {tasks.length === 0 && !isCreating && (
+            <p className="text-style-body-sm text-text-muted">Nenhuma tarefa encontrada.</p>
+          )}
 
-      <ul className="flex list-none flex-col gap-2 m-0 p-0">
-        {(tasks ?? []).map((task) =>
-          editingId === task.id ? (
-            <li key={task.id}>
-              <TaskForm
-                initial={task}
-                onSubmit={(payload) => handleUpdate(task.id, payload)}
-                onCancel={() => setEditingId(null)}
-              />
-            </li>
-          ) : (
-            <li
-              key={task.id}
-              className="flex flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="min-w-0 break-words text-style-label-md text-text-h">{task.title}</h3>
-                <Badge variant={task.status === 'em_curso' ? 'tertiary' : 'neutral'}>
-                  {STATUS_LABEL[task.status]}
-                </Badge>
-              </div>
-              {task.description && <p className="text-style-body-sm text-text-muted">{task.description}</p>}
-              <div className="flex items-center gap-2">
-                <Badge variant="neutral">{PRIORITY_LABEL[task.priority]}</Badge>
-                <span className="text-style-label-sm text-text-muted">
-                  {task.completedPomodoros}/{task.estimatedPomodoros} 🍅
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {task.status !== 'em_curso' && task.status !== 'feito' && (
-                  <Button variant="ghost" onClick={() => handleSetStatus(task, 'em_curso')}>
-                    Focar nesta
-                  </Button>
-                )}
-                {task.status !== 'feito' && (
-                  <Button variant="ghost" onClick={() => handleSetStatus(task, 'feito')}>
-                    Marcar como feita
-                  </Button>
-                )}
-                {task.status === 'feito' && (
-                  <Button variant="ghost" onClick={() => handleSetStatus(task, 'a_fazer')}>
-                    Reabrir
-                  </Button>
-                )}
-                <Button variant="ghost" onClick={() => setEditingId(task.id)}>
-                  Editar
-                </Button>
-                <Button variant="ghost" onClick={() => handleDelete(task)}>
-                  Excluir
-                </Button>
-              </div>
-            </li>
-          ),
-        )}
-      </ul>
+          <ul className="flex list-none flex-col gap-2 m-0 p-0">
+            {tasks.map((task) =>
+              editingId === task.id ? (
+                <li key={task.id}>
+                  <TaskForm
+                    initial={task}
+                    onSubmit={(payload) => handleUpdate(task.id, payload)}
+                    onCancel={() => setEditingId(null)}
+                  />
+                </li>
+              ) : (
+                <li
+                  key={task.id}
+                  className="flex flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="min-w-0 break-words text-style-label-md text-text-h">{task.title}</h3>
+                    <Badge variant={task.status === 'em_curso' ? 'tertiary' : 'neutral'}>
+                      {STATUS_LABEL[task.status]}
+                    </Badge>
+                  </div>
+                  {task.description && <p className="text-style-body-sm text-text-muted">{task.description}</p>}
+                  <div className="flex items-center gap-2">
+                    <Badge variant="neutral">{PRIORITY_LABEL[task.priority]}</Badge>
+                    <span className="text-style-label-sm text-text-muted">
+                      {task.completedPomodoros}/{task.estimatedPomodoros} 🍅
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {task.status !== 'em_curso' && task.status !== 'feito' && (
+                      <Button variant="ghost" onClick={() => handleSetStatus(task, 'em_curso')}>
+                        Focar nesta
+                      </Button>
+                    )}
+                    {task.status !== 'feito' && (
+                      <Button variant="ghost" onClick={() => handleSetStatus(task, 'feito')}>
+                        Marcar como feita
+                      </Button>
+                    )}
+                    {task.status === 'feito' && (
+                      <Button variant="ghost" onClick={() => handleSetStatus(task, 'a_fazer')}>
+                        Reabrir
+                      </Button>
+                    )}
+                    <Button variant="ghost" onClick={() => setEditingId(task.id)}>
+                      Editar
+                    </Button>
+                    <Button variant="ghost" onClick={() => handleDelete(task)}>
+                      Excluir
+                    </Button>
+                  </div>
+                </li>
+              ),
+            )}
+          </ul>
+        </>
+      )}
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Button } from '../components/common/Button'
+import { GardenTileSkeleton } from '../components/Garden/GardenTileSkeleton'
 import { HistoryList } from '../components/History/HistoryList'
 import { useDataSource } from '../context/DataSourceContext'
 import { speciesForIndex } from '../lib/gardenSpecies'
@@ -58,7 +59,19 @@ export function JardimPage() {
 
       <section className={CARD_CLASSES}>
         <h2 className="text-style-headline-sm">Minha coleção</h2>
-        {collection.length === 0 ? (
+        {items === null ? (
+          <div
+            className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2"
+            role="status"
+            aria-live="polite"
+            aria-busy="true"
+          >
+            <span className="sr-only">Carregando coleção…</span>
+            {Array.from({ length: 6 }, (_, index) => (
+              <GardenTileSkeleton key={index} />
+            ))}
+          </div>
+        ) : collection.length === 0 ? (
           <p className="text-style-body-sm text-text-muted">Nenhuma planta colhida ainda. Conclua um foco para começar.</p>
         ) : (
           <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2">
