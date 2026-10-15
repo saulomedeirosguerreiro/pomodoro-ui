@@ -1,6 +1,7 @@
 import { PROMOS } from '../../lib/promos'
 import { usePromoRotation } from '../../hooks/usePromoRotation'
 import { PromoIcon } from './PromoIcon'
+import { trackEvent } from '../../lib/analytics'
 
 interface PromoCardProps {
   secondsPerAd: number
@@ -36,6 +37,14 @@ export function PromoCard({ secondsPerAd }: PromoCardProps) {
         href={current.url}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() =>
+          trackEvent('promo_click', {
+            promo_id: current.id,
+            promo_kind: current.kind,
+            promo_title: current.title,
+            placement: 'sidebar',
+          })
+        }
         className="flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-text-h px-4 text-style-label-lg text-bg no-underline"
       >
         {current.cta}
