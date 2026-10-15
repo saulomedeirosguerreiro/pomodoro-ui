@@ -148,9 +148,9 @@ export function LofiPlayerProvider({ children }: { children: ReactNode }) {
       <audio
         ref={audioRef}
         src={track.src}
-        loop
         preload="none"
         onError={handleAudioError}
+        onEnded={handleNext}
         onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
         onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
       />

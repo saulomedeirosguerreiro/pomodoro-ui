@@ -198,6 +198,35 @@ describe('LofiPlayerBar', () => {
     expect(screen.getByText('Esse áudio ainda não está disponível nesta versão.')).toBeInTheDocument()
   })
 
+  it('ao terminar a faixa, avança pra próxima e continua tocando', async () => {
+    const user = userEvent.setup()
+    renderPlayerBar()
+
+    await user.click(screen.getByRole('button', { name: 'Tocar música de fundo' }))
+    const audio = document.querySelector('audio') as HTMLAudioElement
+
+    act(() => {
+      audio.dispatchEvent(new Event('ended'))
+    })
+
+    expect(screen.getByRole('combobox', { name: 'Escolher faixa lo-fi' })).toHaveValue('1')
+    expect(await screen.findByRole('button', { name: 'Pausar música de fundo' })).toBeInTheDocument()
+  })
+
+  it('ao terminar a última faixa, dá a volta pro início do catálogo', () => {
+    renderPlayerBar()
+
+    const select = screen.getByRole('combobox', { name: 'Escolher faixa lo-fi' })
+    fireEvent.change(select, { target: { value: String(LOFI_TRACKS.length - 1) } })
+
+    const audio = document.querySelector('audio') as HTMLAudioElement
+    act(() => {
+      audio.dispatchEvent(new Event('ended'))
+    })
+
+    expect(select).toHaveValue('0')
+  })
+
   describe('duas instâncias sob o mesmo contexto nunca dessincronizam', () => {
     it('tocar numa instância reflete o estado de tocando na outra', async () => {
       const user = userEvent.setup()
