@@ -24,7 +24,6 @@ export const LOFI_TRACKS: readonly LofiTrackMeta[] = [
     src: '/audio/lofi/velariomusic-lofi-relaxing-598427.mp3',
     credit: 'VelarioMusic · Pixabay',
   },
-  { title: 'Lofi Music', src: '/audio/lofi/prettyjohn1-lofi-lofi-music-587176.mp3', credit: 'prettyjohn1 · Pixabay' },
   {
     title: 'Late Night Stacks',
     src: '/audio/lofi/ornave-lofi-late-night-stacks-553416.mp3',
@@ -32,11 +31,6 @@ export const LOFI_TRACKS: readonly LofiTrackMeta[] = [
   },
   { title: 'Positive Lofi', src: '/audio/lofi/zephiramusic-positive-lofi-587548.mp3', credit: 'ZephiraMusic · Pixabay' },
   { title: 'Lofi Calm', src: '/audio/lofi/velariomusic-lofi-calm-596422.mp3', credit: 'VelarioMusic · Pixabay' },
-  {
-    title: 'Lofi Music (curta)',
-    src: '/audio/lofi/prettyjohn1-lofi-lofi-music_61sec-587180.mp3',
-    credit: 'prettyjohn1 · Pixabay',
-  },
   { title: 'Worn Keys', src: '/audio/lofi/ornave-lofi-worn-keys-594983.mp3', credit: 'Ornave · Pixabay' },
   {
     title: 'Beautiful Lofi',
@@ -83,5 +77,15 @@ export const LOFI_TRACKS: readonly LofiTrackMeta[] = [
     title: 'Nostalgic Lofi',
     src: '/audio/lofi/zephiramusic-nostalgic-lofi-587549.mp3',
     credit: 'ZephiraMusic · Pixabay',
+  },
+  {
+    title: 'Lofi Chill Background Music',
+    src: '/audio/lofi/aventure-lofi-chill-background-music-508269.mp3',
+    credit: 'Aventure · Pixabay',
+  },
+  {
+    title: "Elm's Sunny Desk (Piano Lofi)",
+    src: '/audio/lofi/turning_pages-elmx27s-sunny-desk-piano-lofi-462747.mp3',
+    credit: 'Turning Pages · Pixabay',
   },
 ]
