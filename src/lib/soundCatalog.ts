@@ -43,13 +43,13 @@ export const LOFI_TRACKS: readonly LofiTrackMeta[] = [
     title: 'Lofi Reel',
     src: '/audio/lofi/zephiramusic-lofi-reel-588906.mp3',
     credit: 'ZephiraMusic · Pixabay',
-    cover: telaRetro,
+    cover: terraco,
   },
   {
     title: 'Lofi Chill Vlog Beats',
     src: '/audio/lofi/alex-morgan-lofi-chill-vlog-beats-573883.mp3',
     credit: 'alex-morgan · Pixabay',
-    cover: terraco,
+    cover: montanhas,
   },
   {
     title: 'Lofi Soul',
@@ -175,7 +175,7 @@ export const LOFI_TRACKS: readonly LofiTrackMeta[] = [
     title: 'Lofi Chill Background Music',
     src: '/audio/lofi/aventure-lofi-chill-background-music-508269.mp3',
     credit: 'Aventure · Pixabay',
-    cover: montanhas,
+    cover: telaRetro,
   },
   {
     title: "Elm's Sunny Desk (Piano Lofi)",
