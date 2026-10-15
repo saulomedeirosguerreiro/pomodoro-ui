@@ -32,8 +32,11 @@ function LoopIcon({ className }: { className?: string }) {
   )
 }
 
-const TRANSPORT_BUTTON_CLASSES =
-  'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-text-h transition-colors hover:bg-bg-subtle lg:h-9 lg:w-9'
+const TRANSPORT_BUTTON_BASE = 'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors lg:h-9 lg:w-9'
+const TRANSPORT_BUTTON_CLASSES = `${TRANSPORT_BUTTON_BASE} border border-border bg-surface text-text-h hover:bg-bg-subtle`
+/** Estado "selecionado" do loop: preenchimento sólido, não a mesma mancha sutil do hover dos outros
+    botões — precisa ser reconhecível como toggle ativo, não como um botão só em hover. */
+const LOOP_BUTTON_ACTIVE_CLASSES = `${TRANSPORT_BUTTON_BASE} border border-transparent bg-primary text-bg hover:bg-primary-dark`
 
 /**
  * Barra fixa do player lo-fi — única instância no app, sempre no rodapé (antes vivia espremida no
@@ -140,9 +143,7 @@ export function LofiPlayerBar() {
             </button>
             <button
               type="button"
-              className={`${TRANSPORT_BUTTON_CLASSES} ${
-                isLoopEnabled ? 'border-primary-border bg-primary-bg text-primary' : ''
-              }`}
+              className={isLoopEnabled ? LOOP_BUTTON_ACTIVE_CLASSES : TRANSPORT_BUTTON_CLASSES}
               onClick={toggleLoop}
               aria-pressed={isLoopEnabled}
               aria-label={isLoopEnabled ? 'Desativar repetição da faixa atual' : 'Repetir a faixa atual'}
