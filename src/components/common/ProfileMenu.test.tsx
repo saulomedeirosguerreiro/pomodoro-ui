@@ -2,12 +2,15 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
+import { LanguageProvider } from '../../context/LanguageContext'
 import { ProfileMenu } from './ProfileMenu'
 
 function renderMenu(onLogout = vi.fn()) {
   render(
     <MemoryRouter>
-      <ProfileMenu firstName="João" onLogout={onLogout} />
+      <LanguageProvider>
+        <ProfileMenu firstName="João" onLogout={onLogout} />
+      </LanguageProvider>
     </MemoryRouter>,
   )
   return onLogout

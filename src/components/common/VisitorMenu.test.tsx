@@ -2,12 +2,15 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
+import { LanguageProvider } from '../../context/LanguageContext'
 import { VisitorMenu } from './VisitorMenu'
 
 function renderMenu(onSwitchPerson = vi.fn()) {
   render(
     <MemoryRouter>
-      <VisitorMenu firstName="Visitante" onSwitchPerson={onSwitchPerson} />
+      <LanguageProvider>
+        <VisitorMenu firstName="Visitante" onSwitchPerson={onSwitchPerson} />
+      </LanguageProvider>
     </MemoryRouter>,
   )
   return onSwitchPerson

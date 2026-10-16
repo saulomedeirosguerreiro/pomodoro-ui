@@ -209,7 +209,7 @@ export function ConfiguracoesPage() {
         </h2>
         <p className="text-style-body-sm text-text-muted">{t('appearance.description')}</p>
         <ThemeToggle />
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2">
           <span className="text-style-label-md text-text-muted">{t('appearance.languageLabel')}</span>
           <LanguageSwitcher />
         </div>

@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useDismissOnOutsideClick } from '../../hooks/useDismissOnOutsideClick'
+import { LanguageMenuItems } from './LanguageMenuItems'
 
 interface ProfileMenuProps {
   firstName: string
@@ -58,6 +59,8 @@ export function ProfileMenu({ firstName, onLogout }: ProfileMenuProps) {
           <Link role="menuitem" to="/configuracoes" onClick={() => setIsOpen(false)} className={MENU_ITEM_CLASSES}>
             {t('settingsLink')}
           </Link>
+          <div role="separator" className="my-1 border-t border-border" />
+          <LanguageMenuItems showLabel onSelect={() => setIsOpen(false)} />
           <div role="separator" className="my-1 border-t border-border" />
           <button type="button" role="menuitem" onClick={handleLogoutClick} className={MENU_ITEM_CLASSES}>
             {t('logout')}

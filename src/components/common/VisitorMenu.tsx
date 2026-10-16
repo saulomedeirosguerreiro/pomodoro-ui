@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useDismissOnOutsideClick } from '../../hooks/useDismissOnOutsideClick'
+import { LanguageMenuItems } from './LanguageMenuItems'
 
 interface VisitorMenuProps {
   firstName: string
@@ -53,6 +54,8 @@ export function VisitorMenu({ firstName, onSwitchPerson }: VisitorMenuProps) {
           <button type="button" role="menuitem" onClick={handleSwitchPersonClick} className={MENU_ITEM_CLASSES}>
             {t('visitorMenu.switchPerson')}
           </button>
+          <div role="separator" className="my-1 border-t border-border" />
+          <LanguageMenuItems showLabel onSelect={() => setIsOpen(false)} />
           <div role="separator" className="my-1 border-t border-border" />
           <Link role="menuitem" to="/configuracoes" onClick={() => setIsOpen(false)} className={MENU_ITEM_CLASSES}>
             {t('settingsLink')}

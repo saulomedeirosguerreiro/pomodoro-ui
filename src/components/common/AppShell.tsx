@@ -14,7 +14,6 @@ import { BrandLogo } from './BrandLogo'
 import { Button } from './Button'
 import { Dialog } from './Dialog'
 import { EventsBell } from './EventsBell'
-import { LanguageSwitcher } from './LanguageSwitcher'
 import { LevelProgressSkeleton } from './LevelProgressSkeleton'
 import { ProfileMenu } from './ProfileMenu'
 import { ProgressBar } from './ProgressBar'
@@ -310,9 +309,6 @@ export function AppShell() {
                 <Button onClick={() => navigate('/login')}>{t('accessAccount')}</Button>
               </div>
             )}
-            <div className="hidden lg:block">
-              <LanguageSwitcher />
-            </div>
             <EventsBell />
             <ThemeToggle />
             {isAccount ? (
