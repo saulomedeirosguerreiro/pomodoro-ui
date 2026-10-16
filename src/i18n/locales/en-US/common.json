@@ -90,6 +90,11 @@
   "sessionExpiredMessage": "Your session expired. Sign in again.",
   "networkError": "We couldn't connect to the API.",
   "appLoading": "Loading…",
+  "serviceUnavailable": {
+    "title": "Shhh... the Guardian is napping",
+    "body": "Even guardians need their rest. Try again in a moment.",
+    "retryButton": "Try again"
+  },
   "levelTitles": {
     "Semente Curiosa": "Curious Seed",
     "Broto Aprendiz": "Apprentice Sprout",

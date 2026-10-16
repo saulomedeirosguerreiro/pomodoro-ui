@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { AppShell } from './components/common/AppShell'
 import { ProtectedRoute } from './components/common/ProtectedRoute'
 import { PublicOnlyRoute } from './components/common/PublicOnlyRoute'
@@ -14,6 +14,7 @@ import { SettingsProvider, useSettings } from './context/SettingsContext'
 import { ThemeProvider } from './context/ThemeContext'
 import { TimerProvider } from './context/TimerContext'
 import { setAnalyticsEnabled, trackPageView } from './lib/analytics'
+import { SERVER_ERROR_EVENT } from './lib/apiClient'
 import { AjudaPage } from './routes/AjudaPage'
 import { ConfiguracoesPage } from './routes/ConfiguracoesPage'
 import { ConquistasPage } from './routes/ConquistasPage'
@@ -24,6 +25,7 @@ import { NotFoundPage } from './routes/NotFoundPage'
 import { PerfilPage } from './routes/PerfilPage'
 import { PoliticaDePrivacidadePage } from './routes/PoliticaDePrivacidadePage'
 import { RegisterPage } from './routes/RegisterPage'
+import { ServiceUnavailablePage } from './routes/ServiceUnavailablePage'
 import { TarefasPage } from './routes/TarefasPage'
 import { TermosDeUsoPage } from './routes/TermosDeUsoPage'
 import { TimerPage } from './routes/TimerPage'
@@ -45,6 +47,23 @@ function AnalyticsBootstrap() {
   useEffect(() => {
     trackPageView(location.pathname)
   }, [location.pathname])
+
+  return null
+}
+
+/**
+ * Ponte entre o apiClient (módulo comum, fora da árvore React) e o router: qualquer `request()` que
+ * volte com 5xx dispara SERVER_ERROR_EVENT (apiClient.ts), e só um componente dentro do Router consegue
+ * reagir chamando `useNavigate()`. `replace: true` pra um 500 em background não empilhar no histórico.
+ */
+function ServerErrorRedirect() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const handleServerError = () => navigate('/500', { replace: true })
+    window.addEventListener(SERVER_ERROR_EVENT, handleServerError)
+    return () => window.removeEventListener(SERVER_ERROR_EVENT, handleServerError)
+  }, [navigate])
 
   return null
 }
@@ -72,6 +91,7 @@ export default function App() {
           <AuthProvider>
             <GuestProvider>
               <DataSourceProvider>
+                <ServerErrorRedirect />
                 <Routes>
                   <Route element={<PublicOnlyRoute />}>
                     <Route path="/login" element={<LoginPage />} />
@@ -95,6 +115,7 @@ export default function App() {
 
                   <Route path="/termos-de-uso" element={<TermosDeUsoPage />} />
                   <Route path="/privacidade" element={<PoliticaDePrivacidadePage />} />
+                  <Route path="/500" element={<ServiceUnavailablePage />} />
 
                   <Route path="/dashboard" element={<Navigate to="/timer" replace />} />
                   <Route path="/" element={<Navigate to="/timer" replace />} />

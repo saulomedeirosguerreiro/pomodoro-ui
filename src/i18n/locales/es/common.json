@@ -90,6 +90,11 @@
   "sessionExpiredMessage": "Tu sesión expiró. Vuelve a entrar.",
   "networkError": "No pudimos conectar con la API.",
   "appLoading": "Cargando…",
+  "serviceUnavailable": {
+    "title": "Shhh... el Guardián está dormitando",
+    "body": "Hasta los guardianes necesitan descansar. Inténtalo de nuevo en un momento.",
+    "retryButton": "Intentar de nuevo"
+  },
   "levelTitles": {
     "Semente Curiosa": "Semilla Curiosa",
     "Broto Aprendiz": "Brote Aprendiz",

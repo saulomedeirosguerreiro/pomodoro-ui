@@ -17,6 +17,13 @@ const REQUEST_TIMEOUT_MS = 20_000
 /** Disparado quando uma chamada autenticada recebe 401 — o AuthContext escuta isso para deslogar (US-04 CA-004). */
 export const UNAUTHORIZED_EVENT = 'pomodoro:unauthorized'
 
+/**
+ * Disparado quando qualquer chamada (autenticada ou não) volta com 5xx — "nosso backend caiu de
+ * verdade", diferente de `network_error` (sem internet/DNS/timeout, tratado como guest/offline pelo
+ * AuthContext). O gate em App.tsx escuta isso pra sobrepor a ServiceUnavailableScreen.
+ */
+export const SERVER_ERROR_EVENT = 'pomodoro:server_error'
+
 interface RequestOptions {
   auth?: boolean
 }
@@ -97,6 +104,9 @@ async function request<T>(method: string, path: string, body?: unknown, options:
   }
 
   if (!response.ok) {
+    if (response.status >= 500) {
+      window.dispatchEvent(new Event(SERVER_ERROR_EVENT))
+    }
     throw new ApiError(response.status, await parseErrorBody(response))
   }
 

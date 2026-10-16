@@ -248,6 +248,18 @@
   }
 }
 
+/* Cabeceio de sono do mascote na tela de serviço indisponível (ServiceUnavailableScreen.tsx) — mais
+   lento e suave que o confusedWobble acima, pra ler como "cochilando" e não "agitado". */
+@keyframes sleepyNod {
+  0%,
+  100% {
+    transform: rotate(-3deg) translateY(0);
+  }
+  50% {
+    transform: rotate(4deg) translateY(2px);
+  }
+}
+
 /* Pulse dos placeholders de carregamento (Skeleton.tsx) — em opacidade, não posição, pra não mexer
    no layout enquanto o conteúdo real ainda não chegou. */
 @keyframes skeletonPulse {
