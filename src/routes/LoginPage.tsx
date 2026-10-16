@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AuthLayout } from '../components/common/AuthLayout'
 import { Banner } from '../components/common/Banner'
@@ -16,6 +17,7 @@ interface LocationState {
 }
 
 export function LoginPage() {
+  const { t } = useTranslation('auth')
   const { login, acknowledgeSessionExpired } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -49,7 +51,7 @@ export function LoginPage() {
       if (err instanceof ApiError) {
         setError(err.message)
       } else {
-        setError('Não foi possível entrar. Tente novamente.')
+        setError(t('login.genericError'))
       }
     } finally {
       setIsSubmitting(false)
@@ -57,14 +59,14 @@ export function LoginPage() {
   }
 
   return (
-    <AuthLayout title="Entrar">
+    <AuthLayout title={t('login.title')}>
       {successMessage && <Banner kind="success" message={successMessage} />}
       {error && <Banner kind="error" message={error} />}
       {migration.state.phase === 'error' && <Banner kind="error" message={migration.state.message} />}
 
       <form onSubmit={handleSubmit} noValidate>
         <FormField
-          label="E-mail"
+          label={t('login.emailLabel')}
           name="email"
           type="email"
           autoComplete="email"
@@ -73,7 +75,7 @@ export function LoginPage() {
           onChange={(e) => setEmail(e.target.value)}
         />
         <FormField
-          label="Senha"
+          label={t('login.passwordLabel')}
           name="password"
           type="password"
           autoComplete="current-password"
@@ -85,16 +87,16 @@ export function LoginPage() {
           to="/esqueci-minha-senha"
           className="-mt-2 mb-4 block text-right text-style-body-sm text-text-muted hover:text-primary-dark"
         >
-          Esqueci minha senha
+          {t('login.forgotPassword')}
         </Link>
         <Button type="submit" fullWidth disabled={isSubmitting}>
-          {isSubmitting ? 'Entrando…' : 'Entrar'}
+          {isSubmitting ? t('login.submitting') : t('login.submit')}
         </Button>
       </form>
 
       <div className="mt-6 flex items-center gap-3 text-style-body-sm text-text-muted">
         <span className="h-px flex-1 bg-border" />
-        Novo por aqui?
+        {t('login.newHere')}
         <span className="h-px flex-1 bg-border" />
       </div>
 
@@ -102,7 +104,7 @@ export function LoginPage() {
         to="/cadastro"
         className="mt-4 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border-2 border-border bg-bg-subtle px-6 py-3 text-style-label-lg text-text-h transition-[transform,box-shadow] duration-150 ease-out active:translate-y-0.5"
       >
-        Criar conta
+        {t('login.createAccount')}
       </Link>
 
       {(migration.state.phase === 'asking' || migration.state.phase === 'importing') && (

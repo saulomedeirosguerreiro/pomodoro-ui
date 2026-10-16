@@ -1,0 +1,89 @@
+{
+  "page": {
+    "title": "Settings",
+    "subtitle": "Make Guardião Pomodoro work your way."
+  },
+  "durations": {
+    "heading": "Durations",
+    "focusMinutes": "Focus (minutes)",
+    "shortBreakMinutes": "Short break (minutes)",
+    "longBreakMinutes": "Long break (minutes)",
+    "restoreDefaults": "Restore defaults"
+  },
+  "notifications": {
+    "heading": "Notifications",
+    "unsupported": "Your browser doesn't support notifications.",
+    "enable": "Enable browser notifications",
+    "denied": "Notifications were blocked in your browser settings. To enable them, allow them manually in the site permissions.",
+    "granted": "Notify me when a session ends (while the tab is in the background)"
+  },
+  "mascot": {
+    "heading": "Mascot",
+    "speech": "Tomatinho's lines"
+  },
+  "accessibility": {
+    "heading": "Accessibility",
+    "reduceAnimations": "Reduce animations"
+  },
+  "sound": {
+    "heading": "Sound",
+    "sessionEndSound": "Sound at the end of a session"
+  },
+  "appearance": {
+    "heading": "Appearance",
+    "description": "Choose between light and dark theme.",
+    "languageLabel": "Language"
+  },
+  "helpAndLegal": {
+    "heading": "Help & Legal",
+    "help": "Help",
+    "terms": "Terms of Use",
+    "privacy": "Privacy"
+  },
+  "privacy": {
+    "heading": "Privacy",
+    "analytics": "Share anonymous usage data (Google Analytics)",
+    "analyticsDescription": "Helps us understand how the app is used, so we can improve it. Never includes password, email or the content of your tasks/sessions. Details in the <0>Privacy Policy</0>."
+  },
+  "wipeGuestData": {
+    "heading": "Erase my data on this device",
+    "description": "You're using Guardião Pomodoro without an account: tasks, sessions and achievements are saved only in this browser. Erasing the data on this device removes them forever — there's no way to recover them afterwards. It's also how you switch to another person on this device, for example to lend it to someone to use the app from scratch (the same shortcut is available in the avatar menu, at the top of the screen).",
+    "button": "Erase my data on this device",
+    "confirmTitle": "Erase all data on this device?",
+    "confirmBody": "This action can't be undone. Tasks, sessions and achievements saved in this browser will be permanently erased.",
+    "confirmButton": "Erase permanently"
+  },
+  "deleteAccount": {
+    "heading": "Delete account",
+    "description": "Removes your account and all your history (sessions, tasks, achievements) forever. This action can't be undone.",
+    "button": "Delete my account",
+    "passwordLabel": "Confirm your password to delete the account",
+    "submit": "Delete permanently",
+    "submitting": "Deleting…",
+    "genericError": "Couldn't delete the account. Please try again."
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Change your name or your password.",
+    "loadingProgress": "Loading progress…",
+    "editName": {
+      "heading": "Edit name",
+      "label": "Name",
+      "save": "Save name",
+      "saving": "Saving…",
+      "success": "Name updated.",
+      "genericError": "Couldn't save the name. Please try again."
+    },
+    "changePassword": {
+      "heading": "Change password",
+      "currentPasswordLabel": "Current password",
+      "newPasswordLabel": "New password",
+      "confirmPasswordLabel": "Confirm new password",
+      "save": "Save password",
+      "saving": "Saving…",
+      "success": "Password updated.",
+      "mismatchError": "Passwords don't match.",
+      "genericError": "Couldn't change the password. Please try again."
+    }
+  }
+}

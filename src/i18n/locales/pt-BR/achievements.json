@@ -1,0 +1,12 @@
+{
+  "page": {
+    "title": "Conquistas",
+    "error": "Não foi possível carregar as conquistas.",
+    "unlockedTitle": "Desbloqueadas",
+    "loading": "Carregando conquistas…",
+    "unlockedEmpty": "Continue focando — sua primeira conquista está logo ali.",
+    "unlockedAt": "Desbloqueada em {{date}}",
+    "lockedTitle": "Em progresso",
+    "lockedEmpty": "Você desbloqueou todas as conquistas disponíveis!"
+  }
+}

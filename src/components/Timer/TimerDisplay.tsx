@@ -1,4 +1,5 @@
-import { formatMMSS, SESSION_LABELS } from '../../lib/timerLogic'
+import { useTranslation } from 'react-i18next'
+import { FOCI_PER_LONG_BREAK, formatMMSS, sessionLabel } from '../../lib/timerLogic'
 import type { SessionType } from '../../types/api'
 
 const RADIUS = 115
@@ -32,6 +33,7 @@ function cycleLabel(type: SessionType, cycleCount: number): number {
 }
 
 export function TimerDisplay({ type, remainingSeconds, totalSeconds, cycleCount }: TimerDisplayProps) {
+  const { t } = useTranslation('timer')
   const fractionRemaining = totalSeconds > 0 ? Math.min(1, Math.max(0, remainingSeconds / totalSeconds)) : 0
   const dashOffset = CIRCUMFERENCE * (1 - fractionRemaining)
 
@@ -40,7 +42,7 @@ export function TimerDisplay({ type, remainingSeconds, totalSeconds, cycleCount 
       <p
         className={`rounded-full px-3.5 py-1 text-style-label-md uppercase tracking-[0.04em] ${TYPE_CLASSES[type]}`}
       >
-        {SESSION_LABELS[type]}
+        {sessionLabel(t, type)}
       </p>
 
       <div className="relative h-[min(320px,calc(100vw-80px))] w-[min(320px,calc(100vw-80px))]">
@@ -72,7 +74,7 @@ export function TimerDisplay({ type, remainingSeconds, totalSeconds, cycleCount 
             {formatMMSS(remainingSeconds)}
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg-subtle px-2 py-1 text-style-label-sm text-secondary-dark">
-            Ciclo {cycleLabel(type, cycleCount)} de 4
+            {t('display.cycle', { current: cycleLabel(type, cycleCount), total: FOCI_PER_LONG_BREAK })}
           </span>
         </div>
       </div>

@@ -1,11 +1,7 @@
+import { useTranslation } from 'react-i18next'
 import { SegmentedControl, type SegmentedOption } from '../common/SegmentedControl'
 
 export type FlexibleModeToggleValue = 'foco' | 'pausa'
-
-const OPTIONS: SegmentedOption<FlexibleModeToggleValue>[] = [
-  { value: 'foco', label: '🌱 Foco' },
-  { value: 'pausa', label: '☕ Pausa' },
-]
 
 interface FlexibleModeToggleProps {
   value: FlexibleModeToggleValue
@@ -22,5 +18,12 @@ interface FlexibleModeToggleProps {
  * de novo no tipo que acabou de concluir abre uma nova duração do mesmo tipo).
  */
 export function FlexibleModeToggle({ value, onChange }: FlexibleModeToggleProps) {
-  return <SegmentedControl options={OPTIONS} value={value} onChange={onChange} ariaLabel="Foco ou pausa" />
+  const { t } = useTranslation('timer')
+
+  const options: SegmentedOption<FlexibleModeToggleValue>[] = [
+    { value: 'foco', label: t('flexibleModeToggle.focus') },
+    { value: 'pausa', label: t('flexibleModeToggle.break') },
+  ]
+
+  return <SegmentedControl options={options} value={value} onChange={onChange} ariaLabel={t('flexibleModeToggle.ariaLabel')} />
 }

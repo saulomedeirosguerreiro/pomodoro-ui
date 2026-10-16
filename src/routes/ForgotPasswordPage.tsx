@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 import { AuthLayout } from '../components/common/AuthLayout'
 import { Banner } from '../components/common/Banner'
@@ -13,6 +14,7 @@ import { ApiError } from '../types/api'
  * nome e e-mail baterem com uma conta existente (`POST /api/auth/password-recovery`).
  */
 export function ForgotPasswordPage() {
+  const { t } = useTranslation('auth')
   const navigate = useNavigate()
 
   const [name, setName] = useState('')
@@ -29,7 +31,7 @@ export function ForgotPasswordPage() {
     setFormError(null)
 
     if (newPassword !== confirmPassword) {
-      setFieldErrors({ confirmPassword: 'As senhas não conferem.' })
+      setFieldErrors({ confirmPassword: t('forgotPassword.passwordMismatch') })
       return
     }
 
@@ -38,16 +40,16 @@ export function ForgotPasswordPage() {
 
     try {
       await authService.recoverPassword({ name, email, newPassword })
-      navigate('/login', { state: { email, message: 'Senha redefinida. Faça login com a nova senha.' } })
+      navigate('/login', { state: { email, message: t('forgotPassword.successMessage') } })
     } catch (err) {
       if (err instanceof ApiError && err.status === 429) {
         // Rate limit (`RateLimitPolicies.PasswordRecovery`) — mensagem própria, não a do corpo da resposta.
-        setFormError('Muitas tentativas. Tente novamente mais tarde.')
+        setFormError(t('forgotPassword.rateLimited'))
       } else if (err instanceof ApiError) {
         // 404 com mensagem genérica do backend — não revela se foi o nome ou o e-mail que não bateu.
         setFormError(err.message)
       } else {
-        setFormError('Não foi possível redefinir sua senha. Tente novamente.')
+        setFormError(t('forgotPassword.genericError'))
       }
     } finally {
       setIsSubmitting(false)
@@ -55,12 +57,12 @@ export function ForgotPasswordPage() {
   }
 
   return (
-    <AuthLayout title="Esqueci minha senha">
+    <AuthLayout title={t('forgotPassword.title')}>
       {formError && <Banner kind="error" message={formError} />}
 
       <form onSubmit={handleSubmit} noValidate>
         <FormField
-          label="Nome"
+          label={t('forgotPassword.nameLabel')}
           name="name"
           autoComplete="name"
           required
@@ -68,7 +70,7 @@ export function ForgotPasswordPage() {
           onChange={(e) => setName(e.target.value)}
         />
         <FormField
-          label="E-mail"
+          label={t('forgotPassword.emailLabel')}
           name="email"
           type="email"
           autoComplete="email"
@@ -77,7 +79,7 @@ export function ForgotPasswordPage() {
           onChange={(e) => setEmail(e.target.value)}
         />
         <FormField
-          label="Nova senha"
+          label={t('forgotPassword.newPasswordLabel')}
           name="newPassword"
           type="password"
           autoComplete="new-password"
@@ -86,7 +88,7 @@ export function ForgotPasswordPage() {
           onChange={(e) => setNewPassword(e.target.value)}
         />
         <FormField
-          label="Confirmação da nova senha"
+          label={t('forgotPassword.confirmPasswordLabel')}
           name="confirmPassword"
           type="password"
           autoComplete="new-password"
@@ -96,12 +98,12 @@ export function ForgotPasswordPage() {
           error={fieldErrors.confirmPassword}
         />
         <Button type="submit" fullWidth disabled={isSubmitting}>
-          {isSubmitting ? 'Redefinindo…' : 'Redefinir senha'}
+          {isSubmitting ? t('forgotPassword.submitting') : t('forgotPassword.submit')}
         </Button>
       </form>
 
       <Link to="/login" className="mt-4 block text-center [font:700_13px/18px_var(--font-sans)] text-primary-dark">
-        Voltar para o login
+        {t('forgotPassword.backToLogin')}
       </Link>
     </AuthLayout>
   )

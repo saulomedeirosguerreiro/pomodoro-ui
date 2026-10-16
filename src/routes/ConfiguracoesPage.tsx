@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../components/common/Button'
 import { Checkbox } from '../components/common/Checkbox'
 import { Dialog } from '../components/common/Dialog'
 import { FormField } from '../components/common/FormField'
+import { LanguageSwitcher } from '../components/common/LanguageSwitcher'
 import { ThemeToggle } from '../components/common/ThemeToggle'
 import { useAuth } from '../context/AuthContext'
 import { useDataSource } from '../context/DataSourceContext'
@@ -20,15 +22,15 @@ const DANGER_BUTTON_CLASSES = 'self-start border-danger! text-danger!'
 
 interface DurationFieldConfig {
   key: 'focusMinutes' | 'shortBreakMinutes' | 'longBreakMinutes'
-  label: string
+  labelKey: string
   min: number
   max: number
 }
 
 const DURATION_FIELDS: DurationFieldConfig[] = [
-  { key: 'focusMinutes', label: 'Foco (minutos)', min: 5, max: 120 },
-  { key: 'shortBreakMinutes', label: 'Pausa curta (minutos)', min: 1, max: 30 },
-  { key: 'longBreakMinutes', label: 'Pausa longa (minutos)', min: 5, max: 60 },
+  { key: 'focusMinutes', labelKey: 'durations.focusMinutes', min: 5, max: 120 },
+  { key: 'shortBreakMinutes', labelKey: 'durations.shortBreakMinutes', min: 1, max: 30 },
+  { key: 'longBreakMinutes', labelKey: 'durations.longBreakMinutes', min: 5, max: 60 },
 ]
 
 function clampDuration(raw: string, fallback: number, min: number, max: number): number {
@@ -40,6 +42,7 @@ function clampDuration(raw: string, fallback: number, min: number, max: number):
 }
 
 export function ConfiguracoesPage() {
+  const { t } = useTranslation('settings')
   const { settings, updateSettings } = useSettings()
   const { logout } = useAuth()
   const { mode } = useDataSource()
@@ -98,7 +101,7 @@ export function ConfiguracoesPage() {
       clearGuestData()
       navigate('/timer', { replace: true })
     } catch (err) {
-      setDeleteError(err instanceof ApiError ? err.message : 'Não foi possível excluir a conta. Tente novamente.')
+      setDeleteError(err instanceof ApiError ? err.message : t('deleteAccount.genericError'))
     } finally {
       setIsDeleting(false)
     }
@@ -114,18 +117,18 @@ export function ConfiguracoesPage() {
   return (
     <div className="mx-auto flex max-w-[640px] flex-col gap-4">
       <div>
-        <h1>Configurações</h1>
-        <p className="text-style-body-sm text-text-muted">Ajuste o Guardião Pomodoro do seu jeito.</p>
+        <h1>{t('page.title')}</h1>
+        <p className="text-style-body-sm text-text-muted">{t('page.subtitle')}</p>
       </div>
 
       <section className={CARD_CLASSES}>
         <h2 className="flex items-center gap-2 text-style-headline-sm">
-          <span aria-hidden="true">⏱️</span> Tempos
+          <span aria-hidden="true">⏱️</span> {t('durations.heading')}
         </h2>
         {DURATION_FIELDS.map((field) => (
           <FormField
             key={field.key}
-            label={field.label}
+            label={t(field.labelKey)}
             name={field.key}
             type="number"
             min={field.min}
@@ -137,144 +140,138 @@ export function ConfiguracoesPage() {
           />
         ))}
         <Button variant="secondary" className="self-start" onClick={handleRestoreDefaults}>
-          Restaurar padrões
+          {t('durations.restoreDefaults')}
         </Button>
       </section>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <section className={CARD_CLASSES}>
           <h2 className="flex items-center gap-2 text-style-headline-sm">
-            <span aria-hidden="true">🔔</span> Notificações
+            <span aria-hidden="true">🔔</span> {t('notifications.heading')}
           </h2>
           {permission === 'unsupported' && (
-            <p className="text-style-body-sm text-text-muted">Seu navegador não suporta notificações.</p>
+            <p className="text-style-body-sm text-text-muted">{t('notifications.unsupported')}</p>
           )}
           {permission === 'default' && (
             <Button variant="secondary" onClick={handleRequestPermission}>
-              Ativar notificações do navegador
+              {t('notifications.enable')}
             </Button>
           )}
           {permission === 'denied' && (
-            <p className="text-style-body-sm text-text-muted">
-              As notificações foram bloqueadas nas configurações do navegador. Para ativar, permita-as manualmente nas
-              permissões do site.
-            </p>
+            <p className="text-style-body-sm text-text-muted">{t('notifications.denied')}</p>
           )}
           {permission === 'granted' && (
             <Checkbox
               checked={settings.notificationsEnabled}
               onChange={(checked) => updateSettings({ notificationsEnabled: checked })}
-              label="Avisar quando uma sessão terminar (com a aba em segundo plano)"
+              label={t('notifications.granted')}
             />
           )}
         </section>
 
         <section className={CARD_CLASSES}>
           <h2 className="flex items-center gap-2 text-style-headline-sm">
-            <span aria-hidden="true">🍅</span> Mascote
+            <span aria-hidden="true">🍅</span> {t('mascot.heading')}
           </h2>
           <Checkbox
             checked={settings.mascotSpeechEnabled}
             onChange={(checked) => updateSettings({ mascotSpeechEnabled: checked })}
-            label="Falas do Tomatinho"
+            label={t('mascot.speech')}
           />
         </section>
 
         <section className={CARD_CLASSES}>
           <h2 className="flex items-center gap-2 text-style-headline-sm">
-            <span aria-hidden="true">♿</span> Acessibilidade
+            <span aria-hidden="true">♿</span> {t('accessibility.heading')}
           </h2>
           <Checkbox
             checked={settings.reduceAnimations}
             onChange={(checked) => updateSettings({ reduceAnimations: checked })}
-            label="Reduzir animações"
+            label={t('accessibility.reduceAnimations')}
           />
         </section>
 
         <section className={CARD_CLASSES}>
           <h2 className="flex items-center gap-2 text-style-headline-sm">
-            <span aria-hidden="true">🎧</span> Som
+            <span aria-hidden="true">🎧</span> {t('sound.heading')}
           </h2>
           <Checkbox
             checked={settings.sessionEndSoundEnabled}
             onChange={(checked) => updateSettings({ sessionEndSoundEnabled: checked })}
-            label="Som ao final da sessão"
+            label={t('sound.sessionEndSound')}
           />
         </section>
       </div>
 
       <section className={CARD_CLASSES}>
         <h2 className="flex items-center gap-2 text-style-headline-sm">
-          <span aria-hidden="true">🎨</span> Aparência
+          <span aria-hidden="true">🎨</span> {t('appearance.heading')}
         </h2>
-        <p className="text-style-body-sm text-text-muted">Escolha entre o tema claro e escuro.</p>
+        <p className="text-style-body-sm text-text-muted">{t('appearance.description')}</p>
         <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <span className="text-style-label-md text-text-muted">{t('appearance.languageLabel')}</span>
+          <LanguageSwitcher />
+        </div>
       </section>
 
       <section className={CARD_CLASSES}>
         <h2 className="flex items-center gap-2 text-style-headline-sm">
-          <span aria-hidden="true">❓</span> Ajuda e Legal
+          <span aria-hidden="true">❓</span> {t('helpAndLegal.heading')}
         </h2>
         <div className="flex flex-col gap-1">
           <Link to="/ajuda" className="text-style-body-md text-primary-dark no-underline hover:underline">
-            Ajuda
+            {t('helpAndLegal.help')}
           </Link>
           <Link to="/termos-de-uso" className="text-style-body-md text-primary-dark no-underline hover:underline">
-            Termos de Uso
+            {t('helpAndLegal.terms')}
           </Link>
           <Link to="/privacidade" className="text-style-body-md text-primary-dark no-underline hover:underline">
-            Privacidade
+            {t('helpAndLegal.privacy')}
           </Link>
         </div>
       </section>
 
       <section className={CARD_CLASSES}>
         <h2 className="flex items-center gap-2 text-style-headline-sm">
-          <span aria-hidden="true">🔒</span> Privacidade
+          <span aria-hidden="true">🔒</span> {t('privacy.heading')}
         </h2>
         <Checkbox
           checked={settings.analyticsEnabled}
           onChange={(checked) => updateSettings({ analyticsEnabled: checked })}
-          label="Compartilhar dados de uso anônimos (Google Analytics)"
+          label={t('privacy.analytics')}
         />
         <p className="text-style-body-sm text-text-muted">
-          Ajuda a entender como o app é usado, pra melhorá-lo. Nunca inclui senha, e-mail ou conteúdo
-          de tarefas/sessões. Detalhes na{' '}
-          <Link to="/privacidade" target="_blank" rel="noopener noreferrer" className="text-primary-dark">
-            Política de Privacidade
-          </Link>
-          .
+          <Trans
+            t={t}
+            i18nKey="privacy.analyticsDescription"
+            components={[
+              <Link key="0" to="/privacidade" target="_blank" rel="noopener noreferrer" className="text-primary-dark" />,
+            ]}
+          />
         </p>
       </section>
 
       {mode === 'guest' ? (
         <section className={DANGER_CARD_CLASSES}>
           <h2 className="flex items-center gap-2 text-style-headline-sm">
-            <span aria-hidden="true">⚠️</span> Apagar meus dados deste dispositivo
+            <span aria-hidden="true">⚠️</span> {t('wipeGuestData.heading')}
           </h2>
-          <p className="text-style-body-sm text-text-muted">
-            Você está usando o Guardião Pomodoro sem conta: tarefas, sessões e conquistas ficam salvas só neste navegador.
-            Apagar os dados deste dispositivo os remove para sempre — não há como recuperá-los depois. É também como
-            você troca de pessoa neste aparelho, por exemplo pra emprestar pra alguém usar o app do zero (o mesmo
-            atalho está disponível no menu do avatar, no topo da tela).
-          </p>
+          <p className="text-style-body-sm text-text-muted">{t('wipeGuestData.description')}</p>
 
           <Button variant="ghost" className={DANGER_BUTTON_CLASSES} onClick={() => setIsConfirmingDelete(true)}>
-            Apagar meus dados deste dispositivo
+            {t('wipeGuestData.button')}
           </Button>
 
           {isConfirmingDelete && (
-            <Dialog titleText="Apagar todos os dados deste dispositivo?" onDismiss={() => setIsConfirmingDelete(false)}>
-              <p className="text-style-body-sm text-text-muted">
-                Essa ação não pode ser desfeita. Tarefas, sessões e conquistas salvas neste navegador serão apagadas
-                permanentemente.
-              </p>
+            <Dialog titleText={t('wipeGuestData.confirmTitle')} onDismiss={() => setIsConfirmingDelete(false)}>
+              <p className="text-style-body-sm text-text-muted">{t('wipeGuestData.confirmBody')}</p>
               <div className="flex justify-end gap-2">
                 <Button variant="ghost" onClick={() => setIsConfirmingDelete(false)}>
-                  Cancelar
+                  {t('common:cancel')}
                 </Button>
                 <Button className={DANGER_BUTTON_CLASSES} onClick={handleWipeGuestData}>
-                  Apagar definitivamente
+                  {t('wipeGuestData.confirmButton')}
                 </Button>
               </div>
             </Dialog>
@@ -283,16 +280,13 @@ export function ConfiguracoesPage() {
       ) : (
         <section className={DANGER_CARD_CLASSES}>
           <h2 className="flex items-center gap-2 text-style-headline-sm">
-            <span aria-hidden="true">⚠️</span> Excluir conta
+            <span aria-hidden="true">⚠️</span> {t('deleteAccount.heading')}
           </h2>
-          <p className="text-style-body-sm text-text-muted">
-            Remove sua conta e todo o histórico (sessões, tarefas, conquistas) para sempre. Essa ação não pode
-            ser desfeita.
-          </p>
+          <p className="text-style-body-sm text-text-muted">{t('deleteAccount.description')}</p>
 
           {!isConfirmingDelete ? (
             <Button variant="ghost" className={DANGER_BUTTON_CLASSES} onClick={() => setIsConfirmingDelete(true)}>
-              Excluir minha conta
+              {t('deleteAccount.button')}
             </Button>
           ) : (
             <form className="flex flex-col gap-2" onSubmit={handleDeleteAccount} noValidate>
@@ -302,7 +296,7 @@ export function ConfiguracoesPage() {
                 </p>
               )}
               <FormField
-                label="Confirme sua senha para excluir a conta"
+                label={t('deleteAccount.passwordLabel')}
                 name="deletePassword"
                 type="password"
                 autoComplete="current-password"
@@ -320,10 +314,10 @@ export function ConfiguracoesPage() {
                     setDeleteError(null)
                   }}
                 >
-                  Cancelar
+                  {t('common:cancel')}
                 </Button>
                 <Button type="submit" className={DANGER_BUTTON_CLASSES} disabled={isDeleting}>
-                  {isDeleting ? 'Excluindo…' : 'Excluir definitivamente'}
+                  {isDeleting ? t('deleteAccount.submitting') : t('deleteAccount.submit')}
                 </Button>
               </div>
             </form>

@@ -1,0 +1,85 @@
+{
+  "appName": "Guardião Pomodoro",
+  "tagline": "Growing Garden",
+  "copyright": "© 2026 Guardião Pomodoro — Saulo Guerreiro",
+  "visitor": "Visitor",
+  "logout": "Log out",
+  "accessAccount": "Access my account",
+  "cancel": "Cancel",
+  "nav": {
+    "ariaLabel": "Main navigation",
+    "timer": "Timer",
+    "tasks": "Tasks",
+    "garden": "Focus Garden",
+    "achievements": "Achievements"
+  },
+  "greeting": "Hi, {{name}}! Ready to bloom today? 🌱",
+  "level": "Level {{level}} • {{title}}",
+  "menu": {
+    "open": "Open menu",
+    "close": "Close menu",
+    "title": "Menu"
+  },
+  "dialogs": {
+    "logout": {
+      "title": "Log out of your account?",
+      "bodyRunning": "There's a session in progress. It will be lost if you log out.",
+      "bodyIdle": "You can sign in again whenever you want.",
+      "confirm": "Log out"
+    },
+    "switchPerson": {
+      "title": "Switch to another person on this device?",
+      "body": "This erases the tasks, sessions and achievements saved here as a visitor — there's no way to recover them afterwards. The next person starts from scratch.",
+      "confirm": "Switch person"
+    }
+  },
+  "theme": {
+    "toLight": "Switch to light theme",
+    "toDark": "Switch to dark theme"
+  },
+  "language": {
+    "switcherLabel": "Language",
+    "pt-BR": "PT",
+    "en-US": "EN",
+    "es": "ES"
+  },
+  "notifications": {
+    "bellLabel": "Notifications",
+    "title": "Notifications",
+    "close": "Close notifications",
+    "empty": "No events here yet."
+  },
+  "status": {
+    "concluido": "Completed",
+    "interrompido": "Interrupted"
+  },
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "streak": {
+    "none": "Plant your 1st focus today",
+    "days_one": "{{count}} day in a row",
+    "days_other": "{{count}} days in a row"
+  },
+  "pomodoroCount_one": "{{count}} pomodoro",
+  "pomodoroCount_other": "{{count}} pomodoros",
+  "seedsLabel_one": "Seed",
+  "seedsLabel_other": "Seeds",
+  "sidebarQuote": {
+    "ariaLabel": "Quote of the day",
+    "label": "Quote of the day"
+  },
+  "settingsLink": "Settings",
+  "profileMenu": {
+    "ariaLabel": "Account menu",
+    "profile": "Profile"
+  },
+  "visitorMenu": {
+    "ariaLabel": "Visitor menu",
+    "switchPerson": "Switch person"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "We dug the whole flowerbed and this page just didn't sprout here.",
+    "backButton": "Back to the Timer"
+  }
+}

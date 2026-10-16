@@ -1,4 +1,5 @@
 import { useId } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useLofiPlayer } from '../../context/LofiPlayerContext'
 import { formatMMSS } from '../../lib/timerLogic'
 import { LOFI_TRACKS } from '../../lib/soundCatalog'
@@ -46,6 +47,7 @@ const LOOP_BUTTON_ACTIVE_CLASSES = `${TRANSPORT_BUTTON_BASE} border border-trans
  * transporte + barra de progresso arrastável no centro, volume à direita.
  */
 export function LofiPlayerBar() {
+  const { t } = useTranslation('sound')
   const {
     track,
     trackIndex,
@@ -91,7 +93,7 @@ export function LofiPlayerBar() {
           />
           <div className="min-w-0 flex-1">
             <label htmlFor={trackSelectId} className="sr-only">
-              Escolher faixa lo-fi
+              {t('selectTrack')}
             </label>
             <select
               id={trackSelectId}
@@ -106,8 +108,8 @@ export function LofiPlayerBar() {
                 </option>
               ))}
             </select>
-            <p title={`Crédito: ${track.credit}`} className="truncate text-style-label-sm text-text-muted">
-              Crédito: {track.credit}
+            <p title={t('credit', { credit: track.credit })} className="truncate text-style-label-sm text-text-muted">
+              {t('credit', { credit: track.credit })}
             </p>
           </div>
         </div>
@@ -121,7 +123,7 @@ export function LofiPlayerBar() {
               type="button"
               className={TRANSPORT_BUTTON_CLASSES}
               onClick={handlePrevious}
-              aria-label="Faixa anterior"
+              aria-label={t('previous')}
             >
               ⏮
             </button>
@@ -129,7 +131,7 @@ export function LofiPlayerBar() {
               type="button"
               className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-text-h text-bg transition-transform active:scale-95 lg:h-10 lg:w-10"
               onClick={handlePlayPause}
-              aria-label={isPlaying ? 'Pausar música de fundo' : 'Tocar música de fundo'}
+              aria-label={isPlaying ? t('pause') : t('play')}
             >
               {isPlaying ? '⏸' : '▶'}
             </button>
@@ -137,7 +139,7 @@ export function LofiPlayerBar() {
               type="button"
               className={TRANSPORT_BUTTON_CLASSES}
               onClick={handleNext}
-              aria-label="Próxima música de fundo"
+              aria-label={t('next')}
             >
               ⏭
             </button>
@@ -146,7 +148,7 @@ export function LofiPlayerBar() {
               className={isLoopEnabled ? LOOP_BUTTON_ACTIVE_CLASSES : TRANSPORT_BUTTON_CLASSES}
               onClick={toggleLoop}
               aria-pressed={isLoopEnabled}
-              aria-label={isLoopEnabled ? 'Desativar repetição da faixa atual' : 'Repetir a faixa atual'}
+              aria-label={isLoopEnabled ? t('loopOff') : t('loopOn')}
             >
               <LoopIcon className="h-4 w-4" />
             </button>
@@ -162,7 +164,7 @@ export function LofiPlayerBar() {
               step={1}
               value={Math.min(currentTime, duration || 0)}
               onChange={(e) => seek(Number(e.target.value))}
-              aria-label="Progresso da faixa"
+              aria-label={t('progress')}
             />
             <span className="text-style-label-sm text-text-muted">{formatMMSS(duration)}</span>
           </div>
@@ -170,7 +172,7 @@ export function LofiPlayerBar() {
 
         {/* Direita: volume — só desktop, igual ao mini player mobile do Spotify (que esconde o volume). */}
         <div className="hidden shrink-0 items-center gap-2 lg:flex lg:w-[160px] lg:justify-end">
-          <span aria-hidden="true" title="Volume">
+          <span aria-hidden="true" title={t('volume')}>
             {volumeIcon(volume)}
           </span>
           <input
@@ -181,7 +183,7 @@ export function LofiPlayerBar() {
             step={0.05}
             value={volume}
             onChange={(e) => setVolume(Number(e.target.value))}
-            aria-label="Volume da música de fundo"
+            aria-label={t('volumeControl')}
           />
         </div>
       </div>

@@ -1,0 +1,108 @@
+{
+  "session": {
+    "foco": "Enfoque",
+    "descanso_curto": "Pausa corta",
+    "descanso_longo": "Pausa larga"
+  },
+  "notifications": {
+    "nextActionFocus": "Hora de una pausa.",
+    "nextActionBreak": "Hora de enfocarte.",
+    "sessionCompleted": "¡{{label}} completado! {{nextAction}}"
+  },
+  "rewards": {
+    "message": "+{{xp}} XP · +{{seeds}} 🌱 {{seedsLabel}}",
+    "leveledUp": "{{rewardMessage}} · ¡Subiste al Nivel {{level}}! 🎉",
+    "achievementUnlocked": "Logro desbloqueado: {{name}} — {{description}}"
+  },
+  "errors": {
+    "generic": "No pudimos registrar la sesión. Tus datos no se perdieron.",
+    "durationTooShort": "Ese bloque de {{label}} duró menos que el mínimo de {{min}} min, por eso no entra en tu historial. No es un error — puedes seguir normalmente.",
+    "durationTooLong": "Ese bloque de {{label}} superó el máximo de {{max}} min, por eso no entra en tu historial. No es un error — puedes seguir normalmente."
+  },
+  "controls": {
+    "restartSession": "Reiniciar sesión",
+    "pause": "Pausar",
+    "resume": "Continuar",
+    "startFocus": "Comenzar Enfoque",
+    "startBreak": "Comenzar Pausa",
+    "finalize": "Finalizar tiempo",
+    "finalizeDialog": {
+      "title": "¿Finalizar tiempo?",
+      "body": "Está bien hacer una pausa — el tiempo enfocado hasta ahora se guardará en tu historial.",
+      "cancel": "Cancelar",
+      "confirm": "Finalizar"
+    }
+  },
+  "display": {
+    "cycle": "Ciclo {{current}} de {{total}}"
+  },
+  "modeSwitcher": {
+    "ariaLabel": "Tipo de período",
+    "locked": "Modo bloqueado durante la sesión. Pausa o termina para cambiar.",
+    "sequenceLockedReason": "Fuera de orden — sigue la secuencia del Pomodoro Clásico",
+    "sequenceNotice": "Sigue la secuencia del Pomodoro: ahora solo puedes avanzar a {{nextLabel}}.",
+    "optionFoco": "Enfoque {{minutes}}m",
+    "optionShortBreak": "Pausa Corta {{minutes}}m",
+    "optionLongBreak": "Pausa Larga {{minutes}}m",
+    "confirmDialog": {
+      "title": "¿Cambiar de modo?",
+      "body": "Cambiar de modo terminará la sesión actual. El tiempo ya enfocado se guardará.",
+      "cancel": "Continuar sesión",
+      "confirm": "Cambiar y terminar"
+    }
+  },
+  "flexibleModeToggle": {
+    "ariaLabel": "Enfoque o pausa",
+    "focus": "🌱 Enfoque",
+    "break": "☕ Pausa"
+  },
+  "durationPicker": {
+    "titleFocus": "¿Cuánto tiempo quieres plantar?",
+    "titleBreak": "¿Cuánto tiempo de pausa te viene bien ahora?",
+    "confirmVerbFocus": "Comenzar enfoque de",
+    "confirmVerbBreak": "Comenzar pausa de",
+    "decrease": "Disminuir {{minuteCount}}",
+    "increase": "Aumentar {{minuteCount}}",
+    "sliderLabelFocus": "Duración del enfoque",
+    "sliderLabelBreak": "Duración de la pausa",
+    "endsAt": "Termina a las {{time}}",
+    "dragHint": "Arrastra el anillo a cualquier tiempo entre {{min}} y {{max}} min",
+    "presetsAriaLabel": "Duraciones sugeridas",
+    "confirmButton": "▶ {{verb}} {{minutes}} min"
+  },
+  "flexibleFocusView": {
+    "addedTime": "+{{minutes}} min añadidos",
+    "nextSpecies": "Se convertirá en {{name}} {{emoji}}"
+  },
+  "addMinutesButton": "+{{minutes}} min",
+  "postFocusChoices": {
+    "title": "¡Enfoque completado!",
+    "subtitle": "Tu {{species}} nació. ¿Qué sigue?",
+    "extendTitle": "¿Sigues con el ritmo?",
+    "extendSubtitle": "Extiende este mismo enfoque"
+  },
+  "postBreakChoices": {
+    "title": "¡Pausa completada! ¿Listo para volver?"
+  },
+  "flexibleEnded": {
+    "title": "Sesión terminada 🌼",
+    "summary_one": "Completaste {{count}} enfoque ({{duration}}). ¡Buen trabajo!",
+    "summary_other": "Completaste {{count}} enfoques ({{duration}}). ¡Buen trabajo!",
+    "noFocus": "¡Hasta la próxima sesión!",
+    "startNew": "Comenzar nueva sesión"
+  },
+  "timerModeToggle": {
+    "label": "Elige tu modo",
+    "ariaLabel": "Modo del timer",
+    "lockTooltip": "Modo bloqueado mientras la sesión está en marcha, en enfoque o en pausa, para no perder tu ciclo. Termina la sesión para cambiar.",
+    "classicTitle": "Pomodoro Clásico",
+    "classicDescription": "La forma tradicional de cultivar el enfoque.",
+    "flexibleTitle": "Personalizado",
+    "flexibleDescription": "Planta a tu propio ritmo."
+  },
+  "dismissWarning": "Cerrar aviso",
+  "retryRegistration": "Intentar de nuevo",
+  "taskLoadError": "No pudimos cargar las tareas.",
+  "minuteCount_one": "{{count}} minuto",
+  "minuteCount_other": "{{count}} minutos"
+}

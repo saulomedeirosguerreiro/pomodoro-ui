@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next'
 import type { SessionType } from '../types/api'
 
 /** Valores de fábrica — ponto de partida de `DEFAULT_SETTINGS` e alvo do "Restaurar padrões". */
@@ -7,10 +8,8 @@ export const DEFAULT_SESSION_DURATIONS_SECONDS: Record<SessionType, number> = {
   descanso_longo: 15 * 60,
 }
 
-export const SESSION_LABELS: Record<SessionType, string> = {
-  foco: 'Foco',
-  descanso_curto: 'Pausa curta',
-  descanso_longo: 'Pausa longa',
+export function sessionLabel(t: TFunction, type: SessionType): string {
+  return t(`timer:session.${type}`)
 }
 
 export const FOCI_PER_LONG_BREAK = 4

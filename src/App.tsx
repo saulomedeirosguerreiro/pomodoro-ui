@@ -7,6 +7,7 @@ import { AuthProvider } from './context/AuthContext'
 import { DataSourceProvider } from './context/DataSourceContext'
 import { FlexibleTimerProvider } from './context/FlexibleTimerContext'
 import { GuestProvider } from './context/GuestContext'
+import { LanguageProvider } from './context/LanguageContext'
 import { LofiPlayerProvider } from './context/LofiPlayerContext'
 import { SessionRegistrationProvider } from './context/SessionRegistrationContext'
 import { SettingsProvider, useSettings } from './context/SettingsContext'
@@ -26,7 +27,6 @@ import { RegisterPage } from './routes/RegisterPage'
 import { TarefasPage } from './routes/TarefasPage'
 import { TermosDeUsoPage } from './routes/TermosDeUsoPage'
 import { TimerPage } from './routes/TimerPage'
-import { TweaksPage } from './routes/TweaksPage'
 
 /**
  * Liga/desliga o envio ao GA4 conforme a preferência (opt-out em Configurações, ligado por padrão —
@@ -65,45 +65,46 @@ function TimerScope() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <SettingsProvider>
-        <AnalyticsBootstrap />
-        <AuthProvider>
-          <GuestProvider>
-            <DataSourceProvider>
-              <Routes>
-                <Route element={<PublicOnlyRoute />}>
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/cadastro" element={<RegisterPage />} />
-                  <Route path="/esqueci-minha-senha" element={<ForgotPasswordPage />} />
-                </Route>
+    <LanguageProvider>
+      <ThemeProvider>
+        <SettingsProvider>
+          <AnalyticsBootstrap />
+          <AuthProvider>
+            <GuestProvider>
+              <DataSourceProvider>
+                <Routes>
+                  <Route element={<PublicOnlyRoute />}>
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/cadastro" element={<RegisterPage />} />
+                    <Route path="/esqueci-minha-senha" element={<ForgotPasswordPage />} />
+                  </Route>
 
-                <Route element={<ProtectedRoute />}>
-                  <Route element={<TimerScope />}>
-                    <Route element={<AppShell />}>
-                      <Route path="/timer" element={<TimerPage />} />
-                      <Route path="/tarefas" element={<TarefasPage />} />
-                      <Route path="/jardim" element={<JardimPage />} />
-                      <Route path="/conquistas" element={<ConquistasPage />} />
-                      <Route path="/configuracoes" element={<ConfiguracoesPage />} />
-                      <Route path="/perfil" element={<PerfilPage />} />
-                      <Route path="/tweaks" element={<TweaksPage />} />
-                      <Route path="/ajuda" element={<AjudaPage />} />
+                  <Route element={<ProtectedRoute />}>
+                    <Route element={<TimerScope />}>
+                      <Route element={<AppShell />}>
+                        <Route path="/timer" element={<TimerPage />} />
+                        <Route path="/tarefas" element={<TarefasPage />} />
+                        <Route path="/jardim" element={<JardimPage />} />
+                        <Route path="/conquistas" element={<ConquistasPage />} />
+                        <Route path="/configuracoes" element={<ConfiguracoesPage />} />
+                        <Route path="/perfil" element={<PerfilPage />} />
+                        <Route path="/ajuda" element={<AjudaPage />} />
+                      </Route>
                     </Route>
                   </Route>
-                </Route>
 
-                <Route path="/termos-de-uso" element={<TermosDeUsoPage />} />
-                <Route path="/privacidade" element={<PoliticaDePrivacidadePage />} />
+                  <Route path="/termos-de-uso" element={<TermosDeUsoPage />} />
+                  <Route path="/privacidade" element={<PoliticaDePrivacidadePage />} />
 
-                <Route path="/dashboard" element={<Navigate to="/timer" replace />} />
-                <Route path="/" element={<Navigate to="/timer" replace />} />
-                <Route path="*" element={<NotFoundPage />} />
-              </Routes>
-            </DataSourceProvider>
-          </GuestProvider>
-        </AuthProvider>
-      </SettingsProvider>
-    </ThemeProvider>
+                  <Route path="/dashboard" element={<Navigate to="/timer" replace />} />
+                  <Route path="/" element={<Navigate to="/timer" replace />} />
+                  <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+              </DataSourceProvider>
+            </GuestProvider>
+          </AuthProvider>
+        </SettingsProvider>
+      </ThemeProvider>
+    </LanguageProvider>
   )
 }

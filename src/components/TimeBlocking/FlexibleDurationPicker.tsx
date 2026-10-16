@@ -1,7 +1,7 @@
 import { useCallback, useId, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '../common/Button'
 import { SegmentedControl, type SegmentedOption } from '../common/SegmentedControl'
-import { pluralizeCount } from '../../lib/format'
 import { FlexibleModeToggle } from './FlexibleModeToggle'
 
 export type FlexibleDurationContext = 'foco' | 'pausa'
@@ -25,16 +25,6 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 const STEP_MINUTES = 5
 const ICON_BUTTON_CLASSES =
   'flex h-11 w-11 shrink-0 max-[480px]:h-9 max-[480px]:w-9 cursor-pointer items-center justify-center rounded-full border-2 border-border bg-surface text-[20px] text-text-h transition-[background-color,transform] duration-150 ease-out hover:bg-bg-subtle active:scale-95'
-
-const TITLES: Record<FlexibleDurationContext, string> = {
-  foco: 'Quanto tempo você quer plantar?',
-  pausa: 'Quanto tempo de pausa combina com você agora?',
-}
-
-const CONFIRM_VERBS: Record<FlexibleDurationContext, string> = {
-  foco: 'Começar foco de',
-  pausa: 'Começar pausa de',
-}
 
 const RING_CLASSES: Record<FlexibleDurationContext, { stroke: string; handle: string }> = {
   foco: { stroke: 'var(--color-primary)', handle: 'bg-primary' },
@@ -79,10 +69,13 @@ export function FlexibleDurationPicker({
   onConfirm,
   onSwitchContext,
 }: FlexibleDurationPickerProps) {
+  const { t } = useTranslation('timer')
   const ringContainerRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const customInputId = useId()
   const colors = RING_CLASSES[context]
+  const title = context === 'foco' ? t('durationPicker.titleFocus') : t('durationPicker.titleBreak')
+  const confirmVerb = context === 'foco' ? t('durationPicker.confirmVerbFocus') : t('durationPicker.confirmVerbBreak')
 
   const range = maxMinutes - minMinutes
   const fraction = range > 0 ? clamp((draftMinutes - minMinutes) / range, 0, 1) : 0
@@ -161,13 +154,13 @@ export function FlexibleDurationPicker({
           if (next !== context) onSwitchContext()
         }}
       />
-      <h2 className="text-center text-style-headline-sm text-text-h">{TITLES[context]}</h2>
+      <h2 className="text-center text-style-headline-sm text-text-h">{title}</h2>
 
       <div className="flex w-full items-center justify-center gap-3 rounded-2xl border border-border p-4 max-[480px]:gap-2 max-[480px]:p-2">
         <button
           type="button"
           className={ICON_BUTTON_CLASSES}
-          aria-label={`Diminuir ${pluralizeCount(STEP_MINUTES, 'minuto')}`}
+          aria-label={t('durationPicker.decrease', { minuteCount: t('minuteCount', { count: STEP_MINUTES }) })}
           onClick={() => onChooseCustom(clamp(draftMinutes - STEP_MINUTES, minMinutes, maxMinutes))}
         >
           −
@@ -205,11 +198,11 @@ export function FlexibleDurationPicker({
             id={customInputId}
             role="slider"
             tabIndex={0}
-            aria-label={context === 'foco' ? 'Duração do foco' : 'Duração da pausa'}
+            aria-label={context === 'foco' ? t('durationPicker.sliderLabelFocus') : t('durationPicker.sliderLabelBreak')}
             aria-valuemin={minMinutes}
             aria-valuemax={maxMinutes}
             aria-valuenow={draftMinutes}
-            aria-valuetext={pluralizeCount(draftMinutes, 'minuto')}
+            aria-valuetext={t('minuteCount', { count: draftMinutes })}
             onKeyDown={handleKeyDown}
             className={`absolute h-6 w-6 -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-full border-2 border-surface shadow-popover focus:outline-none focus:ring-4 focus:ring-primary-bg active:cursor-grabbing ${colors.handle}`}
             style={{ left: `${handleLeftPercent}%`, top: `${handleTopPercent}%` }}
@@ -223,14 +216,16 @@ export function FlexibleDurationPicker({
               <span className="text-style-display-timer-mobile text-text-h">{draftMinutes}</span>
               <span className="text-style-label-md text-text-muted">min</span>
             </span>
-            <span className="text-style-label-sm text-text-muted">Termina às {formatEndsAt(draftMinutes)}</span>
+            <span className="text-style-label-sm text-text-muted">
+              {t('durationPicker.endsAt', { time: formatEndsAt(draftMinutes) })}
+            </span>
           </div>
         </div>
 
         <button
           type="button"
           className={ICON_BUTTON_CLASSES}
-          aria-label={`Aumentar ${pluralizeCount(STEP_MINUTES, 'minuto')}`}
+          aria-label={t('durationPicker.increase', { minuteCount: t('minuteCount', { count: STEP_MINUTES }) })}
           onClick={() => onChooseCustom(clamp(draftMinutes + STEP_MINUTES, minMinutes, maxMinutes))}
         >
           +
@@ -238,7 +233,7 @@ export function FlexibleDurationPicker({
       </div>
 
       <p className="text-center text-style-body-sm text-text-muted">
-        Arraste o anel para qualquer tempo entre {minMinutes} e {maxMinutes} min
+        {t('durationPicker.dragHint', { min: minMinutes, max: maxMinutes })}
       </p>
 
       <div className="max-[480px]:hidden">
@@ -246,12 +241,12 @@ export function FlexibleDurationPicker({
           options={segmentedOptions}
           value={activePresetValue}
           onChange={(value) => onChoosePreset(Number(value))}
-          ariaLabel="Durações sugeridas"
+          ariaLabel={t('durationPicker.presetsAriaLabel')}
         />
       </div>
 
       <Button onClick={onConfirm} fullWidth>
-        ▶ {CONFIRM_VERBS[context]} {draftMinutes} min
+        {t('durationPicker.confirmButton', { verb: confirmVerb, minutes: draftMinutes })}
       </Button>
     </section>
   )

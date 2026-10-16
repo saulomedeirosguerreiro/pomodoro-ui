@@ -1,0 +1,12 @@
+{
+  "page": {
+    "title": "Logros",
+    "error": "No se pudieron cargar los logros.",
+    "unlockedTitle": "Desbloqueados",
+    "loading": "Cargando logros…",
+    "unlockedEmpty": "Sigue enfocándote — tu primer logro está a la vuelta de la esquina.",
+    "unlockedAt": "Desbloqueado el {{date}}",
+    "lockedTitle": "En progreso",
+    "lockedEmpty": "¡Has desbloqueado todos los logros disponibles!"
+  }
+}

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '../common/Button'
 import { TodaysGardenCard } from '../Garden/TodaysGardenCard'
 import { Mascot } from '../Mascot/Mascot'
@@ -22,6 +23,7 @@ import { TimerDisplay } from '../Timer/TimerDisplay'
  * trava de sequência sempre que o histórico tinha mais de 10 itens desde a última pausa longa).
  */
 export function ClassicTimerView() {
+  const { t } = useTranslation('timer')
   const timer = useTimerContext()
   const { dataSource } = useDataSource()
 
@@ -35,9 +37,9 @@ export function ClassicTimerView() {
       setTaskError(null)
       setTasks(items)
     } catch {
-      setTaskError('Não foi possível carregar as tarefas.')
+      setTaskError(t('taskLoadError'))
     }
-  }, [dataSource])
+  }, [dataSource, t])
 
   useEffect(() => {
     loadTasks()
@@ -112,14 +114,14 @@ export function ClassicTimerView() {
               type="button"
               onClick={timer.dismissRegistrationError}
               className="absolute right-2 top-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-danger"
-              aria-label="Fechar aviso"
+              aria-label={t('dismissWarning')}
             >
               ✕
             </button>
             <p>{timer.registrationError}</p>
             {timer.canRetryRegistration && (
               <Button variant="ghost" onClick={timer.retryRegistration}>
-                Tentar novamente
+                {t('retryRegistration')}
               </Button>
             )}
           </div>

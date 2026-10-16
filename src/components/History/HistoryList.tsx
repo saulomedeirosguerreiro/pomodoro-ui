@@ -1,6 +1,7 @@
+import { useTranslation } from 'react-i18next'
 import { Button } from '../common/Button'
 import { formatDateTime, formatDurationMinutes, statusLabel } from '../../lib/format'
-import { SESSION_LABELS } from '../../lib/timerLogic'
+import { sessionLabel } from '../../lib/timerLogic'
 import type { PomodoroSession } from '../../types/api'
 import { HistoryRowSkeleton } from './HistoryRowSkeleton'
 
@@ -13,12 +14,14 @@ interface HistoryListProps {
 const STATE_CLASSES = 'flex flex-col items-center gap-2 p-6 text-center text-text-muted'
 
 export function HistoryList({ items, error, onRetry }: HistoryListProps) {
+  const { t } = useTranslation(['history', 'timer'])
+
   if (error) {
     return (
       <div className={STATE_CLASSES}>
         <p>{error}</p>
         <Button variant="ghost" onClick={onRetry}>
-          Tentar novamente
+          {t('retry')}
         </Button>
       </div>
     )
@@ -27,7 +30,7 @@ export function HistoryList({ items, error, onRetry }: HistoryListProps) {
   if (items === null) {
     return (
       <div role="status" aria-live="polite" aria-busy="true">
-        <span className="sr-only">Carregando histórico…</span>
+        <span className="sr-only">{t('loading')}</span>
         <ul className="m-0 flex list-none flex-col gap-1 p-0">
           {Array.from({ length: 4 }, (_, index) => (
             <HistoryRowSkeleton key={index} />
@@ -38,7 +41,7 @@ export function HistoryList({ items, error, onRetry }: HistoryListProps) {
   }
 
   if (items.length === 0) {
-    return <p className={STATE_CLASSES}>Nenhuma sessão registrada ainda. Inicie um foco para começar.</p>
+    return <p className={STATE_CLASSES}>{t('empty')}</p>
   }
 
   return (
@@ -51,11 +54,11 @@ export function HistoryList({ items, error, onRetry }: HistoryListProps) {
           <span className="[font-variant-numeric:tabular-nums] text-text-muted max-[480px]:text-right max-[480px]:[grid-area:duration]">
             {formatDurationMinutes(session.durationSeconds)}
           </span>
-          <span className="max-[480px]:[grid-area:type]">{SESSION_LABELS[session.type]}</span>
+          <span className="max-[480px]:[grid-area:type]">{sessionLabel(t, session.type)}</span>
           <span
             className={`font-semibold max-[480px]:[grid-area:status] ${session.status === 'concluido' ? 'text-success' : 'text-danger'}`}
           >
-            {statusLabel(session.status)}
+            {statusLabel(t, session.status)}
           </span>
           <span className="text-[13px] text-text-muted max-[480px]:text-right max-[480px]:[grid-area:date]">
             {formatDateTime(session.completedAt)}

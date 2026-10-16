@@ -1,0 +1,85 @@
+{
+  "appName": "Guardião Pomodoro",
+  "tagline": "Horta em Crescimento",
+  "copyright": "© 2026 Guardião Pomodoro — Saulo Guerreiro",
+  "visitor": "Visitante",
+  "logout": "Sair",
+  "accessAccount": "Acessar minha conta",
+  "cancel": "Cancelar",
+  "nav": {
+    "ariaLabel": "Navegação principal",
+    "timer": "Timer",
+    "tasks": "Tarefas",
+    "garden": "Jardim de Foco",
+    "achievements": "Conquistas"
+  },
+  "greeting": "Olá, {{name}}! Vamos florescer hoje? 🌱",
+  "level": "Nível {{level}} • {{title}}",
+  "menu": {
+    "open": "Abrir menu",
+    "close": "Fechar menu",
+    "title": "Menu"
+  },
+  "dialogs": {
+    "logout": {
+      "title": "Sair da sua conta?",
+      "bodyRunning": "Há um período em andamento. Ele será perdido ao sair.",
+      "bodyIdle": "Você pode entrar novamente quando quiser.",
+      "confirm": "Sair"
+    },
+    "switchPerson": {
+      "title": "Trocar de pessoa neste dispositivo?",
+      "body": "Isso apaga as tarefas, sessões e conquistas salvas aqui como visitante — não há como recuperar depois. A próxima pessoa começa do zero.",
+      "confirm": "Trocar de pessoa"
+    }
+  },
+  "theme": {
+    "toLight": "Mudar para tema claro",
+    "toDark": "Mudar para tema escuro"
+  },
+  "language": {
+    "switcherLabel": "Idioma",
+    "pt-BR": "PT",
+    "en-US": "EN",
+    "es": "ES"
+  },
+  "notifications": {
+    "bellLabel": "Notificações",
+    "title": "Notificações",
+    "close": "Fechar notificações",
+    "empty": "Nenhum evento por aqui ainda."
+  },
+  "status": {
+    "concluido": "Concluído",
+    "interrompido": "Interrompido"
+  },
+  "today": "Hoje",
+  "yesterday": "Ontem",
+  "streak": {
+    "none": "Plante o 1º foco de hoje",
+    "days_one": "{{count}} dia seguido",
+    "days_other": "{{count}} dias seguidos"
+  },
+  "pomodoroCount_one": "{{count}} pomodoro",
+  "pomodoroCount_other": "{{count}} pomodoros",
+  "seedsLabel_one": "Semente",
+  "seedsLabel_other": "Sementes",
+  "sidebarQuote": {
+    "ariaLabel": "Frase do dia",
+    "label": "Frase do dia"
+  },
+  "settingsLink": "Configurações",
+  "profileMenu": {
+    "ariaLabel": "Menu da conta",
+    "profile": "Perfil"
+  },
+  "visitorMenu": {
+    "ariaLabel": "Menu do visitante",
+    "switchPerson": "Trocar de pessoa"
+  },
+  "notFound": {
+    "title": "Página não encontrada",
+    "body": "Cavei o canteiro inteiro e essa página não brotou por aqui.",
+    "backButton": "Voltar para o Timer"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "priority": {
+    "baixa": "Low",
+    "media": "Medium",
+    "alta": "High"
+  },
+  "status": {
+    "a_fazer": "To do",
+    "em_curso": "In progress",
+    "feito": "Done"
+  },
+  "newTask": "+ New Task",
+  "pomodoroCount_one": "{{count}} pomodoro",
+  "pomodoroCount_other": "{{count}} pomodoros",
+  "checklist": {
+    "title": "✅ Focus Checklist",
+    "viewAll": "View all",
+    "empty": "No pending tasks. How about creating the first one?",
+    "inFocus": "In focus",
+    "focusThis": "Focus on this"
+  },
+  "mission": {
+    "title": "🎯 Current Mission",
+    "empty": "Choose a task from the checklist below to focus on.",
+    "progress": "{{completed}} of {{pomodoroCount}}"
+  },
+  "form": {
+    "titleLabel": "Title",
+    "descriptionLabel": "Description (optional)",
+    "priorityLabel": "Priority",
+    "estimatedPomodorosLabel": "Estimated pomodoros",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving…",
+    "error": "Could not save the task. Please try again."
+  },
+  "page": {
+    "title": "Tasks",
+    "filterAriaLabel": "Filter by status",
+    "filterAll": "All",
+    "loading": "Loading tasks…",
+    "empty": "No tasks found.",
+    "error": "Could not load tasks.",
+    "markDone": "Mark as done",
+    "reopen": "Reopen",
+    "edit": "Edit",
+    "delete": "Delete"
+  }
+}

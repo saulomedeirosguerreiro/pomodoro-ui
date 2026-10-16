@@ -1,0 +1,89 @@
+{
+  "page": {
+    "title": "Configuración",
+    "subtitle": "Ajusta Guardião Pomodoro a tu manera."
+  },
+  "durations": {
+    "heading": "Tiempos",
+    "focusMinutes": "Enfoque (minutos)",
+    "shortBreakMinutes": "Pausa corta (minutos)",
+    "longBreakMinutes": "Pausa larga (minutos)",
+    "restoreDefaults": "Restaurar valores predeterminados"
+  },
+  "notifications": {
+    "heading": "Notificaciones",
+    "unsupported": "Tu navegador no admite notificaciones.",
+    "enable": "Activar notificaciones del navegador",
+    "denied": "Las notificaciones fueron bloqueadas en la configuración del navegador. Para activarlas, permítelas manualmente en los permisos del sitio.",
+    "granted": "Avisarme cuando termine una sesión (con la pestaña en segundo plano)"
+  },
+  "mascot": {
+    "heading": "Mascota",
+    "speech": "Frases del Tomatinho"
+  },
+  "accessibility": {
+    "heading": "Accesibilidad",
+    "reduceAnimations": "Reducir animaciones"
+  },
+  "sound": {
+    "heading": "Sonido",
+    "sessionEndSound": "Sonido al finalizar la sesión"
+  },
+  "appearance": {
+    "heading": "Apariencia",
+    "description": "Elige entre el tema claro y el oscuro.",
+    "languageLabel": "Idioma"
+  },
+  "helpAndLegal": {
+    "heading": "Ayuda y Legal",
+    "help": "Ayuda",
+    "terms": "Términos de Uso",
+    "privacy": "Privacidad"
+  },
+  "privacy": {
+    "heading": "Privacidad",
+    "analytics": "Compartir datos de uso anónimos (Google Analytics)",
+    "analyticsDescription": "Ayuda a entender cómo se usa la app, para mejorarla. Nunca incluye contraseña, correo electrónico ni el contenido de tus tareas/sesiones. Más detalles en la <0>Política de Privacidad</0>."
+  },
+  "wipeGuestData": {
+    "heading": "Borrar mis datos de este dispositivo",
+    "description": "Estás usando Guardião Pomodoro sin cuenta: las tareas, sesiones y logros se guardan solo en este navegador. Borrar los datos de este dispositivo los elimina para siempre — no hay forma de recuperarlos después. También es la forma de cambiar de persona en este dispositivo, por ejemplo para prestarlo a alguien que quiera usar la app desde cero (el mismo atajo está disponible en el menú del avatar, en la parte superior de la pantalla).",
+    "button": "Borrar mis datos de este dispositivo",
+    "confirmTitle": "¿Borrar todos los datos de este dispositivo?",
+    "confirmBody": "Esta acción no se puede deshacer. Las tareas, sesiones y logros guardados en este navegador se borrarán permanentemente.",
+    "confirmButton": "Borrar definitivamente"
+  },
+  "deleteAccount": {
+    "heading": "Eliminar cuenta",
+    "description": "Elimina tu cuenta y todo tu historial (sesiones, tareas, logros) para siempre. Esta acción no se puede deshacer.",
+    "button": "Eliminar mi cuenta",
+    "passwordLabel": "Confirma tu contraseña para eliminar la cuenta",
+    "submit": "Eliminar definitivamente",
+    "submitting": "Eliminando…",
+    "genericError": "No se pudo eliminar la cuenta. Inténtalo de nuevo."
+  },
+  "profile": {
+    "title": "Perfil",
+    "subtitle": "Cambia tu nombre o tu contraseña.",
+    "loadingProgress": "Cargando progreso…",
+    "editName": {
+      "heading": "Editar nombre",
+      "label": "Nombre",
+      "save": "Guardar nombre",
+      "saving": "Guardando…",
+      "success": "Nombre actualizado.",
+      "genericError": "No se pudo guardar el nombre. Inténtalo de nuevo."
+    },
+    "changePassword": {
+      "heading": "Cambiar contraseña",
+      "currentPasswordLabel": "Contraseña actual",
+      "newPasswordLabel": "Nueva contraseña",
+      "confirmPasswordLabel": "Confirmar nueva contraseña",
+      "save": "Guardar contraseña",
+      "saving": "Guardando…",
+      "success": "Contraseña actualizada.",
+      "mismatchError": "Las contraseñas no coinciden.",
+      "genericError": "No se pudo cambiar la contraseña. Inténtalo de nuevo."
+    }
+  }
+}

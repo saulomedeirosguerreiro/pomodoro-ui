@@ -1,93 +1,57 @@
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 const CARD_CLASSES = 'flex flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card'
 
-interface SectionConfig {
-  number: number
+const SECTION_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8] as const
+
+interface SectionContent {
   title: string
   body: string
 }
-
-const SECTIONS: SectionConfig[] = [
-  {
-    number: 1,
-    title: 'Dados que coletamos',
-    body: 'Ao criar uma conta, coletamos seu nome, e-mail e senha (armazenada apenas de forma criptografada, nunca em texto puro). Também armazenamos os dados que você gera usando o aplicativo: tarefas, sessões de foco e pausa, e seu progresso (nível, XP, conquistas). No modo convidado, esses mesmos dados ficam salvos apenas no armazenamento local do seu navegador, e nunca chegam aos nossos servidores.',
-  },
-  {
-    number: 2,
-    title: 'Finalidade do uso dos dados',
-    body: 'Usamos esses dados exclusivamente para fornecer e melhorar o funcionamento do aplicativo: autenticar sua conta, exibir seu histórico e progresso, e manter suas preferências entre sessões.',
-  },
-  {
-    number: 3,
-    title: 'Não comercialização de dados',
-    body: 'Não vendemos nem alugamos seus dados pessoais a terceiros, e não os usamos para publicidade. O único compartilhamento de dados que fazemos com um serviço externo é o descrito na seção "Google Analytics" abaixo — uso agregado, não dados pessoais.',
-  },
-  {
-    number: 4,
-    title: 'Armazenamento local (localStorage)',
-    body: 'O aplicativo usa o armazenamento local do seu navegador (`localStorage`) para guardar preferências (como tema claro/escuro e durações de foco/pausa) e, no modo convidado, todo o seu histórico de uso. Esses dados não são cookies de rastreamento de terceiros — ficam só no seu navegador, a não ser que você crie uma conta e opte por importá-los.',
-  },
-  {
-    number: 5,
-    title: 'Google Analytics',
-    body: 'Usamos o Google Analytics (GA4) para entender, de forma agregada, como as pessoas usam o aplicativo — por exemplo, quais páginas são mais acessadas, quantos focos/pausas são concluídos, e quando alguém sobe de nível ou desbloqueia uma conquista. Isso NUNCA inclui seu nome, e-mail, senha ou o conteúdo das suas tarefas/sessões, e o GA4 não registra seu endereço IP completo. Essa coleta vem ativada por padrão, mas pode ser desativada a qualquer momento em Configurações > Privacidade — a partir daí, nenhum dado novo é enviado ao Google.',
-  },
-  {
-    number: 6,
-    title: 'Retenção e exclusão de dados',
-    body: 'Mantemos os dados da sua conta enquanto ela existir. Você pode solicitar a exclusão da sua conta e dos dados associados a qualquer momento. No modo convidado, a opção "Apagar meus dados deste dispositivo", em Configurações, remove permanentemente os dados salvos neste navegador.',
-  },
-  {
-    number: 7,
-    title: 'Seus direitos',
-    body: 'Em conformidade com a Lei Geral de Proteção de Dados (LGPD), você tem direito a acessar, corrigir, portar ou solicitar a exclusão dos seus dados pessoais, entrando em contato pelos canais indicados abaixo.',
-  },
-  {
-    number: 8,
-    title: 'Contato',
-    body: 'Dúvidas ou solicitações sobre esta Política de Privacidade podem ser enviadas para o e-mail de suporte informado na página inicial do aplicativo.',
-  },
-]
 
 /**
  * Página pública (fora de `AppShell`/`ProtectedRoute`): precisa funcionar tanto aberta a partir do
  * cadastro (sem sessão) quanto a partir do menu do app (logado).
  */
 export function PoliticaDePrivacidadePage() {
+  const { t } = useTranslation('legal')
+
   return (
     <div className="mx-auto flex min-h-svh max-w-[640px] flex-col gap-4 p-6">
       <header className="flex items-center justify-between gap-4">
         <p className="flex items-center gap-2 text-style-headline-sm text-primary-dark">
-          <span aria-hidden="true">🔒</span> Guardião Pomodoro
+          <span aria-hidden="true">🔒</span> {t('privacy.brand')}
         </p>
         <Link
           to="/timer"
           className="rounded-full border border-border px-3 py-1.5 text-style-label-md text-primary-dark no-underline transition-colors hover:bg-bg-subtle"
         >
-          Voltar
+          {t('privacy.back')}
         </Link>
       </header>
 
-      <h1>Política de Privacidade</h1>
+      <h1>{t('privacy.title')}</h1>
 
-      {SECTIONS.map((section) => (
-        <section key={section.number} className={CARD_CLASSES}>
-          <h2 className="flex items-center gap-2 text-style-headline-sm">
-            <span
-              aria-hidden="true"
-              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-bg text-style-label-sm text-primary-dark"
-            >
-              {section.number}
-            </span>
-            {section.title}
-          </h2>
-          <p className="text-style-body-md text-text">{section.body}</p>
-        </section>
-      ))}
+      {SECTION_NUMBERS.map((number) => {
+        const section = t(`privacy.sections.${number}`, { returnObjects: true }) as SectionContent
+        return (
+          <section key={number} className={CARD_CLASSES}>
+            <h2 className="flex items-center gap-2 text-style-headline-sm">
+              <span
+                aria-hidden="true"
+                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-bg text-style-label-sm text-primary-dark"
+              >
+                {number}
+              </span>
+              {section.title}
+            </h2>
+            <p className="text-style-body-md text-text">{section.body}</p>
+          </section>
+        )
+      })}
 
-      <p className="pt-2 text-center text-style-label-sm text-text-muted">© 2026 Guardião Pomodoro — Saulo Guerreiro</p>
+      <p className="pt-2 text-center text-style-label-sm text-text-muted">{t('privacy.footer')}</p>
     </div>
   )
 }

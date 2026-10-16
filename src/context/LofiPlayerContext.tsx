@@ -1,8 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { LOFI_TRACKS, type LofiTrackMeta } from '../lib/soundCatalog'
 import { useSettings } from './SettingsContext'
-
-const UNAVAILABLE_MESSAGE = 'Esse áudio ainda não está disponível nesta versão.'
 
 interface LofiPlayerContextValue {
   track: LofiTrackMeta
@@ -30,6 +29,7 @@ const LofiPlayerContext = createContext<LofiPlayerContextValue | undefined>(unde
  * autenticadas (só pausa se o usuário pausar, ou ao deslogar).
  */
 export function LofiPlayerProvider({ children }: { children: ReactNode }) {
+  const { t } = useTranslation('sound')
   const { settings, updateSettings } = useSettings()
   const [trackIndex, setTrackIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -57,10 +57,10 @@ export function LofiPlayerProvider({ children }: { children: ReactNode }) {
       ?.play()
       .then(() => setIsPlaying(true))
       .catch(() => {
-        setMessage(UNAVAILABLE_MESSAGE)
+        setMessage(t('unavailable'))
         setIsPlaying(false)
       })
-  }, [trackIndex])
+  }, [trackIndex, t])
 
   // Pausa ao desmontar (ex.: logout, que desmonta o TimerScope inteiro) — nunca fica tocando "escondido".
   useEffect(() => {
@@ -87,13 +87,13 @@ export function LofiPlayerProvider({ children }: { children: ReactNode }) {
         setIsPlaying(true)
       })
       .catch(() => {
-        setMessage(UNAVAILABLE_MESSAGE)
+        setMessage(t('unavailable'))
         setIsPlaying(false)
       })
   }
 
   function handleAudioError() {
-    setMessage(UNAVAILABLE_MESSAGE)
+    setMessage(t('unavailable'))
     setIsPlaying(false)
   }
 
@@ -104,7 +104,7 @@ export function LofiPlayerProvider({ children }: { children: ReactNode }) {
       if (!audio) return
       audio.currentTime = 0
       audio.play().catch(() => {
-        setMessage(UNAVAILABLE_MESSAGE)
+        setMessage(t('unavailable'))
         setIsPlaying(false)
       })
       return

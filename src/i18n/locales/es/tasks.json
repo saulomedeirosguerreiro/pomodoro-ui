@@ -1,0 +1,49 @@
+{
+  "priority": {
+    "baixa": "Baja",
+    "media": "Media",
+    "alta": "Alta"
+  },
+  "status": {
+    "a_fazer": "Por hacer",
+    "em_curso": "En curso",
+    "feito": "Hecho"
+  },
+  "newTask": "+ Nueva Tarea",
+  "pomodoroCount_one": "{{count}} pomodoro",
+  "pomodoroCount_other": "{{count}} pomodoros",
+  "checklist": {
+    "title": "✅ Lista de Enfoque",
+    "viewAll": "Ver todas",
+    "empty": "No hay tareas pendientes. ¿Qué tal crear la primera?",
+    "inFocus": "En foco",
+    "focusThis": "Enfocar esta"
+  },
+  "mission": {
+    "title": "🎯 Misión del Momento",
+    "empty": "Elige una tarea de la lista de abajo para enfocarte en ella.",
+    "progress": "{{completed}} de {{pomodoroCount}}"
+  },
+  "form": {
+    "titleLabel": "Título",
+    "descriptionLabel": "Descripción (opcional)",
+    "priorityLabel": "Prioridad",
+    "estimatedPomodorosLabel": "Estimación de pomodoros",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "error": "No se pudo guardar la tarea. Inténtalo de nuevo."
+  },
+  "page": {
+    "title": "Tareas",
+    "filterAriaLabel": "Filtrar por estado",
+    "filterAll": "Todas",
+    "loading": "Cargando tareas…",
+    "empty": "No se encontraron tareas.",
+    "error": "No se pudieron cargar las tareas.",
+    "markDone": "Marcar como hecha",
+    "reopen": "Reabrir",
+    "edit": "Editar",
+    "delete": "Eliminar"
+  }
+}

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router-dom'
 import { AuthLayout } from '../components/common/AuthLayout'
 import { Banner } from '../components/common/Banner'
@@ -16,6 +17,7 @@ import { tokenStorage } from '../lib/tokenStorage'
 import { ApiError } from '../types/api'
 
 export function RegisterPage() {
+  const { t } = useTranslation('auth')
   const navigate = useNavigate()
   const { guest, clearGuestData } = useGuest()
   const { login, refreshProfile } = useAuth()
@@ -36,12 +38,12 @@ export function RegisterPage() {
     setFormError(null)
 
     if (password !== confirmPassword) {
-      setFieldErrors({ confirmPassword: 'As senhas não conferem.' })
+      setFieldErrors({ confirmPassword: t('register.passwordMismatch') })
       return
     }
 
     if (!acceptedTerms) {
-      setFieldErrors({ acceptedTerms: 'Você precisa aceitar os Termos de Uso e a Política de Privacidade.' })
+      setFieldErrors({ acceptedTerms: t('register.termsRequired') })
       return
     }
 
@@ -60,7 +62,7 @@ export function RegisterPage() {
           acceptedTerms: err.fieldMessage('AcceptedTerms') ?? '',
         })
       } else {
-        setFormError('Não foi possível criar a conta. Tente novamente.')
+        setFormError(t('register.genericError'))
       }
       setIsSubmitting(false)
       return
@@ -76,7 +78,7 @@ export function RegisterPage() {
         navigate('/login', {
           state: {
             email,
-            message: 'Conta criada, mas não foi possível entrar automaticamente. Informe sua senha para continuar.',
+            message: t('register.autoLoginFailed'),
           },
         })
       } finally {
@@ -109,7 +111,7 @@ export function RegisterPage() {
       navigate('/login', {
         state: {
           email,
-          message: 'Conta criada, mas não foi possível importar seus dados locais agora. Entre para tentar novamente.',
+          message: t('register.importFailed'),
         },
       })
       return
@@ -125,12 +127,12 @@ export function RegisterPage() {
   }
 
   return (
-    <AuthLayout title="Criar conta">
+    <AuthLayout title={t('register.title')}>
       {formError && <Banner kind="error" message={formError} />}
 
       <form onSubmit={handleSubmit} noValidate>
         <FormField
-          label="Nome"
+          label={t('register.nameLabel')}
           name="name"
           autoComplete="name"
           required
@@ -139,7 +141,7 @@ export function RegisterPage() {
           error={fieldErrors.name}
         />
         <FormField
-          label="E-mail"
+          label={t('register.emailLabel')}
           name="email"
           type="email"
           autoComplete="email"
@@ -149,7 +151,7 @@ export function RegisterPage() {
           error={fieldErrors.email}
         />
         <FormField
-          label="Senha"
+          label={t('register.passwordLabel')}
           name="password"
           type="password"
           autoComplete="new-password"
@@ -159,7 +161,7 @@ export function RegisterPage() {
           error={fieldErrors.password}
         />
         <FormField
-          label="Confirmação de senha"
+          label={t('register.confirmPasswordLabel')}
           name="confirmPassword"
           type="password"
           autoComplete="new-password"
@@ -174,17 +176,18 @@ export function RegisterPage() {
             checked={acceptedTerms}
             onChange={setAcceptedTerms}
             label={
-              <>
-                Li e aceito os{' '}
-                <Link to="/termos-de-uso" target="_blank" rel="noopener noreferrer" className="text-primary-dark">
-                  Termos de Uso
-                </Link>{' '}
-                e a{' '}
-                <Link to="/privacidade" target="_blank" rel="noopener noreferrer" className="text-primary-dark">
-                  Política de Privacidade
-                </Link>
-                .
-              </>
+              <Trans
+                t={t}
+                i18nKey="register.acceptTerms"
+                components={{
+                  termsLink: (
+                    <Link to="/termos-de-uso" target="_blank" rel="noopener noreferrer" className="text-primary-dark" />
+                  ),
+                  privacyLink: (
+                    <Link to="/privacidade" target="_blank" rel="noopener noreferrer" className="text-primary-dark" />
+                  ),
+                }}
+              />
             }
           />
           {fieldErrors.acceptedTerms && (
@@ -195,12 +198,12 @@ export function RegisterPage() {
         </div>
 
         <Button type="submit" fullWidth disabled={isSubmitting || !acceptedTerms}>
-          {isSubmitting ? 'Criando…' : 'Cadastrar'}
+          {isSubmitting ? t('register.submitting') : t('register.submit')}
         </Button>
       </form>
 
       <Link to="/login" className="mt-4 block text-center [font:700_13px/18px_var(--font-sans)] text-primary-dark">
-        Já tenho conta
+        {t('register.alreadyHaveAccount')}
       </Link>
 
       {migrationReport && <MigrationReport result={migrationReport} onDismiss={handleDismissReport} />}

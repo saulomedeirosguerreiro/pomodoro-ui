@@ -1,0 +1,25 @@
+{
+  "ariaLabel": "Promotion",
+  "pageIndicator": "{{current}} of {{total}}",
+  "dotAriaLabel": "Show promotion {{index}}",
+  "items": {
+    "budai-app": {
+      "label": "App",
+      "title": "BudAI",
+      "description": "Organize your personal finances effortlessly",
+      "cta": "Check out BudAI"
+    },
+    "cla-da-grana": {
+      "label": "YouTube channel",
+      "title": "Clã da Grana",
+      "description": "Videos about money and investing",
+      "cta": "Subscribe to the channel"
+    },
+    "budai-instagram": {
+      "label": "Instagram",
+      "title": "BudAI on Instagram",
+      "description": "Finance tips in the feed and stories",
+      "cta": "Follow on Instagram"
+    }
+  }
+}

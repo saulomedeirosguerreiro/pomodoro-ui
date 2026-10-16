@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/common/Button'
 import { TomatoArt } from '../components/Mascot/TomatoArt'
@@ -7,6 +8,7 @@ import { TomatoArt } from '../components/Mascot/TomatoArt'
  * sessão — qualquer rota que não bate com nada cai aqui.
  */
 export function NotFoundPage() {
+  const { t } = useTranslation('common')
   const navigate = useNavigate()
 
   return (
@@ -46,13 +48,11 @@ export function NotFoundPage() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <h1 className="text-style-headline-xl text-text-h">Página não encontrada</h1>
-          <p className="text-style-body-md text-text-muted">
-            Cavei o canteiro inteiro e essa página não brotou por aqui.
-          </p>
+          <h1 className="text-style-headline-xl text-text-h">{t('notFound.title')}</h1>
+          <p className="text-style-body-md text-text-muted">{t('notFound.body')}</p>
         </div>
 
-        <Button onClick={() => navigate('/timer', { replace: true })}>Voltar para o Timer</Button>
+        <Button onClick={() => navigate('/timer', { replace: true })}>{t('notFound.backButton')}</Button>
       </div>
     </div>
   )

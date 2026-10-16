@@ -1,0 +1,14 @@
+{
+  "unavailable": "This audio isn't available in this version yet.",
+  "selectTrack": "Choose lo-fi track",
+  "credit": "Credit: {{credit}}",
+  "previous": "Previous track",
+  "play": "Play background music",
+  "pause": "Pause background music",
+  "next": "Next background track",
+  "loopOn": "Repeat current track",
+  "loopOff": "Turn off track repeat",
+  "progress": "Track progress",
+  "volume": "Volume",
+  "volumeControl": "Background music volume"
+}

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useFlexibleTimerContext } from '../../context/FlexibleTimerContext'
 import { Button } from '../common/Button'
 
@@ -9,16 +10,17 @@ import { Button } from '../common/Button'
  * na tela de escolher duração (`FlexibleDurationPicker`).
  */
 export function FlexiblePostBreakChoices() {
+  const { t } = useTranslation('timer')
   const { backToFocus, startBreak } = useFlexibleTimerContext()
 
   return (
     <section className="flex w-full flex-col items-center gap-4 rounded-2xl border border-border bg-surface p-6 text-center shadow-card">
-      <h2 className="text-style-headline-sm text-text-h">Pausa concluída! Pronto para voltar?</h2>
+      <h2 className="text-style-headline-sm text-text-h">{t('postBreakChoices.title')}</h2>
 
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <Button onClick={backToFocus}>🌱 Foco</Button>
+        <Button onClick={backToFocus}>{t('flexibleModeToggle.focus')}</Button>
         <Button variant="secondary" onClick={startBreak}>
-          ☕ Pausa
+          {t('flexibleModeToggle.break')}
         </Button>
       </div>
     </section>

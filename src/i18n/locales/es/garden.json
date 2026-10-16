@@ -1,0 +1,21 @@
+{
+  "harvestCount_one": "{{count}} cosecha",
+  "harvestCount_other": "{{count}} cosechas",
+  "todaysGarden": {
+    "title": "🌱 Jardín de Enfoque de Hoy",
+    "description": "¡Cada sesión completada hace florecer un nuevo amigo en tu huerto!",
+    "empty": "Tu huerto está esperando la primera semilla de hoy.",
+    "matured": "Maduro",
+    "seedling": "Semilla",
+    "sprouting": "Brotando"
+  },
+  "page": {
+    "title": "Jardín de Enfoque",
+    "collectionTitle": "Mi colección",
+    "loading": "Cargando colección…",
+    "collectionEmpty": "Todavía no se ha cosechado ninguna planta. Completa un foco para empezar.",
+    "historyTitle": "Historial completo",
+    "loadMore": "Ver más",
+    "error": "No se pudo cargar el historial."
+  }
+}

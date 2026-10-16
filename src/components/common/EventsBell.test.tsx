@@ -3,8 +3,11 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import * as TimerContextModule from '../../context/TimerContext'
 import type { AppEvent } from '../../context/TimerContext'
+import i18n from '../../i18n'
 import { formatEventTimestamp } from '../../lib/format'
 import { EventsBell } from './EventsBell'
+
+const t = i18n.t.bind(i18n)
 
 function mockEvents(events: AppEvent[], markEventsSeen = vi.fn()) {
   vi.spyOn(TimerContextModule, 'useTimerContext').mockReturnValue({
@@ -57,9 +60,9 @@ describe('EventsBell', () => {
 
     expect(screen.getByRole('dialog', { name: 'Notificações' })).toBeInTheDocument()
     expect(screen.getByText('Conquista desbloqueada: Primeira Semente')).toBeInTheDocument()
-    expect(screen.getByText(formatEventTimestamp(achievementCreatedAt))).toBeInTheDocument()
+    expect(screen.getByText(formatEventTimestamp(t, achievementCreatedAt))).toBeInTheDocument()
     expect(screen.getByText('Nível 2 alcançado!')).toBeInTheDocument()
-    expect(screen.getByText(formatEventTimestamp(levelCreatedAt))).toBeInTheDocument()
+    expect(screen.getByText(formatEventTimestamp(t, levelCreatedAt))).toBeInTheDocument()
     expect(screen.getByText('🏆')).toBeInTheDocument()
     expect(screen.getByText('⭐')).toBeInTheDocument()
     expect(markEventsSeen).toHaveBeenCalledTimes(1)

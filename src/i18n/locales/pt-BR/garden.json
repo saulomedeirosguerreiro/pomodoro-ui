@@ -1,0 +1,21 @@
+{
+  "harvestCount_one": "{{count}} colheita",
+  "harvestCount_other": "{{count}} colheitas",
+  "todaysGarden": {
+    "title": "🌱 Jardim de Foco de Hoje",
+    "description": "Cada sessão completada faz florescer um amigo no seu canteiro!",
+    "empty": "Seu canteiro está esperando a primeira semente de hoje.",
+    "matured": "Maduro",
+    "seedling": "Semente",
+    "sprouting": "Brotando"
+  },
+  "page": {
+    "title": "Jardim de Foco",
+    "collectionTitle": "Minha coleção",
+    "loading": "Carregando coleção…",
+    "collectionEmpty": "Nenhuma planta colhida ainda. Conclua um foco para começar.",
+    "historyTitle": "Histórico completo",
+    "loadMore": "Ver mais",
+    "error": "Não foi possível carregar o histórico."
+  }
+}

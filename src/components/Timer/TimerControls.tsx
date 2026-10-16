@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '../common/Button'
 import { Dialog } from '../common/Dialog'
 import type { SessionType } from '../../types/api'
@@ -18,12 +19,6 @@ interface TimerControlsProps {
   onFinalize: () => void
 }
 
-const START_LABEL: Record<SessionType, string> = {
-  foco: 'Começar Foco',
-  descanso_curto: 'Começar Pausa',
-  descanso_longo: 'Começar Pausa',
-}
-
 export function TimerControls({
   type,
   phase,
@@ -34,6 +29,7 @@ export function TimerControls({
   onRestart,
   onFinalize,
 }: TimerControlsProps) {
+  const { t } = useTranslation('timer')
   const [confirmingFinalize, setConfirmingFinalize] = useState(false)
 
   function handleConfirmFinalize() {
@@ -41,40 +37,40 @@ export function TimerControls({
     setConfirmingFinalize(false)
   }
 
+  const startLabel = type === 'foco' ? t('controls.startFocus') : t('controls.startBreak')
+
   return (
     <div className="flex flex-wrap items-center justify-center gap-4 pb-6">
       <button
         type="button"
         className={ICON_BUTTON_CLASSES}
         onClick={onRestart}
-        title="Reiniciar sessão"
-        aria-label="Reiniciar sessão"
+        title={t('controls.restartSession')}
+        aria-label={t('controls.restartSession')}
       >
         ↺
       </button>
 
       {phase === 'rodando' ? (
-        <Button onClick={onPause}>Pausar</Button>
+        <Button onClick={onPause}>{t('controls.pause')}</Button>
       ) : phase === 'pausado' ? (
-        <Button onClick={onResume}>Continuar</Button>
+        <Button onClick={onResume}>{t('controls.resume')}</Button>
       ) : (
-        <Button onClick={onStart}>{START_LABEL[type]}</Button>
+        <Button onClick={onStart}>{startLabel}</Button>
       )}
 
       <Button variant="ghost" onClick={() => setConfirmingFinalize(true)} disabled={!canFinalize}>
-        Finalizar tempo
+        {t('controls.finalize')}
       </Button>
 
       {confirmingFinalize && (
-        <Dialog titleText="Finalizar tempo?" onDismiss={() => setConfirmingFinalize(false)}>
-          <p className="mb-4 text-style-body-sm text-text-muted">
-            Tudo bem fazer uma pausa — o tempo focado até aqui já vai para o seu histórico.
-          </p>
+        <Dialog titleText={t('controls.finalizeDialog.title')} onDismiss={() => setConfirmingFinalize(false)}>
+          <p className="mb-4 text-style-body-sm text-text-muted">{t('controls.finalizeDialog.body')}</p>
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setConfirmingFinalize(false)}>
-              Cancelar
+              {t('controls.finalizeDialog.cancel')}
             </Button>
-            <Button onClick={handleConfirmFinalize}>Finalizar</Button>
+            <Button onClick={handleConfirmFinalize}>{t('controls.finalizeDialog.confirm')}</Button>
           </div>
         </Dialog>
       )}

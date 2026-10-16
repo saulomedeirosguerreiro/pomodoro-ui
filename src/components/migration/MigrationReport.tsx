@@ -1,6 +1,7 @@
+import type { TFunction } from 'i18next'
+import { useTranslation } from 'react-i18next'
 import { Button } from '../common/Button'
 import { Dialog } from '../common/Dialog'
-import { pluralize } from '../../lib/format'
 import type { ImportGuestDataResponse, ImportSkippedItem } from '../../lib/migrationService'
 
 interface MigrationReportProps {
@@ -12,28 +13,29 @@ interface MigrationReportProps {
  *  `CreatePomodoroValidator`/`CreateTaskHandler`) para algo que não soe como um erro da conta —
  *  o mais comum de longe é duração fora da faixa (ex.: "Encerrar agora" poucos segundos após
  *  iniciar), o mesmo caso já explicado de forma amigável em `describeRegistrationError`. Motivos
- *  não mapeados caem no texto original do backend como fallback. */
-const FRIENDLY_REASONS: Record<string, string> = {
-  'Duração fora da faixa permitida para o tipo informado.':
-    'duração muito curta ou muito longa pra esse tipo de sessão — não é um erro, só não entra no histórico',
-  'Esta sessão se sobrepõe a outra já registrada.': 'período sobreposto a uma sessão já registrada',
+ *  não mapeados caem no texto original do backend como fallback. As chaves são os textos crus que o
+ *  backend devolve (sempre em pt-BR) — não são conteúdo traduzível em si, só o índice do mapa. */
+const FRIENDLY_REASON_KEYS: Record<string, string> = {
+  'Duração fora da faixa permitida para o tipo informado.': 'migration.report.friendlyReasons.durationOutOfRange',
+  'Esta sessão se sobrepõe a outra já registrada.': 'migration.report.friendlyReasons.overlappingSession',
 }
 
-function friendlyReason(reason: string): string {
-  return FRIENDLY_REASONS[reason] ?? reason
+function friendlyReason(t: TFunction, reason: string): string {
+  const key = FRIENDLY_REASON_KEYS[reason]
+  return key ? t(key) : reason
 }
 
-function itemLabel(itemType: ImportSkippedItem['itemType'], count: number): string {
-  return itemType === 'task' ? pluralize(count, 'tarefa') : pluralize(count, 'sessão', 'sessões')
+function itemLabel(t: TFunction, itemType: ImportSkippedItem['itemType'], count: number): string {
+  return itemType === 'task' ? t('migration.report.taskCount', { count }) : t('migration.report.sessionCount', { count })
 }
 
 /** Agrupa itens pulados por (tipo + motivo já traduzido) — evita repetir a mesma linha técnica
  *  3x quando, por exemplo, 3 sessões curtas demais caem no mesmo motivo. */
-function groupSkipped(skipped: ImportSkippedItem[]) {
+function groupSkipped(t: TFunction, skipped: ImportSkippedItem[]) {
   const groups = new Map<string, { itemType: ImportSkippedItem['itemType']; reason: string; count: number }>()
 
   for (const item of skipped) {
-    const reason = friendlyReason(item.reason)
+    const reason = friendlyReason(t, item.reason)
     const key = `${item.itemType}-${reason}`
     const existing = groups.get(key)
     if (existing) {
@@ -48,32 +50,33 @@ function groupSkipped(skipped: ImportSkippedItem[]) {
 
 /** Só é mostrado quando `result.skipped.length > 0` — quem não teve nenhum item problemático não vê tela nenhuma. */
 export function MigrationReport({ result, onDismiss }: MigrationReportProps) {
+  const { t } = useTranslation('auth')
   const importedCount = result.tasksImported + result.sessionsImported
   const skippedCount = result.skipped.length
-  const groups = groupSkipped(result.skipped)
+  const groups = groupSkipped(t, result.skipped)
 
   return (
-    <Dialog titleText="Conta criada! 🎉" onDismiss={onDismiss}>
+    <Dialog titleText={t('migration.report.title')} onDismiss={onDismiss}>
       <div className="mb-4 flex items-center gap-3 rounded-lg border border-secondary bg-secondary-bg p-3">
         <span aria-hidden="true" className="shrink-0 text-[28px]">
           🌱
         </span>
         <p className="text-style-body-md text-secondary-dark">
           {importedCount === 0
-            ? 'Sua conta está pronta — é só começar a plantar foco.'
-            : `Trouxemos ${importedCount} ${pluralize(importedCount, 'item', 'itens')} que você já tinha neste navegador.`}
+            ? t('migration.report.readyNoItems')
+            : t('migration.report.broughtItems', { count: importedCount })}
         </p>
       </div>
 
       {skippedCount > 0 && (
         <div className="mb-4 rounded-lg bg-bg-subtle p-3">
           <p className="mb-2 text-style-body-sm text-text-muted">
-            {`Só ${skippedCount} ${pluralize(skippedCount, 'item', 'itens')} ${pluralize(skippedCount, 'ficou', 'ficaram')} de fora:`}
+            {t('migration.report.skippedSummary', { count: skippedCount })}
           </p>
           <ul className="m-0 flex list-none flex-col gap-1 p-0 text-style-body-sm text-text-muted">
             {groups.map((group) => (
               <li key={`${group.itemType}-${group.reason}`}>
-                {group.count} {itemLabel(group.itemType, group.count)} — {group.reason}
+                {itemLabel(t, group.itemType, group.count)} — {group.reason}
               </li>
             ))}
           </ul>
@@ -81,7 +84,7 @@ export function MigrationReport({ result, onDismiss }: MigrationReportProps) {
       )}
 
       <Button onClick={onDismiss} fullWidth>
-        Entendi
+        {t('migration.report.dismiss')}
       </Button>
     </Dialog>
   )

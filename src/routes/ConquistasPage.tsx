@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { AchievementRowSkeleton } from '../components/Achievements/AchievementRowSkeleton'
 import { ProgressBar } from '../components/common/ProgressBar'
 import { useDataSource } from '../context/DataSourceContext'
@@ -8,6 +9,7 @@ import type { Achievement } from '../types/api'
 const CARD_CLASSES = 'flex flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card'
 
 export function ConquistasPage() {
+  const { t } = useTranslation('achievements')
   const { dataSource } = useDataSource()
   const [achievements, setAchievements] = useState<Achievement[] | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -19,9 +21,9 @@ export function ConquistasPage() {
       setError(null)
       setAchievements(items)
     } catch {
-      setError('Não foi possível carregar as conquistas.')
+      setError(t('page.error'))
     }
-  }, [dataSource])
+  }, [dataSource, t])
 
   useEffect(() => {
     load()
@@ -32,21 +34,21 @@ export function ConquistasPage() {
 
   return (
     <div className="mx-auto flex max-w-[720px] flex-col gap-4">
-      <h1>Conquistas</h1>
+      <h1>{t('page.title')}</h1>
 
       {error && <p className="text-style-body-sm text-danger">{error}</p>}
 
       <section className={CARD_CLASSES}>
-        <h2 className="text-style-headline-sm">Desbloqueadas</h2>
+        <h2 className="text-style-headline-sm">{t('page.unlockedTitle')}</h2>
         {achievements === null ? (
           <ul className="flex list-none flex-col gap-2 m-0 p-0" role="status" aria-live="polite" aria-busy="true">
-            <span className="sr-only">Carregando conquistas…</span>
+            <span className="sr-only">{t('page.loading')}</span>
             {Array.from({ length: 2 }, (_, index) => (
               <AchievementRowSkeleton key={index} />
             ))}
           </ul>
         ) : unlocked.length === 0 ? (
-          <p className="text-style-body-sm text-text-muted">Continue focando — sua primeira conquista está logo ali.</p>
+          <p className="text-style-body-sm text-text-muted">{t('page.unlockedEmpty')}</p>
         ) : (
           <ul className="flex list-none flex-col gap-2 m-0 p-0">
             {unlocked.map((achievement) => (
@@ -61,7 +63,7 @@ export function ConquistasPage() {
                   <p className="text-style-label-md text-text-h">{achievement.name}</p>
                   <p className="text-style-body-sm text-text-muted">{achievement.description}</p>
                   <p className="text-style-label-sm text-secondary-dark">
-                    Desbloqueada em {formatDateTime(achievement.unlockedAt!)}
+                    {t('page.unlockedAt', { date: formatDateTime(achievement.unlockedAt!) })}
                   </p>
                 </div>
               </li>
@@ -71,16 +73,16 @@ export function ConquistasPage() {
       </section>
 
       <section className={CARD_CLASSES}>
-        <h2 className="text-style-headline-sm">Em progresso</h2>
+        <h2 className="text-style-headline-sm">{t('page.lockedTitle')}</h2>
         {achievements === null ? (
           <ul className="flex list-none flex-col gap-2 m-0 p-0" role="status" aria-live="polite" aria-busy="true">
-            <span className="sr-only">Carregando conquistas…</span>
+            <span className="sr-only">{t('page.loading')}</span>
             {Array.from({ length: 2 }, (_, index) => (
               <AchievementRowSkeleton key={index} locked />
             ))}
           </ul>
         ) : locked.length === 0 ? (
-          <p className="text-style-body-sm text-text-muted">Você desbloqueou todas as conquistas disponíveis!</p>
+          <p className="text-style-body-sm text-text-muted">{t('page.lockedEmpty')}</p>
         ) : (
           <ul className="flex list-none flex-col gap-2 m-0 p-0">
             {locked.map((achievement) => (

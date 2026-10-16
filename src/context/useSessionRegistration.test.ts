@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import type { SessionRegistration } from '../components/Timer/useTimer'
+import i18n from '../i18n'
 import { ApiError } from '../types/api'
 import { describeRegistrationError } from './useSessionRegistration'
+
+const t = i18n.t.bind(i18n)
 
 function buildRegistration(overrides: Partial<SessionRegistration> = {}): SessionRegistration {
   return {
@@ -22,7 +25,7 @@ describe('describeRegistrationError', () => {
       fields: [{ field: 'DurationSeconds', message: 'fora da faixa' }],
     })
 
-    const result = describeRegistrationError(error, buildRegistration({ durationSeconds: 10 }))
+    const result = describeRegistrationError(t, error, buildRegistration({ durationSeconds: 10 }))
 
     expect(result.retryable).toBe(false)
     expect(result.message).toContain('durou menos que o mínimo')
@@ -35,7 +38,7 @@ describe('describeRegistrationError', () => {
       fields: [{ field: 'DurationSeconds', message: 'fora da faixa' }],
     })
 
-    const result = describeRegistrationError(error, buildRegistration({ durationSeconds: 999 * 60 }))
+    const result = describeRegistrationError(t, error, buildRegistration({ durationSeconds: 999 * 60 }))
 
     expect(result.retryable).toBe(false)
     expect(result.message).toContain('passou do máximo')
@@ -50,7 +53,7 @@ describe('describeRegistrationError', () => {
       message: 'A duração informada está fora da tolerância permitida para este tipo de sessão.',
     })
 
-    const result = describeRegistrationError(error, buildRegistration({ type: 'foco', durationSeconds: 3 }))
+    const result = describeRegistrationError(t, error, buildRegistration({ type: 'foco', durationSeconds: 3 }))
 
     expect(result.retryable).toBe(false)
     expect(result.message).toContain('durou menos que o mínimo')
@@ -62,7 +65,7 @@ describe('describeRegistrationError', () => {
       message: 'A duração informada está fora da tolerância permitida para este tipo de sessão.',
     })
 
-    const result = describeRegistrationError(error, buildRegistration({ type: 'descanso_curto', durationSeconds: 40 * 60 }))
+    const result = describeRegistrationError(t, error, buildRegistration({ type: 'descanso_curto', durationSeconds: 40 * 60 }))
 
     expect(result.retryable).toBe(false)
     expect(result.message).toContain('passou do máximo')
@@ -71,7 +74,7 @@ describe('describeRegistrationError', () => {
   it('ApiError de outro tipo (ex.: overlap) cai no texto genérico, reenviável', () => {
     const error = new ApiError(409, { code: 'overlap', message: 'Sobreposição.' })
 
-    const result = describeRegistrationError(error, buildRegistration())
+    const result = describeRegistrationError(t, error, buildRegistration())
 
     expect(result.retryable).toBe(true)
     expect(result.message).toBe('Não foi possível registrar a sessão. Seus dados não foram perdidos.')
@@ -84,14 +87,14 @@ describe('describeRegistrationError', () => {
       fields: [{ field: 'TaskId', message: 'inválido' }],
     })
 
-    const result = describeRegistrationError(error, buildRegistration())
+    const result = describeRegistrationError(t, error, buildRegistration())
 
     expect(result.retryable).toBe(true)
     expect(result.message).toBe('Não foi possível registrar a sessão. Seus dados não foram perdidos.')
   })
 
   it('erro que não é ApiError (ex.: falha de rede) cai no texto genérico, reenviável', () => {
-    const result = describeRegistrationError(new TypeError('Failed to fetch'), buildRegistration())
+    const result = describeRegistrationError(t, new TypeError('Failed to fetch'), buildRegistration())
 
     expect(result.retryable).toBe(true)
     expect(result.message).toBe('Não foi possível registrar a sessão. Seus dados não foram perdidos.')

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '../components/common/Button'
 import { GardenTileSkeleton } from '../components/Garden/GardenTileSkeleton'
 import { HistoryList } from '../components/History/HistoryList'
@@ -10,6 +11,7 @@ const PAGE_SIZE = 10
 const CARD_CLASSES = 'flex flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card'
 
 export function JardimPage() {
+  const { t } = useTranslation('garden')
   const { dataSource } = useDataSource()
   const [items, setItems] = useState<PomodoroSession[] | null>(null)
   const [totalCount, setTotalCount] = useState(0)
@@ -24,10 +26,10 @@ export function JardimPage() {
         setTotalCount(page.totalCount)
         setItems((prev) => (append && prev ? [...prev, ...page.items] : page.items))
       } catch {
-        setError('Não foi possível carregar o histórico.')
+        setError(t('page.error'))
       }
     },
-    [dataSource],
+    [dataSource, t],
   )
 
   useEffect(() => {
@@ -55,10 +57,10 @@ export function JardimPage() {
 
   return (
     <div className="mx-auto flex max-w-[720px] flex-col gap-4">
-      <h1>Jardim de Foco</h1>
+      <h1>{t('page.title')}</h1>
 
       <section className={CARD_CLASSES}>
-        <h2 className="text-style-headline-sm">Minha coleção</h2>
+        <h2 className="text-style-headline-sm">{t('page.collectionTitle')}</h2>
         {items === null ? (
           <div
             className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2"
@@ -66,13 +68,13 @@ export function JardimPage() {
             aria-live="polite"
             aria-busy="true"
           >
-            <span className="sr-only">Carregando coleção…</span>
+            <span className="sr-only">{t('page.loading')}</span>
             {Array.from({ length: 6 }, (_, index) => (
               <GardenTileSkeleton key={index} />
             ))}
           </div>
         ) : collection.length === 0 ? (
-          <p className="text-style-body-sm text-text-muted">Nenhuma planta colhida ainda. Conclua um foco para começar.</p>
+          <p className="text-style-body-sm text-text-muted">{t('page.collectionEmpty')}</p>
         ) : (
           <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2">
             {collection.map((species) => (
@@ -92,11 +94,11 @@ export function JardimPage() {
       </section>
 
       <section className={CARD_CLASSES}>
-        <h2 className="text-style-headline-sm">Histórico completo</h2>
+        <h2 className="text-style-headline-sm">{t('page.historyTitle')}</h2>
         <HistoryList items={items} error={error} onRetry={() => load(0, false)} />
         {hasMore && !error && (
           <Button variant="ghost" fullWidth onClick={handleLoadMore}>
-            Ver mais
+            {t('page.loadMore')}
           </Button>
         )}
       </section>

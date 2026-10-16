@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useSettings } from '../../context/SettingsContext'
 import { useFlexibleTimerContext } from '../../context/FlexibleTimerContext'
 import { speciesForIndex } from '../../lib/gardenSpecies'
@@ -26,6 +27,7 @@ const ADD_TIME_OPTIONS_MINUTES = [5, 10] as const
  * (`gardenSpecies.ts`) antecipa qual vai florescer quando o bloco completar.
  */
 export function FlexibleFocusView() {
+  const { t } = useTranslation('timer')
   const flexible = useFlexibleTimerContext()
   const { settings } = useSettings()
 
@@ -83,28 +85,32 @@ export function FlexibleFocusView() {
           </span>
           <span className="text-style-display-timer-mobile text-text-h">{formatMMSS(remainingSeconds)}</span>
           <span className="text-style-label-sm text-text-muted">
-            Vai virar {nextSpecies.name} {nextSpecies.emoji}
+            {t('flexibleFocusView.nextSpecies', { name: nextSpecies.name, emoji: nextSpecies.emoji })}
           </span>
         </div>
       </div>
 
       {addedSeconds > 0 && (
         <span className="rounded-full bg-tertiary-bg px-2.5 py-1 text-style-label-sm text-on-tertiary-chip">
-          +{Math.round(addedSeconds / 60)} min adicionados
+          {t('flexibleFocusView.addedTime', { minutes: Math.round(addedSeconds / 60) })}
         </span>
       )}
 
       <div className="flex flex-wrap items-center justify-center gap-4">
-        {isPaused ? <Button onClick={resume}>Continuar</Button> : <Button onClick={pause}>Pausar</Button>}
+        {isPaused ? (
+          <Button onClick={resume}>{t('controls.resume')}</Button>
+        ) : (
+          <Button onClick={pause}>{t('controls.pause')}</Button>
+        )}
 
         {ADD_TIME_OPTIONS_MINUTES.map((minutes) => (
           <Button key={minutes} variant="secondary" onClick={() => addTime(minutes * 60)}>
-            +{minutes} min
+            {t('addMinutesButton', { minutes })}
           </Button>
         ))}
 
         <Button variant="ghost" onClick={endCurrentBlockNow}>
-          Finalizar tempo
+          {t('controls.finalize')}
         </Button>
       </div>
     </section>

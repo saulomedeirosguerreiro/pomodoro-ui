@@ -1,0 +1,21 @@
+{
+  "harvestCount_one": "{{count}} harvest",
+  "harvestCount_other": "{{count}} harvests",
+  "todaysGarden": {
+    "title": "🌱 Today's Focus Garden",
+    "description": "Every completed session makes a new friend bloom in your garden bed!",
+    "empty": "Your garden bed is waiting for today's first seed.",
+    "matured": "Ripe",
+    "seedling": "Seed",
+    "sprouting": "Sprouting"
+  },
+  "page": {
+    "title": "Focus Garden",
+    "collectionTitle": "My collection",
+    "loading": "Loading collection…",
+    "collectionEmpty": "No plants harvested yet. Complete a focus session to get started.",
+    "historyTitle": "Full history",
+    "loadMore": "Load more",
+    "error": "Could not load history."
+  }
+}

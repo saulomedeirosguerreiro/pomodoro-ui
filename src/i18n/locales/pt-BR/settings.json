@@ -1,0 +1,89 @@
+{
+  "page": {
+    "title": "Configurações",
+    "subtitle": "Ajuste o Guardião Pomodoro do seu jeito."
+  },
+  "durations": {
+    "heading": "Tempos",
+    "focusMinutes": "Foco (minutos)",
+    "shortBreakMinutes": "Pausa curta (minutos)",
+    "longBreakMinutes": "Pausa longa (minutos)",
+    "restoreDefaults": "Restaurar padrões"
+  },
+  "notifications": {
+    "heading": "Notificações",
+    "unsupported": "Seu navegador não suporta notificações.",
+    "enable": "Ativar notificações do navegador",
+    "denied": "As notificações foram bloqueadas nas configurações do navegador. Para ativar, permita-as manualmente nas permissões do site.",
+    "granted": "Avisar quando uma sessão terminar (com a aba em segundo plano)"
+  },
+  "mascot": {
+    "heading": "Mascote",
+    "speech": "Falas do Tomatinho"
+  },
+  "accessibility": {
+    "heading": "Acessibilidade",
+    "reduceAnimations": "Reduzir animações"
+  },
+  "sound": {
+    "heading": "Som",
+    "sessionEndSound": "Som ao final da sessão"
+  },
+  "appearance": {
+    "heading": "Aparência",
+    "description": "Escolha entre o tema claro e escuro.",
+    "languageLabel": "Idioma"
+  },
+  "helpAndLegal": {
+    "heading": "Ajuda e Legal",
+    "help": "Ajuda",
+    "terms": "Termos de Uso",
+    "privacy": "Privacidade"
+  },
+  "privacy": {
+    "heading": "Privacidade",
+    "analytics": "Compartilhar dados de uso anônimos (Google Analytics)",
+    "analyticsDescription": "Ajuda a entender como o app é usado, pra melhorá-lo. Nunca inclui senha, e-mail ou conteúdo de tarefas/sessões. Detalhes na <0>Política de Privacidade</0>."
+  },
+  "wipeGuestData": {
+    "heading": "Apagar meus dados deste dispositivo",
+    "description": "Você está usando o Guardião Pomodoro sem conta: tarefas, sessões e conquistas ficam salvas só neste navegador. Apagar os dados deste dispositivo os remove para sempre — não há como recuperá-los depois. É também como você troca de pessoa neste aparelho, por exemplo pra emprestar pra alguém usar o app do zero (o mesmo atalho está disponível no menu do avatar, no topo da tela).",
+    "button": "Apagar meus dados deste dispositivo",
+    "confirmTitle": "Apagar todos os dados deste dispositivo?",
+    "confirmBody": "Essa ação não pode ser desfeita. Tarefas, sessões e conquistas salvas neste navegador serão apagadas permanentemente.",
+    "confirmButton": "Apagar definitivamente"
+  },
+  "deleteAccount": {
+    "heading": "Excluir conta",
+    "description": "Remove sua conta e todo o histórico (sessões, tarefas, conquistas) para sempre. Essa ação não pode ser desfeita.",
+    "button": "Excluir minha conta",
+    "passwordLabel": "Confirme sua senha para excluir a conta",
+    "submit": "Excluir definitivamente",
+    "submitting": "Excluindo…",
+    "genericError": "Não foi possível excluir a conta. Tente novamente."
+  },
+  "profile": {
+    "title": "Perfil",
+    "subtitle": "Troque seu nome ou sua senha.",
+    "loadingProgress": "Carregando progresso…",
+    "editName": {
+      "heading": "Editar nome",
+      "label": "Nome",
+      "save": "Salvar nome",
+      "saving": "Salvando…",
+      "success": "Nome atualizado.",
+      "genericError": "Não foi possível salvar o nome. Tente novamente."
+    },
+    "changePassword": {
+      "heading": "Alterar senha",
+      "currentPasswordLabel": "Senha atual",
+      "newPasswordLabel": "Nova senha",
+      "confirmPasswordLabel": "Confirmar nova senha",
+      "save": "Salvar senha",
+      "saving": "Salvando…",
+      "success": "Senha atualizada.",
+      "mismatchError": "As senhas não conferem.",
+      "genericError": "Não foi possível trocar a senha. Tente novamente."
+    }
+  }
+}

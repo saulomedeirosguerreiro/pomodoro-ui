@@ -1,16 +1,15 @@
+import type { TFunction } from 'i18next'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { SessionRegistration } from '../components/Timer/useTimer'
 import { trackEvent } from '../lib/analytics'
-import { pluralize } from '../lib/format'
 import { getNotificationPermission, requestNotificationPermission, showSessionNotification } from '../lib/notifications'
 import { playSessionEndSound } from '../lib/sound'
-import { SESSION_DURATION_RANGE_MINUTES, SESSION_LABELS } from '../lib/timerLogic'
+import { SESSION_DURATION_RANGE_MINUTES, sessionLabel } from '../lib/timerLogic'
 import { ApiError } from '../types/api'
 import type { PomodoroSession, ProgressSummary, TaskItem } from '../types/api'
 import { useDataSource } from './DataSourceContext'
 import { useSettings } from './SettingsContext'
-
-const GENERIC_REGISTRATION_ERROR = 'Não foi possível registrar a sessão. Seus dados não foram perdidos.'
 
 export interface RegistrationErrorDescription {
   message: string
@@ -28,30 +27,34 @@ export interface RegistrationErrorDescription {
  * só o primeiro formato (como era antes) faz o modo guest cair sempre no texto genérico
  * "tente novamente" — que nunca ajuda aqui, porque reenviar falha de novo com a mesma duração.
  */
-export function describeRegistrationError(error: unknown, registration: SessionRegistration): RegistrationErrorDescription {
+export function describeRegistrationError(
+  t: TFunction,
+  error: unknown,
+  registration: SessionRegistration,
+): RegistrationErrorDescription {
   const isDurationError =
     error instanceof ApiError &&
     ((error.code === 'validation_error' && error.fieldMessage('DurationSeconds')) || error.code === 'invalid_duration')
 
   if (isDurationError) {
     const range = SESSION_DURATION_RANGE_MINUTES[registration.type]
-    const label = SESSION_LABELS[registration.type].toLowerCase()
+    const label = sessionLabel(t, registration.type).toLowerCase()
 
     if (registration.durationSeconds < range.min * 60) {
       return {
-        message: `Esse bloco de ${label} durou menos que o mínimo de ${range.min} min e por isso não entra no seu histórico. Não é um erro — pode seguir normalmente.`,
+        message: t('timer:errors.durationTooShort', { label, min: range.min }),
         retryable: false,
       }
     }
     if (registration.durationSeconds > range.max * 60) {
       return {
-        message: `Esse bloco de ${label} passou do máximo de ${range.max} min e por isso não entra no seu histórico. Não é um erro — pode seguir normalmente.`,
+        message: t('timer:errors.durationTooLong', { label, max: range.max }),
         retryable: false,
       }
     }
   }
 
-  return { message: GENERIC_REGISTRATION_ERROR, retryable: true }
+  return { message: t('timer:errors.generic'), retryable: true }
 }
 
 export interface AppEvent {
@@ -71,6 +74,7 @@ export interface AppEvent {
  * do modo flexível), já que `dataSource.createSession` repassa o payload inteiro.
  */
 export function useSessionRegistration() {
+  const { t } = useTranslation(['common', 'timer'])
   const { dataSource } = useDataSource()
   const { settings, updateSettings } = useSettings()
 
@@ -151,7 +155,10 @@ export function useSessionRegistration() {
           pushEvent({
             id: `achievement-${newlyUnlocked.code}`,
             type: 'achievement',
-            message: `Conquista desbloqueada: ${newlyUnlocked.name} — ${newlyUnlocked.description}`,
+            message: t('timer:rewards.achievementUnlocked', {
+              name: newlyUnlocked.name,
+              description: newlyUnlocked.description,
+            }),
           })
           trackEvent('achievement_unlocked', { achievement_code: newlyUnlocked.code })
         }
@@ -159,7 +166,7 @@ export function useSessionRegistration() {
     } catch {
       /* conquistas são um bônus; falha ao buscar não deve interromper o registro da sessão */
     }
-  }, [dataSource, pushEvent])
+  }, [dataSource, pushEvent, t])
 
   useEffect(() => {
     if (dataSource) {
@@ -212,8 +219,13 @@ export function useSessionRegistration() {
           // Dispara sempre que foco/pausa (curta ou longa) termina, com a aba focada ou não —
           // só depende da permissão já concedida (CA-002).
           if (settings.notificationsEnabled) {
-            const nextAction = registration.type === 'foco' ? 'Hora de uma pausa.' : 'Hora de focar.'
-            showSessionNotification('Guardião Pomodoro', `${SESSION_LABELS[registration.type]} concluído! ${nextAction}`)
+            const nextAction = t(
+              registration.type === 'foco' ? 'timer:notifications.nextActionFocus' : 'timer:notifications.nextActionBreak',
+            )
+            showSessionNotification(
+              t('common:appName'),
+              t('timer:notifications.sessionCompleted', { label: sessionLabel(t, registration.type), nextAction }),
+            )
           }
           if (settings.sessionEndSoundEnabled) {
             playSessionEndSound()
@@ -227,11 +239,15 @@ export function useSessionRegistration() {
             const xp = updated.totalXp - previous.totalXp
             const seeds = updated.seeds - previous.seeds
             const leveledUp = updated.level > previous.level
-            const rewardMessage = `+${xp} XP · +${seeds} 🌱 ${pluralize(seeds, 'Semente', 'Sementes')}`
+            const rewardMessage = t('timer:rewards.message', {
+              xp,
+              seeds,
+              seedsLabel: t('common:seedsLabel', { count: seeds }),
+            })
             pushEvent({
               id: `reward-${created.id}`,
               type: 'level',
-              message: leveledUp ? `${rewardMessage} · Subiu para o Nível ${updated.level}! 🎉` : rewardMessage,
+              message: leveledUp ? t('timer:rewards.leveledUp', { rewardMessage, level: updated.level }) : rewardMessage,
             })
             if (leveledUp) {
               trackEvent('level_up', { level: updated.level })
@@ -240,12 +256,12 @@ export function useSessionRegistration() {
           refreshAchievements()
         }
       } catch (error) {
-        const { message, retryable } = describeRegistrationError(error, registration)
+        const { message, retryable } = describeRegistrationError(t, error, registration)
         setPendingRegistration(retryable ? registration : null)
         setRegistrationError(message)
       }
     },
-    [dataSource, refreshTotalFociCompleted, refreshProgress, refreshAchievements, pushEvent, settings],
+    [dataSource, refreshTotalFociCompleted, refreshProgress, refreshAchievements, pushEvent, settings, t],
   )
 
   const retryRegistration = useCallback(() => {

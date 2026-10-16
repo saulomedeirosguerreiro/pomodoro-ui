@@ -1,11 +1,12 @@
 import { useEffect, useState, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useGuest } from '../../context/GuestContext'
 import { useSettings } from '../../context/SettingsContext'
 import { useTimerContext } from '../../context/TimerContext'
-import { formatHoursAndMinutes, pluralizeCount, streakLabel } from '../../lib/format'
-import { formatMMSS, SESSION_LABELS } from '../../lib/timerLogic'
+import { formatHoursAndMinutes, streakLabel } from '../../lib/format'
+import { formatMMSS, sessionLabel } from '../../lib/timerLogic'
 import type { ProgressSummary } from '../../types/api'
 import { LofiPlayerBar } from '../Sound/LofiPlayerBar'
 import { Badge } from './Badge'
@@ -13,6 +14,7 @@ import { BrandLogo } from './BrandLogo'
 import { Button } from './Button'
 import { Dialog } from './Dialog'
 import { EventsBell } from './EventsBell'
+import { LanguageSwitcher } from './LanguageSwitcher'
 import { LevelProgressSkeleton } from './LevelProgressSkeleton'
 import { ProfileMenu } from './ProfileMenu'
 import { ProgressBar } from './ProgressBar'
@@ -24,11 +26,11 @@ import { ThemeToggle } from './ThemeToggle'
 import { VisitorMenu } from './VisitorMenu'
 
 const NAV_ITEMS = [
-  { to: '/timer', label: 'Timer', icon: '⏱️' },
-  { to: '/tarefas', label: 'Tarefas', icon: '✅' },
-  { to: '/jardim', label: 'Jardim de Foco', icon: '🌱' },
-  { to: '/conquistas', label: 'Conquistas', icon: '🏆' },
-]
+  { to: '/timer', labelKey: 'nav.timer', icon: '⏱️' },
+  { to: '/tarefas', labelKey: 'nav.tasks', icon: '✅' },
+  { to: '/jardim', labelKey: 'nav.garden', icon: '🌱' },
+  { to: '/conquistas', labelKey: 'nav.achievements', icon: '🏆' },
+] as const
 
 const LINK_BASE_CLASSES =
   'flex items-center gap-2 whitespace-nowrap rounded-lg px-4 py-2.5 text-style-label-lg text-text-muted no-underline transition-colors duration-150 hover:bg-bg-subtle hover:text-text-h'
@@ -67,11 +69,13 @@ function SidebarContent({
   onNavigate,
   promoSlot,
 }: SidebarContentProps) {
+  const { t } = useTranslation('common')
+
   return (
     <>
       <div className="flex flex-col gap-1 p-1">
         <BrandLogo size="sm" />
-        <p className="pl-1 text-style-label-sm text-secondary-dark">Horta em Crescimento</p>
+        <p className="pl-1 text-style-label-sm text-secondary-dark">{t('tagline')}</p>
       </div>
 
       <div className="flex flex-col gap-2 rounded-lg border border-border bg-bg-subtle p-4">
@@ -79,7 +83,7 @@ function SidebarContent({
         {progress ? (
           <>
             <p className="text-style-label-sm text-primary-dark">
-              Nível {progress.level} • {progress.title}
+              {t('level', { level: progress.level, title: progress.title })}
             </p>
             <div className="flex items-center gap-2">
               <div className="flex-1">
@@ -98,18 +102,18 @@ function SidebarContent({
         )}
         {isAccount ? (
           <Button variant="ghost" fullWidth onClick={onLogout}>
-            Sair
+            {t('logout')}
           </Button>
         ) : (
           onAccessAccount && (
             <Button variant="ghost" fullWidth onClick={onAccessAccount}>
-              Acessar minha conta
+              {t('accessAccount')}
             </Button>
           )
         )}
       </div>
 
-      <nav className="flex flex-col gap-1" aria-label="Navegação principal">
+      <nav className="flex flex-col gap-1" aria-label={t('nav.ariaLabel')}>
         {NAV_ITEMS.map((item) => (
           <NavLink
             key={item.to}
@@ -118,7 +122,7 @@ function SidebarContent({
             className={({ isActive }) => `${LINK_BASE_CLASSES} ${isActive ? LINK_ACTIVE_CLASSES : ''}`}
           >
             <span aria-hidden="true">{item.icon}</span>
-            <span>{item.label}</span>
+            <span>{t(item.labelKey)}</span>
           </NavLink>
         ))}
       </nav>
@@ -127,14 +131,13 @@ function SidebarContent({
 
       {promoSlot}
 
-      <p className="mt-auto border-t border-border px-4 pt-3 text-style-label-sm text-text-muted">
-        © 2026 Guardião Pomodoro — Saulo Guerreiro
-      </p>
+      <p className="mt-auto border-t border-border px-4 pt-3 text-style-label-sm text-text-muted">{t('copyright')}</p>
     </>
   )
 }
 
 export function AppShell() {
+  const { t } = useTranslation('common')
   const { user, logout } = useAuth()
   const { guest, clearGuestData } = useGuest()
   const timer = useTimerContext()
@@ -152,7 +155,7 @@ export function AppShell() {
   // Sem identidade nenhuma (modal de boas-vindas pedindo o nome ainda aberto), mostra um placeholder:
   // `ProtectedRoute` já renderiza o shell por trás do modal, de propósito, para a pessoa ver a tela de
   // onde vai cair assim que informar o nome — não é um estado "quebrado" a esconder com `return null`.
-  const displayName = user?.name ?? guest?.name ?? 'Visitante'
+  const displayName = user?.name ?? guest?.name ?? t('visitor')
 
   const isTimerRunning = timer.phase !== 'parado'
   const isOnTimerPage = location.pathname === '/timer'
@@ -228,16 +231,16 @@ export function AppShell() {
           <div
             role="dialog"
             aria-modal="true"
-            aria-label="Menu"
+            aria-label={t('menu.title')}
             className="scroll-thin absolute inset-y-0 left-0 flex w-[280px] max-w-[85vw] flex-col gap-4 overflow-y-auto bg-surface p-4 shadow-popover"
           >
             <div className="flex items-center justify-between">
-              <span className="text-style-headline-sm text-text-h">Menu</span>
+              <span className="text-style-headline-sm text-text-h">{t('menu.title')}</span>
               <button
                 type="button"
                 onClick={() => setIsMenuOpen(false)}
                 className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-border bg-surface"
-                aria-label="Fechar menu"
+                aria-label={t('menu.close')}
               >
                 ✕
               </button>
@@ -266,24 +269,24 @@ export function AppShell() {
               type="button"
               onClick={() => setIsMenuOpen(true)}
               className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border bg-surface text-[18px] lg:hidden"
-              aria-label="Abrir menu"
+              aria-label={t('menu.open')}
             >
               ☰
             </button>
 
             <div className="flex min-w-0 flex-col gap-1">
-              <p className="text-style-label-lg text-text-h lg:hidden">Guardião Pomodoro</p>
+              <p className="text-style-label-lg text-text-h lg:hidden">{t('appName')}</p>
               <p className="hidden overflow-hidden text-ellipsis whitespace-nowrap text-style-label-lg text-text-h lg:block lg:text-style-headline-sm">
-                Olá, {firstName}! Vamos florescer hoje? 🌱
+                {t('greeting', { name: firstName })}
               </p>
               {progress ? (
                 <div className="hidden flex-wrap items-center gap-2 lg:flex">
                   <Badge variant={progress.streakDays > 0 ? 'highlight' : 'neutral'}>
-                    🔥 {streakLabel(progress.streakDays)}
+                    🔥 {streakLabel(t, progress.streakDays)}
                   </Badge>
                   {progress.todayFocusCount > 0 && (
                     <Badge variant="primary">
-                      🍅 {pluralizeCount(progress.todayFocusCount, 'pomodoro')} ({formatHoursAndMinutes(progress.todayFocusSeconds)})
+                      🍅 {t('pomodoroCount', { count: progress.todayFocusCount })} ({formatHoursAndMinutes(progress.todayFocusSeconds)})
                     </Badge>
                   )}
                 </div>
@@ -299,14 +302,17 @@ export function AppShell() {
           <div className="flex shrink-0 items-center gap-2">
             {!isOnTimerPage && isTimerRunning && (
               <span className="whitespace-nowrap rounded-full bg-primary-bg px-2 py-1.5 text-style-label-md text-primary-dark">
-                {SESSION_LABELS[timer.type]} {formatMMSS(timer.remainingSeconds)}
+                {sessionLabel(t, timer.type)} {formatMMSS(timer.remainingSeconds)}
               </span>
             )}
             {!isAccount && (
               <div className="hidden lg:block">
-                <Button onClick={() => navigate('/login')}>Acessar minha conta</Button>
+                <Button onClick={() => navigate('/login')}>{t('accessAccount')}</Button>
               </div>
             )}
+            <div className="hidden lg:block">
+              <LanguageSwitcher />
+            </div>
             <EventsBell />
             <ThemeToggle />
             {isAccount ? (
@@ -332,32 +338,27 @@ export function AppShell() {
       </div>
 
       {isLogoutDialogOpen && (
-        <Dialog titleText="Sair da sua conta?" onDismiss={() => setIsLogoutDialogOpen(false)}>
+        <Dialog titleText={t('dialogs.logout.title')} onDismiss={() => setIsLogoutDialogOpen(false)}>
           <p className="text-style-body-sm text-text-muted">
-            {isTimerRunning
-              ? 'Há um período em andamento. Ele será perdido ao sair.'
-              : 'Você pode entrar novamente quando quiser.'}
+            {isTimerRunning ? t('dialogs.logout.bodyRunning') : t('dialogs.logout.bodyIdle')}
           </p>
           <div className="mt-4 flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setIsLogoutDialogOpen(false)}>
-              Cancelar
+              {t('cancel')}
             </Button>
-            <Button onClick={confirmLogout}>Sair</Button>
+            <Button onClick={confirmLogout}>{t('dialogs.logout.confirm')}</Button>
           </div>
         </Dialog>
       )}
 
       {isSwitchPersonDialogOpen && (
-        <Dialog titleText="Trocar de pessoa neste dispositivo?" onDismiss={() => setIsSwitchPersonDialogOpen(false)}>
-          <p className="text-style-body-sm text-text-muted">
-            Isso apaga as tarefas, sessões e conquistas salvas aqui como visitante — não há como recuperar depois. A
-            próxima pessoa começa do zero.
-          </p>
+        <Dialog titleText={t('dialogs.switchPerson.title')} onDismiss={() => setIsSwitchPersonDialogOpen(false)}>
+          <p className="text-style-body-sm text-text-muted">{t('dialogs.switchPerson.body')}</p>
           <div className="mt-4 flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setIsSwitchPersonDialogOpen(false)}>
-              Cancelar
+              {t('cancel')}
             </Button>
-            <Button onClick={confirmSwitchPerson}>Trocar de pessoa</Button>
+            <Button onClick={confirmSwitchPerson}>{t('dialogs.switchPerson.confirm')}</Button>
           </div>
         </Dialog>
       )}

@@ -1,0 +1,100 @@
+{
+  "terms": {
+    "brand": "Guardião Pomodoro",
+    "back": "Back",
+    "title": "Terms of Use",
+    "footer": "© 2026 Guardião Pomodoro — Saulo Guerreiro",
+    "sections": {
+      "1": {
+        "title": "Acceptance of the terms",
+        "body": "By creating an account or using Guardião Pomodoro, you agree to these Terms of Use and to our Privacy Policy. If you don't agree with any of these terms, you must not create an account or use the service."
+      },
+      "2": {
+        "title": "Description of the service",
+        "body": "Guardião Pomodoro is a personal productivity tool based on the Pomodoro technique, which lets you time focus and break periods, log tasks and track your progress over time."
+      },
+      "3": {
+        "title": "Guest mode and account mode",
+        "body": "You can use the app without creating an account (\"guest mode\"): your data is saved only in this browser, under your own responsibility — losing the browser or clearing your local data means losing that history. When you create an account, your data starts being stored on our servers, associated with your email and password."
+      },
+      "4": {
+        "title": "Account responsibilities",
+        "body": "You're responsible for keeping your password confidential and for all activities carried out with your account. Let us know immediately if you suspect unauthorized use."
+      },
+      "5": {
+        "title": "Acceptable use",
+        "body": "You agree not to use the service for illegal purposes, to try to access other users' data, or to interfere with the normal operation of the platform."
+      },
+      "6": {
+        "title": "Disclaimer of warranties and limitation of liability",
+        "body": "The service is provided \"as is\", without guarantees of continuous availability or absence of errors. To the maximum extent permitted by law, we are not liable for data loss, service interruptions or indirect damages arising from the use of the app."
+      },
+      "7": {
+        "title": "Changes to these terms",
+        "body": "We may update these Terms of Use periodically. Significant changes will be communicated within the app itself. Continued use of the service after a change implies agreement with the new terms."
+      },
+      "8": {
+        "title": "Contact",
+        "body": "Questions about these terms can be sent to the support email listed on the app's home page."
+      }
+    }
+  },
+  "privacy": {
+    "brand": "Guardião Pomodoro",
+    "back": "Back",
+    "title": "Privacy Policy",
+    "footer": "© 2026 Guardião Pomodoro — Saulo Guerreiro",
+    "sections": {
+      "1": {
+        "title": "Data we collect",
+        "body": "When you create an account, we collect your name, email and password (stored only in encrypted form, never as plain text). We also store the data you generate while using the app: tasks, focus and break sessions, and your progress (level, XP, achievements). In guest mode, this same data is saved only in your browser's local storage, and never reaches our servers."
+      },
+      "2": {
+        "title": "Purpose of data use",
+        "body": "We use this data exclusively to provide and improve the app's operation: authenticating your account, showing your history and progress, and keeping your preferences between sessions."
+      },
+      "3": {
+        "title": "No sale of data",
+        "body": "We don't sell or rent your personal data to third parties, and we don't use it for advertising. The only data sharing we do with an external service is the one described in the \"Google Analytics\" section below — aggregated usage, not personal data."
+      },
+      "4": {
+        "title": "Local storage (localStorage)",
+        "body": "The app uses your browser's local storage (`localStorage`) to keep preferences (such as light/dark theme and focus/break durations) and, in guest mode, your entire usage history. This data isn't third-party tracking cookies — it stays only on your browser, unless you create an account and choose to import it."
+      },
+      "5": {
+        "title": "Google Analytics",
+        "body": "We use Google Analytics (GA4) to understand, in aggregate, how people use the app — for example, which pages are visited most, how many focus/break sessions are completed, and when someone levels up or unlocks an achievement. This NEVER includes your name, email, password or the content of your tasks/sessions, and GA4 doesn't log your full IP address. This collection is enabled by default, but can be turned off at any time in Settings > Privacy — from then on, no new data is sent to Google."
+      },
+      "6": {
+        "title": "Data retention and deletion",
+        "body": "We keep your account data for as long as the account exists. You can request the deletion of your account and associated data at any time. In guest mode, the \"Erase my data on this device\" option, in Settings, permanently removes the data saved in this browser."
+      },
+      "7": {
+        "title": "Your rights",
+        "body": "In accordance with the Brazilian General Data Protection Law (LGPD), you have the right to access, correct, port or request the deletion of your personal data by contacting us through the channels listed below."
+      },
+      "8": {
+        "title": "Contact",
+        "body": "Questions or requests about this Privacy Policy can be sent to the support email listed on the app's home page."
+      }
+    }
+  },
+  "help": {
+    "title": "Help",
+    "subtitle": "How Guardião Pomodoro works behind the scenes.",
+    "pomodoroHeading": "The Pomodoro",
+    "pomodoroBody": "Each <0>Focus</0> period lasts {{focusDuration}}. After a focus, comes a <1>Short Break</1> of {{shortBreakDuration}} — except every {{longBreakEvery}}th focus, when a <2>Long Break</2> of {{longBreakDuration}} comes instead.",
+    "cycleHeading": "Cycle",
+    "cycleBody": "A full cycle is {{longBreakEvery}} focuses in a row followed by a long break. The timer shows \"Cycle N of {{longBreakEvery}}\" so you can keep track of where you are.",
+    "xpHeading": "XP and Level",
+    "xpBody": "Each completed focus is worth <0>{{focusXp}} XP</0>; each completed break is worth <1>{{restXp}} XP</1>. Interrupted sessions are worth no XP. You level up every {{xpMultiplier}} XP multiplied by your current level — that's why each level asks a bit more than the previous one.",
+    "seedsHeading": "Seeds",
+    "seedsBody": "Each completed focus yields <0>{{focusSeeds}}</0>, and completing a long break gives a bonus of <1>{{cycleSeeds}}</1> for closing the cycle.",
+    "streakHeading": "Streak",
+    "streakBody": "Your streak counts the consecutive days with at least one completed focus. It only \"breaks\" when a whole day goes by with no focus at all — an early-morning focus still saves the previous day.",
+    "gardenHeading": "Garden",
+    "gardenBody": "Each focus completed during the day plants a species in your Focus Garden, in rotation: {{species}}. The full collection is on the Garden page, along with your session history."
+  },
+  "seedCount_one": "{{count}} seed",
+  "seedCount_other": "{{count}} seeds"
+}

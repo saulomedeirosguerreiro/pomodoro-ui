@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Button } from '../common/Button'
 import { useFlexibleTimerContext } from '../../context/FlexibleTimerContext'
 import { speciesForIndex } from '../../lib/gardenSpecies'
@@ -17,6 +18,7 @@ const PILL_BUTTON_CLASSES =
  * `focusBlocksCompleted - 1`.
  */
 export function FlexiblePostFocusChoices() {
+  const { t } = useTranslation('timer')
   const { startBreak, startAnotherFocus, addTime, focusBlocksCompleted } = useFlexibleTimerContext()
   const species = speciesForIndex(Math.max(0, focusBlocksCompleted - 1))
 
@@ -30,28 +32,26 @@ export function FlexiblePostFocusChoices() {
       </div>
 
       <div>
-        <h2 className="text-style-headline-sm text-text-h">Foco concluído!</h2>
-        <p className="text-style-body-sm text-text-muted">
-          Seu {species.name} nasceu. O que vem agora?
-        </p>
+        <h2 className="text-style-headline-sm text-text-h">{t('postFocusChoices.title')}</h2>
+        <p className="text-style-body-sm text-text-muted">{t('postFocusChoices.subtitle', { species: species.name })}</p>
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <Button onClick={startAnotherFocus}>🌱 Foco</Button>
+        <Button onClick={startAnotherFocus}>{t('flexibleModeToggle.focus')}</Button>
         <Button variant="secondary" onClick={startBreak}>
-          ☕ Pausa
+          {t('flexibleModeToggle.break')}
         </Button>
       </div>
 
       <div className="flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-bg-subtle p-4 text-left">
         <div>
-          <p className="text-style-label-lg text-text-h">Ainda no ritmo?</p>
-          <p className="text-style-body-sm text-text-muted">Estenda este mesmo foco</p>
+          <p className="text-style-label-lg text-text-h">{t('postFocusChoices.extendTitle')}</p>
+          <p className="text-style-body-sm text-text-muted">{t('postFocusChoices.extendSubtitle')}</p>
         </div>
         <div className="flex gap-2">
           {ADD_TIME_OPTIONS_MINUTES.map((minutes) => (
             <button key={minutes} type="button" className={PILL_BUTTON_CLASSES} onClick={() => addTime(minutes * 60)}>
-              +{minutes} min
+              {t('addMinutesButton', { minutes })}
             </button>
           ))}
         </div>

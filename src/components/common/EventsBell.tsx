@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import { useTimerContext } from '../../context/TimerContext'
 import type { AppEvent } from '../../context/TimerContext'
 import { formatEventTimestamp } from '../../lib/format'
@@ -26,6 +27,7 @@ const EVENT_ICON_CLASSES: Record<AppEvent['type'], string> = {
  * ser comparado. O portal tira o painel de dentro do header, então ele compete como root-level.
  */
 export function EventsBell() {
+  const { t } = useTranslation('common')
   const { events, markEventsSeen } = useTimerContext()
   const [isOpen, setIsOpen] = useState(false)
   const unseenCount = events.filter((event) => !event.seen).length
@@ -65,7 +67,7 @@ export function EventsBell() {
         onClick={handleToggle}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
-        aria-label="Notificações"
+        aria-label={t('notifications.bellLabel')}
       >
         <span aria-hidden="true">🔔</span>
         {unseenCount > 0 && (
@@ -88,16 +90,16 @@ export function EventsBell() {
             <div
               role="dialog"
               aria-modal="true"
-              aria-label="Notificações"
+              aria-label={t('notifications.title')}
               className="absolute inset-0 flex flex-col bg-surface lg:inset-y-0 lg:left-auto lg:right-0 lg:w-[380px] lg:max-w-[90vw] lg:shadow-popover"
             >
               <div className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3">
-                <span className="text-style-headline-sm text-text-h">Notificações</span>
+                <span className="text-style-headline-sm text-text-h">{t('notifications.title')}</span>
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
                   className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-border bg-surface"
-                  aria-label="Fechar notificações"
+                  aria-label={t('notifications.close')}
                 >
                   ✕
                 </button>
@@ -108,12 +110,12 @@ export function EventsBell() {
                   <span aria-hidden="true" className="text-3xl">
                     🌱
                   </span>
-                  <p className="text-style-body-sm text-text-muted">Nenhum evento por aqui ainda.</p>
+                  <p className="text-style-body-sm text-text-muted">{t('notifications.empty')}</p>
                 </div>
               ) : (
                 <ul className="m-0 flex flex-1 list-none flex-col gap-1 overflow-y-auto p-2">
                   {events.map((event) => {
-                    const timestamp = formatEventTimestamp(event.createdAt)
+                    const timestamp = formatEventTimestamp(t, event.createdAt)
                     return (
                       <li
                         key={event.id}

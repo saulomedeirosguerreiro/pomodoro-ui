@@ -1,0 +1,14 @@
+{
+  "unavailable": "Ese audio todavía no está disponible en esta versión.",
+  "selectTrack": "Elegir pista lo-fi",
+  "credit": "Crédito: {{credit}}",
+  "previous": "Pista anterior",
+  "play": "Reproducir música de fondo",
+  "pause": "Pausar música de fondo",
+  "next": "Siguiente pista de fondo",
+  "loopOn": "Repetir la pista actual",
+  "loopOff": "Desactivar repetición de la pista",
+  "progress": "Progreso de la pista",
+  "volume": "Volumen",
+  "volumeControl": "Volumen de la música de fondo"
+}

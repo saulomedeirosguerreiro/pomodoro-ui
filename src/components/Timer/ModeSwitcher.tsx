@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSettings } from '../../context/SettingsContext'
-import { SESSION_LABELS } from '../../lib/timerLogic'
+import { sessionLabel } from '../../lib/timerLogic'
 import type { SessionType } from '../../types/api'
 import { Button } from '../common/Button'
 import { Dialog } from '../common/Dialog'
@@ -16,8 +17,6 @@ interface ModeSwitcherProps {
   onSelectType: (type: SessionType) => void
 }
 
-const SEQUENCE_DISABLED_REASON = 'Fora de ordem — siga a sequência do Pomodoro Clássico'
-
 /**
  * Seleção manual de tipo de período (US-33, G-Q5/G-Q5a) — trava durante sessão ativa ("Seletor de
  * Modo – Proposta A", mesmo padrão de `TimerModeToggle`): `rodando` desabilita as outras abas de
@@ -29,11 +28,13 @@ const SEQUENCE_DISABLED_REASON = 'Fora de ordem — siga a sequência do Pomodor
  * Clássico não permite pular etapas nem repetir a pausa longa fora do 4º ciclo.
  */
 export function ModeSwitcher({ type, phase, suggestedNextType, onSelectType }: ModeSwitcherProps) {
+  const { t } = useTranslation('timer')
   const { settings } = useSettings()
   const [pendingType, setPendingType] = useState<SessionType | null>(null)
 
   const isLocked = phase === 'rodando'
   const requiresConfirmation = phase === 'pausado'
+  const sequenceDisabledReason = t('modeSwitcher.sequenceLockedReason')
 
   const options = useMemo<SegmentedOption<SessionType>[]>(() => {
     function buildOption(value: SessionType, label: string): SegmentedOption<SessionType> {
@@ -41,15 +42,24 @@ export function ModeSwitcher({ type, phase, suggestedNextType, onSelectType }: M
         return { value, label, disabled: type !== value }
       }
       const outOfSequence = value !== type && value !== suggestedNextType
-      return { value, label, disabled: outOfSequence, disabledReason: SEQUENCE_DISABLED_REASON }
+      return { value, label, disabled: outOfSequence, disabledReason: sequenceDisabledReason }
     }
 
     return [
-      buildOption('foco', `Foco ${settings.focusMinutes}m`),
-      buildOption('descanso_curto', `Pausa Curta ${settings.shortBreakMinutes}m`),
-      buildOption('descanso_longo', `Pausa Longa ${settings.longBreakMinutes}m`),
+      buildOption('foco', t('modeSwitcher.optionFoco', { minutes: settings.focusMinutes })),
+      buildOption('descanso_curto', t('modeSwitcher.optionShortBreak', { minutes: settings.shortBreakMinutes })),
+      buildOption('descanso_longo', t('modeSwitcher.optionLongBreak', { minutes: settings.longBreakMinutes })),
     ]
-  }, [settings.focusMinutes, settings.shortBreakMinutes, settings.longBreakMinutes, isLocked, type, suggestedNextType])
+  }, [
+    settings.focusMinutes,
+    settings.shortBreakMinutes,
+    settings.longBreakMinutes,
+    isLocked,
+    type,
+    suggestedNextType,
+    sequenceDisabledReason,
+    t,
+  ])
 
   const hasSequenceLock = !isLocked && options.some((option) => option.disabled)
 
@@ -72,30 +82,28 @@ export function ModeSwitcher({ type, phase, suggestedNextType, onSelectType }: M
 
   return (
     <div className="flex flex-col items-center gap-1">
-      <SegmentedControl options={options} value={type} onChange={handleChange} ariaLabel="Tipo de período" />
+      <SegmentedControl options={options} value={type} onChange={handleChange} ariaLabel={t('modeSwitcher.ariaLabel')} />
 
       {isLocked && (
         <p role="status" className="text-style-label-sm text-text-muted">
-          Modo bloqueado durante a sessão. Pause ou encerre para trocar.
+          {t('modeSwitcher.locked')}
         </p>
       )}
 
       {hasSequenceLock && (
         <p role="status" className="text-style-label-sm text-text-muted">
-          Siga a sequência do Pomodoro: agora só é possível avançar para {SESSION_LABELS[suggestedNextType]}.
+          {t('modeSwitcher.sequenceNotice', { nextLabel: sessionLabel(t, suggestedNextType) })}
         </p>
       )}
 
       {pendingType && (
-        <Dialog titleText="Trocar de modo?" onDismiss={() => setPendingType(null)}>
-          <p className="mb-4 text-style-body-sm text-text-muted">
-            Trocar de modo vai encerrar a sessão atual. O tempo já focado será salvo.
-          </p>
+        <Dialog titleText={t('modeSwitcher.confirmDialog.title')} onDismiss={() => setPendingType(null)}>
+          <p className="mb-4 text-style-body-sm text-text-muted">{t('modeSwitcher.confirmDialog.body')}</p>
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setPendingType(null)}>
-              Continuar sessão
+              {t('modeSwitcher.confirmDialog.cancel')}
             </Button>
-            <Button onClick={handleConfirm}>Trocar e encerrar</Button>
+            <Button onClick={handleConfirm}>{t('modeSwitcher.confirmDialog.confirm')}</Button>
           </div>
         </Dialog>
       )}

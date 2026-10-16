@@ -1,0 +1,12 @@
+{
+  "page": {
+    "title": "Achievements",
+    "error": "Could not load achievements.",
+    "unlockedTitle": "Unlocked",
+    "loading": "Loading achievements…",
+    "unlockedEmpty": "Keep focusing — your first achievement is right around the corner.",
+    "unlockedAt": "Unlocked on {{date}}",
+    "lockedTitle": "In progress",
+    "lockedEmpty": "You've unlocked all available achievements!"
+  }
+}

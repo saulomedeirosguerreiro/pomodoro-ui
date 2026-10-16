@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Button } from '../common/Button'
 import { Dialog } from '../common/Dialog'
 
@@ -14,20 +15,20 @@ interface MigrationDialogProps {
  * texto de cada botão deixa isso explícito.
  */
 export function MigrationDialog({ onImport, onDiscard, onLater, isImporting }: MigrationDialogProps) {
+  const { t } = useTranslation('auth')
+
   return (
-    <Dialog titleText="Você tem dados salvos neste navegador" dismissible={!isImporting} onDismiss={onLater}>
-      <p className="mb-4 text-style-body-md text-text">
-        Encontramos tarefas e sessões registradas sem conta. O que você quer fazer com elas?
-      </p>
+    <Dialog titleText={t('migration.dialog.title')} dismissible={!isImporting} onDismiss={onLater}>
+      <p className="mb-4 text-style-body-md text-text">{t('migration.dialog.body')}</p>
       <div className="flex flex-col gap-2">
         <Button onClick={onImport} disabled={isImporting} fullWidth>
-          {isImporting ? 'Levando para a conta…' : 'Levar para minha conta'}
+          {isImporting ? t('migration.dialog.importing') : t('migration.dialog.import')}
         </Button>
         <Button variant="secondary" onClick={onDiscard} disabled={isImporting} fullWidth>
-          Descartar (não pode ser desfeito)
+          {t('migration.dialog.discard')}
         </Button>
         <Button variant="ghost" onClick={onLater} disabled={isImporting} fullWidth>
-          Agora não (decidir depois)
+          {t('migration.dialog.later')}
         </Button>
       </div>
     </Dialog>

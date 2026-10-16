@@ -4,7 +4,6 @@ import type { Promo } from '../lib/promos'
 export interface PromoDot {
   index: number
   isActive: boolean
-  ariaLabel: string
   select: () => void
 }
 
@@ -49,7 +48,6 @@ export function usePromoRotation(intervalSeconds: number, items: Promo[]): UsePr
     dots: items.map((_, i) => ({
       index: i,
       isActive: i === safeIndex,
-      ariaLabel: `Mostrar divulgação ${i + 1}`,
       select: () => select(i),
     })),
   }

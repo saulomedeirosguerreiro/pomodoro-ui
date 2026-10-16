@@ -1,0 +1,24 @@
+{
+  "labels": {
+    "ocioso": "Tomatinho: Inactivo",
+    "focado": "Tomatinho: Enfocado",
+    "quase_la": "Tomatinho: ¡Ya casi!",
+    "descansando": "Tomatinho: Descansando",
+    "pausado": "Tomatinho: Pausado",
+    "comemorando": "Tomatinho: ¡Celebrando!",
+    "acolhendo": "Tomatinho: Contigo"
+  },
+  "phrases": {
+    "ocioso": ["¡Listo cuando tú quieras! 🍅", "¿Qué tal si plantamos un foco?", "Aquí estoy, sin ninguna prisa."],
+    "focado": ["¡Lo estás haciendo muy bien!", "Respira hondo y sigue firme.", "Un paso a la vez, aquí estoy para apoyarte."],
+    "quase_la": ["¡Ya casi, no te rindas ahora!", "La recta final es la mejor parte.", "¡Un poquito más — tú puedes!"],
+    "descansando": ["Aprovecha para estirar las piernas.", "Descansar también es parte del trabajo.", "Toma un poco de agua, te espero aquí."],
+    "pausado": ["Tranquilo, yo me encargo.", "Vuelve cuando te sientas listo.", "Sin prisa — el tiempo se pausó contigo."],
+    "comemorando": ["¡Muy bien hecho! 🎉", "¡Una semillita más en el jardín!", "¡Eso es, celebra conmigo!"],
+    "acolhendo": [
+      "Está bien, no toda sesión tiene que terminar perfecta.",
+      "Lo importante es que lo intentaste. ¿Vamos de nuevo?",
+      "Sin culpas por aquí — el jardín sigue creciendo a tu ritmo."
+    ]
+  }
+}

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSettings } from '../../context/SettingsContext'
 import { useTimerContext } from '../../context/TimerContext'
-import { MASCOT_LABELS, pickPhrase } from '../../lib/mascotPhrases'
+import { mascotLabel, pickPhrase } from '../../lib/mascotPhrases'
 import { resolveMascotState, type MascotState } from '../../lib/mascotState'
 import { SpeechBubble } from '../common/SpeechBubble'
 import { TomatoArt } from './TomatoArt'
@@ -20,6 +21,7 @@ const CHARACTER_STATE_CLASSES: Record<MascotState, string> = {
 }
 
 export function Mascot() {
+  const { t } = useTranslation('mascot')
   const timer = useTimerContext()
   const { settings } = useSettings()
 
@@ -53,13 +55,19 @@ export function Mascot() {
   const [phrase, setPhrase] = useState<string | null>(null)
   const previousStateRef = useRef<MascotState | null>(null)
 
+  // Troca de idioma força a fala atual a ser sorteada de novo no idioma novo — sem isso, ela ficaria
+  // parada no idioma antigo até a próxima transição de estado (guarda logo abaixo, por `state`).
+  useEffect(() => {
+    previousStateRef.current = null
+  }, [t])
+
   useEffect(() => {
     if (previousStateRef.current === state) {
       return
     }
     previousStateRef.current = state
-    setPhrase((previousPhrase) => pickPhrase(state, previousPhrase))
-  }, [state])
+    setPhrase((previousPhrase) => pickPhrase(t, state, previousPhrase))
+  }, [state, t])
 
   return (
     <div className="flex flex-col items-center gap-2">
@@ -83,7 +91,7 @@ export function Mascot() {
       </div>
 
       <p className="text-style-label-sm text-text-muted" role="status">
-        {MASCOT_LABELS[state]}
+        {mascotLabel(t, state)}
       </p>
     </div>
   )

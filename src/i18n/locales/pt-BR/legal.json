@@ -1,0 +1,100 @@
+{
+  "terms": {
+    "brand": "Guardião Pomodoro",
+    "back": "Voltar",
+    "title": "Termos de Uso",
+    "footer": "© 2026 Guardião Pomodoro — Saulo Guerreiro",
+    "sections": {
+      "1": {
+        "title": "Aceitação dos termos",
+        "body": "Ao criar uma conta ou utilizar o Guardião Pomodoro, você concorda com estes Termos de Uso e com a nossa Política de Privacidade. Se você não concorda com algum destes termos, não deve criar uma conta nem utilizar o serviço."
+      },
+      "2": {
+        "title": "Descrição do serviço",
+        "body": "O Guardião Pomodoro é uma ferramenta de produtividade pessoal baseada na técnica Pomodoro, que permite cronometrar períodos de foco e pausa, registrar tarefas e acompanhar seu progresso ao longo do tempo."
+      },
+      "3": {
+        "title": "Modo convidado e modo conta",
+        "body": "Você pode usar o aplicativo sem criar conta (\"modo convidado\"): seus dados ficam salvos apenas neste navegador, sob sua responsabilidade — perder o navegador ou limpar seus dados locais significa perder esse histórico. Ao criar uma conta, seus dados passam a ser armazenados em nossos servidores, associados ao seu e-mail e senha."
+      },
+      "4": {
+        "title": "Responsabilidades da conta",
+        "body": "Você é responsável por manter a confidencialidade da sua senha e por todas as atividades realizadas com sua conta. Informe-nos imediatamente caso suspeite de uso não autorizado."
+      },
+      "5": {
+        "title": "Uso aceitável",
+        "body": "Você concorda em não utilizar o serviço para fins ilegais, para tentar acessar dados de outros usuários, ou para interferir no funcionamento normal da plataforma."
+      },
+      "6": {
+        "title": "Isenção de garantias e limitação de responsabilidade",
+        "body": "O serviço é fornecido \"como está\", sem garantias de disponibilidade contínua ou ausência de erros. Na máxima extensão permitida por lei, não nos responsabilizamos por perda de dados, interrupções do serviço ou danos indiretos decorrentes do uso do aplicativo."
+      },
+      "7": {
+        "title": "Alterações nestes termos",
+        "body": "Podemos atualizar estes Termos de Uso periodicamente. Mudanças significativas serão comunicadas dentro do próprio aplicativo. O uso continuado do serviço após uma alteração implica concordância com os novos termos."
+      },
+      "8": {
+        "title": "Contato",
+        "body": "Dúvidas sobre estes termos podem ser enviadas para o e-mail de suporte informado na página inicial do aplicativo."
+      }
+    }
+  },
+  "privacy": {
+    "brand": "Guardião Pomodoro",
+    "back": "Voltar",
+    "title": "Política de Privacidade",
+    "footer": "© 2026 Guardião Pomodoro — Saulo Guerreiro",
+    "sections": {
+      "1": {
+        "title": "Dados que coletamos",
+        "body": "Ao criar uma conta, coletamos seu nome, e-mail e senha (armazenada apenas de forma criptografada, nunca em texto puro). Também armazenamos os dados que você gera usando o aplicativo: tarefas, sessões de foco e pausa, e seu progresso (nível, XP, conquistas). No modo convidado, esses mesmos dados ficam salvos apenas no armazenamento local do seu navegador, e nunca chegam aos nossos servidores."
+      },
+      "2": {
+        "title": "Finalidade do uso dos dados",
+        "body": "Usamos esses dados exclusivamente para fornecer e melhorar o funcionamento do aplicativo: autenticar sua conta, exibir seu histórico e progresso, e manter suas preferências entre sessões."
+      },
+      "3": {
+        "title": "Não comercialização de dados",
+        "body": "Não vendemos nem alugamos seus dados pessoais a terceiros, e não os usamos para publicidade. O único compartilhamento de dados que fazemos com um serviço externo é o descrito na seção \"Google Analytics\" abaixo — uso agregado, não dados pessoais."
+      },
+      "4": {
+        "title": "Armazenamento local (localStorage)",
+        "body": "O aplicativo usa o armazenamento local do seu navegador (`localStorage`) para guardar preferências (como tema claro/escuro e durações de foco/pausa) e, no modo convidado, todo o seu histórico de uso. Esses dados não são cookies de rastreamento de terceiros — ficam só no seu navegador, a não ser que você crie uma conta e opte por importá-los."
+      },
+      "5": {
+        "title": "Google Analytics",
+        "body": "Usamos o Google Analytics (GA4) para entender, de forma agregada, como as pessoas usam o aplicativo — por exemplo, quais páginas são mais acessadas, quantos focos/pausas são concluídos, e quando alguém sobe de nível ou desbloqueia uma conquista. Isso NUNCA inclui seu nome, e-mail, senha ou o conteúdo das suas tarefas/sessões, e o GA4 não registra seu endereço IP completo. Essa coleta vem ativada por padrão, mas pode ser desativada a qualquer momento em Configurações > Privacidade — a partir daí, nenhum dado novo é enviado ao Google."
+      },
+      "6": {
+        "title": "Retenção e exclusão de dados",
+        "body": "Mantemos os dados da sua conta enquanto ela existir. Você pode solicitar a exclusão da sua conta e dos dados associados a qualquer momento. No modo convidado, a opção \"Apagar meus dados deste dispositivo\", em Configurações, remove permanentemente os dados salvos neste navegador."
+      },
+      "7": {
+        "title": "Seus direitos",
+        "body": "Em conformidade com a Lei Geral de Proteção de Dados (LGPD), você tem direito a acessar, corrigir, portar ou solicitar a exclusão dos seus dados pessoais, entrando em contato pelos canais indicados abaixo."
+      },
+      "8": {
+        "title": "Contato",
+        "body": "Dúvidas ou solicitações sobre esta Política de Privacidade podem ser enviadas para o e-mail de suporte informado na página inicial do aplicativo."
+      }
+    }
+  },
+  "help": {
+    "title": "Ajuda",
+    "subtitle": "Como o Guardião Pomodoro funciona por baixo dos panos.",
+    "pomodoroHeading": "O Pomodoro",
+    "pomodoroBody": "Cada período de <0>Foco</0> dura {{focusDuration}}. Depois de um foco, vem uma <1>Pausa Curta</1> de {{shortBreakDuration}} — exceto a cada {{longBreakEvery}}º foco, quando vem uma <2>Pausa Longa</2> de {{longBreakDuration}}.",
+    "cycleHeading": "Ciclo",
+    "cycleBody": "Um ciclo completo são {{longBreakEvery}} focos seguidos de uma pausa longa. O timer mostra \"Ciclo N de {{longBreakEvery}}\" para você acompanhar onde está.",
+    "xpHeading": "XP e Nível",
+    "xpBody": "Cada foco concluído vale <0>{{focusXp}} XP</0>; cada pausa concluída vale <1>{{restXp}} XP</1>. Sessões interrompidas não valem XP. Você sobe de nível a cada {{xpMultiplier}} XP multiplicados pelo nível atual — por isso cada nível pede um pouco mais que o anterior.",
+    "seedsHeading": "Sementes",
+    "seedsBody": "Cada foco concluído rende <0>{{focusSeeds}}</0>, e completar uma pausa longa dá um bônus de <1>{{cycleSeeds}}</1> por fechar o ciclo.",
+    "streakHeading": "Streak",
+    "streakBody": "Sua sequência conta os dias seguidos com pelo menos um foco concluído. Ela só \"quebra\" quando um dia inteiro passa sem nenhum foco — um foco de madrugada ainda salva o dia anterior.",
+    "gardenHeading": "Jardim",
+    "gardenBody": "Cada foco concluído no dia planta uma espécie no seu Jardim de Foco, em rotação: {{species}}. A coleção completa fica na página Jardim, junto com o histórico de sessões."
+  },
+  "seedCount_one": "{{count}} semente",
+  "seedCount_other": "{{count}} sementes"
+}

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { PROMOS } from '../../lib/promos'
 import { usePromoRotation } from '../../hooks/usePromoRotation'
 import { PromoIcon } from './PromoIcon'
@@ -9,27 +10,28 @@ interface PromoCardProps {
 
 /** Card de divulgação cruzada na sidebar desktop, logo acima de Configurações. */
 export function PromoCard({ secondsPerAd }: PromoCardProps) {
+  const { t } = useTranslation('promos')
   const { current, index, dots } = usePromoRotation(secondsPerAd, PROMOS)
 
   return (
     <section
-      aria-label="Divulgação"
+      aria-label={t('ariaLabel')}
       className="flex flex-col gap-3 rounded-lg border border-border bg-bg-subtle p-4"
     >
       <div className="flex items-center justify-end">
         <span className="text-style-label-sm text-text-muted">
-          {index + 1} de {PROMOS.length}
+          {t('pageIndicator', { current: index + 1, total: PROMOS.length })}
         </span>
       </div>
 
       <div className="flex items-center gap-3">
         <PromoIcon kind={current.kind} />
         <div className="min-w-0">
-          <p className="text-style-label-sm text-text-muted">{current.label}</p>
+          <p className="text-style-label-sm text-text-muted">{t(`items.${current.id}.label`)}</p>
           <p className="overflow-hidden text-ellipsis whitespace-nowrap text-style-label-lg text-text-h">
-            {current.title}
+            {t(`items.${current.id}.title`)}
           </p>
-          <p className="text-style-body-sm text-text-muted">{current.description}</p>
+          <p className="text-style-body-sm text-text-muted">{t(`items.${current.id}.description`)}</p>
         </div>
       </div>
 
@@ -41,13 +43,13 @@ export function PromoCard({ secondsPerAd }: PromoCardProps) {
           trackEvent('promo_click', {
             promo_id: current.id,
             promo_kind: current.kind,
-            promo_title: current.title,
+            promo_title: t(`items.${current.id}.title`),
             placement: 'sidebar',
           })
         }
         className="flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-text-h px-4 text-style-label-lg text-bg no-underline"
       >
-        {current.cta}
+        {t(`items.${current.id}.cta`)}
       </a>
 
       <div className="flex justify-center gap-1">
@@ -56,7 +58,7 @@ export function PromoCard({ secondsPerAd }: PromoCardProps) {
             key={dot.index}
             type="button"
             onClick={dot.select}
-            aria-label={dot.ariaLabel}
+            aria-label={t('dotAriaLabel', { index: dot.index + 1 })}
             className="flex h-6 w-6 items-center justify-center border-0 bg-transparent p-0"
           >
             <span

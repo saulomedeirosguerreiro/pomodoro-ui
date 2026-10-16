@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthProvider } from '../context/AuthContext'
 import * as DataSourceContextModule from '../context/DataSourceContext'
 import * as GuestContextModule from '../context/GuestContext'
+import { LanguageProvider } from '../context/LanguageContext'
 import { SettingsProvider } from '../context/SettingsContext'
 import { ThemeProvider } from '../context/ThemeContext'
 import * as notifications from '../lib/notifications'
@@ -35,13 +36,15 @@ function mockGuest(clearGuestData = vi.fn()) {
 function renderPage() {
   return render(
     <MemoryRouter>
-      <ThemeProvider>
-        <SettingsProvider>
-          <AuthProvider>
-            <ConfiguracoesPage />
-          </AuthProvider>
-        </SettingsProvider>
-      </ThemeProvider>
+      <LanguageProvider>
+        <ThemeProvider>
+          <SettingsProvider>
+            <AuthProvider>
+              <ConfiguracoesPage />
+            </AuthProvider>
+          </SettingsProvider>
+        </ThemeProvider>
+      </LanguageProvider>
     </MemoryRouter>,
   )
 }
@@ -56,13 +59,15 @@ function renderPageWithTimerRoute() {
         <Route
           path="/configuracoes"
           element={
-            <ThemeProvider>
-              <SettingsProvider>
-                <AuthProvider>
-                  <ConfiguracoesPage />
-                </AuthProvider>
-              </SettingsProvider>
-            </ThemeProvider>
+            <LanguageProvider>
+              <ThemeProvider>
+                <SettingsProvider>
+                  <AuthProvider>
+                    <ConfiguracoesPage />
+                  </AuthProvider>
+                </SettingsProvider>
+              </ThemeProvider>
+            </LanguageProvider>
           }
         />
         <Route path="/timer" element={<p>Tela do timer</p>} />

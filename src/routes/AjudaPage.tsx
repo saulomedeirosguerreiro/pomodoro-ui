@@ -1,5 +1,6 @@
+import { Trans, useTranslation } from 'react-i18next'
 import { useSettings } from '../context/SettingsContext'
-import { formatDurationMinutes, pluralizeCount } from '../lib/format'
+import { formatDurationMinutes } from '../lib/format'
 import { FOCUS_XP, REST_XP, SEEDS_PER_CYCLE_BONUS, SEEDS_PER_FOCUS, XP_PER_LEVEL_MULTIPLIER } from '../lib/gameConstants'
 import { GARDEN_SPECIES } from '../lib/gardenSpecies'
 import { FOCI_PER_LONG_BREAK, sessionDurationsSecondsFrom } from '../lib/timerLogic'
@@ -7,6 +8,7 @@ import { FOCI_PER_LONG_BREAK, sessionDurationsSecondsFrom } from '../lib/timerLo
 const CARD_CLASSES = 'flex flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card'
 
 export function AjudaPage() {
+  const { t } = useTranslation('legal')
   const { settings } = useSettings()
   const durations = sessionDurationsSecondsFrom(
     settings.focusMinutes,
@@ -14,78 +16,89 @@ export function AjudaPage() {
     settings.longBreakMinutes,
   )
 
+  const focusSeeds = t('seedCount', { count: SEEDS_PER_FOCUS })
+  const cycleSeeds = t('seedCount', { count: SEEDS_PER_CYCLE_BONUS })
+
   return (
     <div className="mx-auto flex max-w-[640px] flex-col gap-4">
       <div>
-        <h1>Ajuda</h1>
-        <p className="text-style-body-sm text-text-muted">Como o Guardião Pomodoro funciona por baixo dos panos.</p>
+        <h1>{t('help.title')}</h1>
+        <p className="text-style-body-sm text-text-muted">{t('help.subtitle')}</p>
       </div>
 
       <section className={CARD_CLASSES}>
         <h2 className="flex items-center gap-2 text-style-headline-sm">
-          <span aria-hidden="true">📖</span> O Pomodoro
+          <span aria-hidden="true">📖</span> {t('help.pomodoroHeading')}
         </h2>
         <p className="text-style-body-md text-text">
-          Cada período de <strong>Foco</strong> dura {formatDurationMinutes(durations.foco)}. Depois
-          de um foco, vem uma <strong>Pausa Curta</strong> de {formatDurationMinutes(durations.descanso_curto)}
-          {' '}— exceto a cada {FOCI_PER_LONG_BREAK}º foco, quando vem uma{' '}
-          <strong>Pausa Longa</strong> de {formatDurationMinutes(durations.descanso_longo)}.
+          <Trans
+            t={t}
+            i18nKey="help.pomodoroBody"
+            values={{
+              focusDuration: formatDurationMinutes(durations.foco),
+              shortBreakDuration: formatDurationMinutes(durations.descanso_curto),
+              longBreakDuration: formatDurationMinutes(durations.descanso_longo),
+              longBreakEvery: FOCI_PER_LONG_BREAK,
+            }}
+            components={[<strong key="0" />, <strong key="1" />, <strong key="2" />]}
+          />
         </p>
       </section>
 
       <section className={CARD_CLASSES}>
         <h2 className="flex items-center gap-2 text-style-headline-sm">
-          <span aria-hidden="true">🔁</span> Ciclo
+          <span aria-hidden="true">🔁</span> {t('help.cycleHeading')}
         </h2>
         <p className="text-style-body-md text-text">
-          Um ciclo completo são {FOCI_PER_LONG_BREAK} focos seguidos de uma pausa longa. O timer mostra "Ciclo N de{' '}
-          {FOCI_PER_LONG_BREAK}" para você acompanhar onde está.
+          {t('help.cycleBody', { longBreakEvery: FOCI_PER_LONG_BREAK })}
         </p>
       </section>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <section className={CARD_CLASSES}>
           <h2 className="flex items-center gap-2 text-style-headline-sm">
-            <span aria-hidden="true">⭐</span> XP e Nível
+            <span aria-hidden="true">⭐</span> {t('help.xpHeading')}
           </h2>
           <p className="text-style-body-md text-text">
-            Cada foco concluído vale <strong>{FOCUS_XP} XP</strong>; cada pausa concluída vale{' '}
-            <strong>{REST_XP} XP</strong>. Sessões interrompidas não valem XP. Você sobe de nível a cada{' '}
-            {XP_PER_LEVEL_MULTIPLIER} XP multiplicados pelo nível atual — por isso cada nível pede um pouco mais que o
-            anterior.
+            <Trans
+              t={t}
+              i18nKey="help.xpBody"
+              values={{ focusXp: FOCUS_XP, restXp: REST_XP, xpMultiplier: XP_PER_LEVEL_MULTIPLIER }}
+              components={[<strong key="0" />, <strong key="1" />]}
+            />
           </p>
         </section>
 
         <section className={CARD_CLASSES}>
           <h2 className="flex items-center gap-2 text-style-headline-sm">
-            <span aria-hidden="true">🌰</span> Sementes
+            <span aria-hidden="true">🌰</span> {t('help.seedsHeading')}
           </h2>
           <p className="text-style-body-md text-text">
-            Cada foco concluído rende <strong>{pluralizeCount(SEEDS_PER_FOCUS, 'semente')}</strong>, e completar uma
-            pausa longa dá um bônus de <strong>{pluralizeCount(SEEDS_PER_CYCLE_BONUS, 'semente')}</strong> por fechar
-            o ciclo.
+            <Trans
+              t={t}
+              i18nKey="help.seedsBody"
+              values={{ focusSeeds, cycleSeeds }}
+              components={[<strong key="0" />, <strong key="1" />]}
+            />
           </p>
         </section>
 
         <section className={CARD_CLASSES}>
           <h2 className="flex items-center gap-2 text-style-headline-sm">
-            <span aria-hidden="true">🔥</span> Streak
+            <span aria-hidden="true">🔥</span> {t('help.streakHeading')}
           </h2>
-          <p className="text-style-body-md text-text">
-            Sua sequência conta os dias seguidos com pelo menos um foco concluído. Ela só "quebra" quando um dia
-            inteiro passa sem nenhum foco — um foco de madrugada ainda salva o dia anterior.
-          </p>
+          <p className="text-style-body-md text-text">{t('help.streakBody')}</p>
         </section>
       </div>
 
       <section className={CARD_CLASSES}>
         <h2 className="flex items-center gap-2 text-style-headline-sm">
-          <span aria-hidden="true">🌻</span> Jardim
+          <span aria-hidden="true">🌻</span> {t('help.gardenHeading')}
         </h2>
         <p className="text-style-body-md text-text">
-          Cada foco concluído no dia planta uma espécie no seu Jardim de Foco, em rotação:{' '}
-          {GARDEN_SPECIES.map((species) => `${species.emoji} ${species.name}`).join(', ')}. A coleção completa fica
-          na página Jardim, junto com o histórico de sessões.
+          {t('help.gardenBody', {
+            species: GARDEN_SPECIES.map((species) => `${species.emoji} ${species.name}`).join(', '),
+          })}
         </p>
       </section>
     </div>

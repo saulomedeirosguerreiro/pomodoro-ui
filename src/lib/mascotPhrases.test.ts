@@ -1,21 +1,23 @@
 import { describe, expect, it } from 'vitest'
-import { MASCOT_LABELS, MASCOT_PHRASES, pickPhrase } from './mascotPhrases'
+import i18n from '../i18n'
+import { mascotLabel, mascotPhrases, pickPhrase } from './mascotPhrases'
 import type { MascotState } from './mascotState'
 
+const t = i18n.t.bind(i18n)
 const ALL_STATES: MascotState[] = ['ocioso', 'focado', 'quase_la', 'descansando', 'pausado', 'comemorando', 'acolhendo']
 
-describe('MASCOT_PHRASES', () => {
+describe('mascotPhrases', () => {
   it('tem pelo menos 3 falas para cada estado (US-39 RN-01)', () => {
     for (const state of ALL_STATES) {
-      expect(MASCOT_PHRASES[state].length).toBeGreaterThanOrEqual(3)
+      expect(mascotPhrases(t, state).length).toBeGreaterThanOrEqual(3)
     }
   })
 })
 
-describe('MASCOT_LABELS', () => {
+describe('mascotLabel', () => {
   it('tem um rótulo textual para cada estado', () => {
     for (const state of ALL_STATES) {
-      expect(MASCOT_LABELS[state]).toMatch(/^Tomatinho:/)
+      expect(mascotLabel(t, state)).toMatch(/^Tomatinho:/)
     }
   })
 })
@@ -23,13 +25,13 @@ describe('MASCOT_LABELS', () => {
 describe('pickPhrase', () => {
   it('nunca repete a fala anterior quando há mais de uma opção', () => {
     for (let i = 0; i < 50; i++) {
-      const phrase = pickPhrase('ocioso', MASCOT_PHRASES.ocioso[0])
-      expect(phrase).not.toBe(MASCOT_PHRASES.ocioso[0])
+      const phrase = pickPhrase(t, 'ocioso', mascotPhrases(t, 'ocioso')[0])
+      expect(phrase).not.toBe(mascotPhrases(t, 'ocioso')[0])
     }
   })
 
   it('retorna sempre uma fala do catálogo do estado', () => {
-    const phrase = pickPhrase('focado', null)
-    expect(MASCOT_PHRASES.focado).toContain(phrase)
+    const phrase = pickPhrase(t, 'focado', null)
+    expect(mascotPhrases(t, 'focado')).toContain(phrase)
   })
 })

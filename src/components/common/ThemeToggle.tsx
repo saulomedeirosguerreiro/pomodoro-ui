@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '../../context/ThemeContext'
 
 function SunIcon({ className }: { className?: string }) {
@@ -27,8 +28,10 @@ function MoonIcon({ className }: { className?: string }) {
 }
 
 export function ThemeToggle() {
+  const { t } = useTranslation('common')
   const { theme, toggleTheme } = useTheme()
   const isDark = theme === 'dark'
+  const label = isDark ? t('theme.toLight') : t('theme.toDark')
 
   return (
     <button
@@ -36,8 +39,8 @@ export function ThemeToggle() {
       role="switch"
       aria-checked={isDark}
       onClick={toggleTheme}
-      aria-label={isDark ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
-      title={isDark ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
+      aria-label={label}
+      title={label}
       className={`relative inline-flex h-8 w-14 shrink-0 cursor-pointer items-center rounded-full border p-1 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-border ${
         isDark ? 'border-primary-border bg-primary-bg' : 'border-border bg-bg-subtle'
       }`}

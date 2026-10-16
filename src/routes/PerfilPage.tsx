@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Badge } from '../components/common/Badge'
 import { Banner } from '../components/common/Banner'
@@ -18,6 +19,7 @@ const CARD_CLASSES = 'flex flex-col gap-2 rounded-2xl border border-border bg-su
 /** Só faz sentido pra quem tem conta (nome só é persistido no servidor, senha só existe pra quem
  *  não é guest) — um guest que chegue aqui direto pela URL é mandado de volta pro timer. */
 export function PerfilPage() {
+  const { t } = useTranslation('settings')
   const { user, refreshProfile } = useAuth()
   const { progress } = useTimerContext()
   const navigate = useNavigate()
@@ -54,9 +56,9 @@ export function PerfilPage() {
     try {
       await usersService.updateName(name)
       await refreshProfile()
-      setNameSuccess('Nome atualizado.')
+      setNameSuccess(t('profile.editName.success'))
     } catch (err) {
-      setNameError(err instanceof ApiError ? err.message : 'Não foi possível salvar o nome. Tente novamente.')
+      setNameError(err instanceof ApiError ? err.message : t('profile.editName.genericError'))
     } finally {
       setIsSavingName(false)
     }
@@ -68,7 +70,7 @@ export function PerfilPage() {
     setPasswordSuccess(null)
 
     if (newPassword !== confirmPassword) {
-      setPasswordFieldErrors({ confirmPassword: 'As senhas não conferem.' })
+      setPasswordFieldErrors({ confirmPassword: t('profile.changePassword.mismatchError') })
       return
     }
 
@@ -80,7 +82,7 @@ export function PerfilPage() {
       setCurrentPassword('')
       setNewPassword('')
       setConfirmPassword('')
-      setPasswordSuccess('Senha atualizada.')
+      setPasswordSuccess(t('profile.changePassword.success'))
     } catch (err) {
       if (err instanceof ApiError) {
         setPasswordError(err.message)
@@ -89,7 +91,7 @@ export function PerfilPage() {
           newPassword: err.fieldMessage('NewPassword') ?? '',
         })
       } else {
-        setPasswordError('Não foi possível trocar a senha. Tente novamente.')
+        setPasswordError(t('profile.changePassword.genericError'))
       }
     } finally {
       setIsSavingPassword(false)
@@ -105,8 +107,8 @@ export function PerfilPage() {
   return (
     <div className="mx-auto flex max-w-[640px] flex-col gap-4">
       <div>
-        <h1>Perfil</h1>
-        <p className="text-style-body-sm text-text-muted">Troque seu nome ou sua senha.</p>
+        <h1>{t('profile.title')}</h1>
+        <p className="text-style-body-sm text-text-muted">{t('profile.subtitle')}</p>
       </div>
 
       <section className={CARD_CLASSES}>
@@ -131,10 +133,10 @@ export function PerfilPage() {
           <div className="flex flex-col gap-2 border-t border-border pt-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-style-label-sm text-primary-dark">
-                Nível {progress.level} • {progress.title}
+                {t('common:level', { level: progress.level, title: progress.title })}
               </p>
               <Badge variant={progress.streakDays > 0 ? 'highlight' : 'neutral'}>
-                🔥 {streakLabel(progress.streakDays)}
+                🔥 {streakLabel(t, progress.streakDays)}
               </Badge>
             </div>
             <div className="flex items-center gap-2">
@@ -148,7 +150,7 @@ export function PerfilPage() {
           </div>
         ) : (
           <div className="flex flex-col gap-2 border-t border-border pt-3" role="status" aria-live="polite" aria-busy="true">
-            <span className="sr-only">Carregando progresso…</span>
+            <span className="sr-only">{t('profile.loadingProgress')}</span>
             <div className="flex items-center justify-between gap-2">
               <Skeleton variant="text" className="w-40" />
               <Skeleton variant="rect" className="h-5 w-20 rounded-full" />
@@ -160,13 +162,13 @@ export function PerfilPage() {
 
       <section className={CARD_CLASSES}>
         <h2 className="flex items-center gap-2 text-style-headline-sm">
-          <span aria-hidden="true">✏️</span> Editar nome
+          <span aria-hidden="true">✏️</span> {t('profile.editName.heading')}
         </h2>
         <form className="flex flex-col gap-2" onSubmit={handleSaveName} noValidate>
           {nameSuccess && <Banner kind="success" message={nameSuccess} />}
           {nameError && <Banner kind="error" message={nameError} />}
           <FormField
-            label="Nome"
+            label={t('profile.editName.label')}
             name="name"
             autoComplete="name"
             required
@@ -174,20 +176,20 @@ export function PerfilPage() {
             onChange={(e) => setName(e.target.value)}
           />
           <Button type="submit" className="self-start" disabled={isSavingName}>
-            {isSavingName ? 'Salvando…' : 'Salvar nome'}
+            {isSavingName ? t('profile.editName.saving') : t('profile.editName.save')}
           </Button>
         </form>
       </section>
 
       <section className={CARD_CLASSES}>
         <h2 className="flex items-center gap-2 text-style-headline-sm">
-          <span aria-hidden="true">🔑</span> Alterar senha
+          <span aria-hidden="true">🔑</span> {t('profile.changePassword.heading')}
         </h2>
         <form className="flex flex-col gap-2" onSubmit={handleSavePassword} noValidate>
           {passwordSuccess && <Banner kind="success" message={passwordSuccess} />}
           {passwordError && <Banner kind="error" message={passwordError} />}
           <FormField
-            label="Senha atual"
+            label={t('profile.changePassword.currentPasswordLabel')}
             name="currentPassword"
             type="password"
             autoComplete="current-password"
@@ -197,7 +199,7 @@ export function PerfilPage() {
             error={passwordFieldErrors.currentPassword}
           />
           <FormField
-            label="Nova senha"
+            label={t('profile.changePassword.newPasswordLabel')}
             name="newPassword"
             type="password"
             autoComplete="new-password"
@@ -207,7 +209,7 @@ export function PerfilPage() {
             error={passwordFieldErrors.newPassword}
           />
           <FormField
-            label="Confirmar nova senha"
+            label={t('profile.changePassword.confirmPasswordLabel')}
             name="confirmPassword"
             type="password"
             autoComplete="new-password"
@@ -217,7 +219,7 @@ export function PerfilPage() {
             error={passwordFieldErrors.confirmPassword}
           />
           <Button type="submit" className="self-start" disabled={isSavingPassword}>
-            {isSavingPassword ? 'Salvando…' : 'Salvar senha'}
+            {isSavingPassword ? t('profile.changePassword.saving') : t('profile.changePassword.save')}
           </Button>
         </form>
       </section>

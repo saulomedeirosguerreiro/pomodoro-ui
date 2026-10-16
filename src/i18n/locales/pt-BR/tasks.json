@@ -1,0 +1,49 @@
+{
+  "priority": {
+    "baixa": "Baixa",
+    "media": "Média",
+    "alta": "Alta"
+  },
+  "status": {
+    "a_fazer": "A fazer",
+    "em_curso": "Em curso",
+    "feito": "Feito"
+  },
+  "newTask": "+ Nova Tarefa",
+  "pomodoroCount_one": "{{count}} pomodoro",
+  "pomodoroCount_other": "{{count}} pomodoros",
+  "checklist": {
+    "title": "✅ Checklist de Foco",
+    "viewAll": "Ver todas",
+    "empty": "Nenhuma tarefa pendente. Que tal criar a primeira?",
+    "inFocus": "Em foco",
+    "focusThis": "Focar nesta"
+  },
+  "mission": {
+    "title": "🎯 Missão do Momento",
+    "empty": "Escolha uma tarefa no checklist abaixo para focar nela.",
+    "progress": "{{completed}} de {{pomodoroCount}}"
+  },
+  "form": {
+    "titleLabel": "Título",
+    "descriptionLabel": "Descrição (opcional)",
+    "priorityLabel": "Prioridade",
+    "estimatedPomodorosLabel": "Estimativa de pomodoros",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "saving": "Salvando…",
+    "error": "Não foi possível salvar a tarefa. Tente novamente."
+  },
+  "page": {
+    "title": "Tarefas",
+    "filterAriaLabel": "Filtrar por status",
+    "filterAll": "Todas",
+    "loading": "Carregando tarefas…",
+    "empty": "Nenhuma tarefa encontrada.",
+    "error": "Não foi possível carregar as tarefas.",
+    "markDone": "Marcar como feita",
+    "reopen": "Reabrir",
+    "edit": "Editar",
+    "delete": "Excluir"
+  }
+}

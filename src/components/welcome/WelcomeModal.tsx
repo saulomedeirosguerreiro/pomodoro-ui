@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Button } from '../common/Button'
 import { Dialog } from '../common/Dialog'
@@ -14,6 +15,7 @@ const NAME_MAX_LENGTH = 60
  * `GuestContext`, porque o guard passa a renderizar o `<Outlet/>` no próximo render.
  */
 export function WelcomeModal() {
+  const { t } = useTranslation('auth')
   const { startGuest } = useGuest()
   const [name, setName] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -23,11 +25,11 @@ export function WelcomeModal() {
     const trimmedName = name.trim()
 
     if (trimmedName.length === 0) {
-      setError('Conte pra gente como podemos te chamar.')
+      setError(t('welcome.nameRequired'))
       return
     }
     if (trimmedName.length > NAME_MAX_LENGTH) {
-      setError(`O nome pode ter no máximo ${NAME_MAX_LENGTH} caracteres.`)
+      setError(t('welcome.nameTooLong', { max: NAME_MAX_LENGTH }))
       return
     }
 
@@ -36,14 +38,12 @@ export function WelcomeModal() {
   }
 
   return (
-    <Dialog titleText="Boas-vindas ao Guardião Pomodoro" dismissible={false}>
-      <p className="mb-4 text-style-body-md text-text">
-        Use o Guardião Pomodoro sem precisar criar conta. Seus dados ficam só neste navegador.
-      </p>
+    <Dialog titleText={t('welcome.title')} dismissible={false}>
+      <p className="mb-4 text-style-body-md text-text">{t('welcome.intro')}</p>
 
       <form onSubmit={handleSubmit} noValidate>
         <FormField
-          label="Como podemos te chamar?"
+          label={t('welcome.nameLabel')}
           name="name"
           autoComplete="given-name"
           required
@@ -53,29 +53,27 @@ export function WelcomeModal() {
           error={error ?? undefined}
         />
         <Button type="submit" fullWidth>
-          Começar
+          {t('welcome.submit')}
         </Button>
       </form>
 
       <hr className="mt-6 border-t border-border" />
 
-      <p className="mt-6 text-center text-style-body-sm text-text-muted">
-        Já tem conta ou quer usar em outros aparelhos?
-      </p>
+      <p className="mt-6 text-center text-style-body-sm text-text-muted">{t('welcome.existingAccountPrompt')}</p>
 
       <div className="mt-4 flex gap-3">
         <Link
           to="/login"
           className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full border-2 border-border bg-bg-subtle px-6 py-3 text-style-label-lg text-text-h transition-[transform,box-shadow] duration-150 ease-out active:translate-y-0.5"
         >
-          Entrar
+          {t('welcome.login')}
         </Link>
 
         <Link
           to="/cadastro"
           className="inline-flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full border-2 border-border bg-bg-subtle px-6 py-3 text-style-label-lg text-text-h transition-[transform,box-shadow] duration-150 ease-out active:translate-y-0.5"
         >
-          Criar conta
+          {t('welcome.createAccount')}
         </Link>
       </div>
     </Dialog>

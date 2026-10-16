@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Badge } from '../components/common/Badge'
 import { Button } from '../components/common/Button'
 import { SegmentedControl } from '../components/common/SegmentedControl'
@@ -9,28 +10,28 @@ import { useTimerContext } from '../context/TimerContext'
 import type { TaskPayload } from '../lib/tasksService'
 import type { TaskItem, TaskItemStatus } from '../types/api'
 
-const PRIORITY_LABEL: Record<TaskItem['priority'], string> = {
-  baixa: 'Baixa',
-  media: 'Média',
-  alta: 'Alta',
-}
-
-const STATUS_LABEL: Record<TaskItemStatus, string> = {
-  a_fazer: 'A fazer',
-  em_curso: 'Em curso',
-  feito: 'Feito',
-}
-
-const FILTER_OPTIONS: { value: 'todas' | TaskItemStatus; label: string }[] = [
-  { value: 'todas', label: 'Todas' },
-  { value: 'a_fazer', label: 'A fazer' },
-  { value: 'em_curso', label: 'Em curso' },
-  { value: 'feito', label: 'Feito' },
-]
+const STATUS_VALUES: TaskItemStatus[] = ['a_fazer', 'em_curso', 'feito']
+const FILTER_VALUES: ('todas' | TaskItemStatus)[] = ['todas', 'a_fazer', 'em_curso', 'feito']
 
 export function TarefasPage() {
+  const { t } = useTranslation('tasks')
   const timer = useTimerContext()
   const { dataSource } = useDataSource()
+
+  const PRIORITY_LABEL: Record<TaskItem['priority'], string> = {
+    baixa: t('priority.baixa'),
+    media: t('priority.media'),
+    alta: t('priority.alta'),
+  }
+
+  const STATUS_LABEL: Record<TaskItemStatus, string> = Object.fromEntries(
+    STATUS_VALUES.map((value) => [value, t(`status.${value}`)]),
+  ) as Record<TaskItemStatus, string>
+
+  const FILTER_OPTIONS: { value: 'todas' | TaskItemStatus; label: string }[] = FILTER_VALUES.map((value) => ({
+    value,
+    label: value === 'todas' ? t('page.filterAll') : t(`status.${value}`),
+  }))
 
   const [filter, setFilter] = useState<'todas' | TaskItemStatus>('todas')
   const [tasks, setTasks] = useState<TaskItem[] | null>(null)
@@ -46,10 +47,10 @@ export function TarefasPage() {
         setError(null)
         setTasks(items)
       } catch {
-        setError('Não foi possível carregar as tarefas.')
+        setError(t('page.error'))
       }
     },
-    [dataSource],
+    [dataSource, t],
   )
 
   useEffect(() => {
@@ -90,11 +91,16 @@ export function TarefasPage() {
 
   return (
     <div className="mx-auto flex max-w-[720px] flex-col gap-4">
-      <h1>Tarefas</h1>
+      <h1>{t('page.title')}</h1>
 
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <SegmentedControl ariaLabel="Filtrar por status" options={FILTER_OPTIONS} value={filter} onChange={setFilter} />
-        {!isCreating && <Button onClick={() => setIsCreating(true)}>+ Nova Tarefa</Button>}
+        <SegmentedControl
+          ariaLabel={t('page.filterAriaLabel')}
+          options={FILTER_OPTIONS}
+          value={filter}
+          onChange={setFilter}
+        />
+        {!isCreating && <Button onClick={() => setIsCreating(true)}>{t('newTask')}</Button>}
       </div>
 
       {error && <p className="text-style-body-sm text-danger">{error}</p>}
@@ -103,7 +109,7 @@ export function TarefasPage() {
 
       {tasks === null ? (
         <ul className="flex list-none flex-col gap-2 m-0 p-0" role="status" aria-live="polite" aria-busy="true">
-          <span className="sr-only">Carregando tarefas…</span>
+          <span className="sr-only">{t('page.loading')}</span>
           {Array.from({ length: 3 }, (_, index) => (
             <TaskCardSkeleton key={index} />
           ))}
@@ -111,7 +117,7 @@ export function TarefasPage() {
       ) : (
         <>
           {tasks.length === 0 && !isCreating && (
-            <p className="text-style-body-sm text-text-muted">Nenhuma tarefa encontrada.</p>
+            <p className="text-style-body-sm text-text-muted">{t('page.empty')}</p>
           )}
 
           <ul className="flex list-none flex-col gap-2 m-0 p-0">
@@ -145,24 +151,24 @@ export function TarefasPage() {
                   <div className="flex flex-wrap gap-2">
                     {task.status !== 'em_curso' && task.status !== 'feito' && (
                       <Button variant="ghost" onClick={() => handleSetStatus(task, 'em_curso')}>
-                        Focar nesta
+                        {t('checklist.focusThis')}
                       </Button>
                     )}
                     {task.status !== 'feito' && (
                       <Button variant="ghost" onClick={() => handleSetStatus(task, 'feito')}>
-                        Marcar como feita
+                        {t('page.markDone')}
                       </Button>
                     )}
                     {task.status === 'feito' && (
                       <Button variant="ghost" onClick={() => handleSetStatus(task, 'a_fazer')}>
-                        Reabrir
+                        {t('page.reopen')}
                       </Button>
                     )}
                     <Button variant="ghost" onClick={() => setEditingId(task.id)}>
-                      Editar
+                      {t('page.edit')}
                     </Button>
                     <Button variant="ghost" onClick={() => handleDelete(task)}>
-                      Excluir
+                      {t('page.delete')}
                     </Button>
                   </div>
                 </li>

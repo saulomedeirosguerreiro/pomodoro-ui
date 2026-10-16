@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useFlexibleTimerContext } from '../../context/FlexibleTimerContext'
 import {
   FLEXIBLE_BREAK_MAX_MINUTES,
@@ -18,17 +19,21 @@ import { FlexiblePostFocusChoices } from './FlexiblePostFocusChoices'
 
 /** "Sessão encerrada": resumo mínimo + botão para recomeçar (único texto próprio deste componente, sem arquivo dedicado no plano). */
 function EndedSummary() {
+  const { t } = useTranslation('timer')
   const { focusBlocksCompleted, totalFocusSecondsCompleted, startNewSession } = useFlexibleTimerContext()
 
   return (
     <section className="flex w-full flex-col items-center gap-4 rounded-2xl border border-border bg-surface p-6 text-center shadow-card">
-      <h2 className="text-style-headline-sm text-text-h">Sessão encerrada 🌼</h2>
+      <h2 className="text-style-headline-sm text-text-h">{t('flexibleEnded.title')}</h2>
       <p className="text-style-body-md text-text-muted">
         {focusBlocksCompleted > 0
-          ? `Você completou ${focusBlocksCompleted} ${focusBlocksCompleted === 1 ? 'foco' : 'focos'} (${formatMMSS(totalFocusSecondsCompleted)}). Bom trabalho!`
-          : 'Até a próxima sessão!'}
+          ? t('flexibleEnded.summary', {
+              count: focusBlocksCompleted,
+              duration: formatMMSS(totalFocusSecondsCompleted),
+            })
+          : t('flexibleEnded.noFocus')}
       </p>
-      <Button onClick={startNewSession}>Começar nova sessão</Button>
+      <Button onClick={startNewSession}>{t('flexibleEnded.startNew')}</Button>
     </section>
   )
 }
@@ -39,6 +44,7 @@ function EndedSummary() {
  * mesmo bloco de erro de registro já usado em `ClassicTimerView`.
  */
 export function FlexibleTimerView() {
+  const { t } = useTranslation('timer')
   const flexible = useFlexibleTimerContext()
   const { phase, progress, registrationError, retryRegistration, dismissRegistrationError, canRetryRegistration } = flexible
 
@@ -88,14 +94,14 @@ export function FlexibleTimerView() {
             type="button"
             onClick={dismissRegistrationError}
             className="absolute right-2 top-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-danger"
-            aria-label="Fechar aviso"
+            aria-label={t('dismissWarning')}
           >
             ✕
           </button>
           <p>{registrationError}</p>
           {canRetryRegistration && (
             <Button variant="ghost" onClick={retryRegistration}>
-              Tentar novamente
+              {t('retryRegistration')}
             </Button>
           )}
         </div>

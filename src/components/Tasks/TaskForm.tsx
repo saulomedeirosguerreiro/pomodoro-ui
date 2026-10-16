@@ -1,15 +1,12 @@
 import { useState, type FormEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '../common/Button'
 import { FormField } from '../common/FormField'
 import { SegmentedControl } from '../common/SegmentedControl'
 import type { TaskPayload } from '../../lib/tasksService'
 import type { TaskItem, TaskPriority } from '../../types/api'
 
-const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = [
-  { value: 'baixa', label: 'Baixa' },
-  { value: 'media', label: 'Média' },
-  { value: 'alta', label: 'Alta' },
-]
+const PRIORITY_VALUES: TaskPriority[] = ['baixa', 'media', 'alta']
 
 interface TaskFormProps {
   initial?: TaskItem
@@ -18,6 +15,11 @@ interface TaskFormProps {
 }
 
 export function TaskForm({ initial, onSubmit, onCancel }: TaskFormProps) {
+  const { t } = useTranslation('tasks')
+  const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = PRIORITY_VALUES.map((value) => ({
+    value,
+    label: t(`priority.${value}`),
+  }))
   const [title, setTitle] = useState(initial?.title ?? '')
   const [description, setDescription] = useState(initial?.description ?? '')
   const [priority, setPriority] = useState<TaskPriority>(initial?.priority ?? 'media')
@@ -41,7 +43,7 @@ export function TaskForm({ initial, onSubmit, onCancel }: TaskFormProps) {
         estimatedPomodoros: Number(estimatedPomodorosText),
       })
     } catch {
-      setError('Não foi possível salvar a tarefa. Tente novamente.')
+      setError(t('form.error'))
     } finally {
       setIsSubmitting(false)
     }
@@ -59,7 +61,7 @@ export function TaskForm({ initial, onSubmit, onCancel }: TaskFormProps) {
         </p>
       )}
       <FormField
-        label="Título"
+        label={t('form.titleLabel')}
         name="title"
         required
         maxLength={120}
@@ -67,18 +69,23 @@ export function TaskForm({ initial, onSubmit, onCancel }: TaskFormProps) {
         onChange={(e) => setTitle(e.target.value)}
       />
       <FormField
-        label="Descrição (opcional)"
+        label={t('form.descriptionLabel')}
         name="description"
         maxLength={500}
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
       <div>
-        <span className="mb-1 block text-style-label-sm text-text-muted">Prioridade</span>
-        <SegmentedControl ariaLabel="Prioridade" options={PRIORITY_OPTIONS} value={priority} onChange={setPriority} />
+        <span className="mb-1 block text-style-label-sm text-text-muted">{t('form.priorityLabel')}</span>
+        <SegmentedControl
+          ariaLabel={t('form.priorityLabel')}
+          options={PRIORITY_OPTIONS}
+          value={priority}
+          onChange={setPriority}
+        />
       </div>
       <FormField
-        label="Estimativa de pomodoros"
+        label={t('form.estimatedPomodorosLabel')}
         name="estimatedPomodoros"
         type="number"
         min={1}
@@ -89,10 +96,10 @@ export function TaskForm({ initial, onSubmit, onCancel }: TaskFormProps) {
       />
       <div className="flex flex-wrap justify-end gap-2">
         <Button type="button" variant="ghost" onClick={onCancel}>
-          Cancelar
+          {t('form.cancel')}
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Salvando…' : 'Salvar'}
+          {isSubmitting ? t('form.saving') : t('form.save')}
         </Button>
       </div>
     </form>

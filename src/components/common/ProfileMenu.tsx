@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useDismissOnOutsideClick } from '../../hooks/useDismissOnOutsideClick'
 
@@ -21,6 +22,7 @@ const MENU_ITEM_CLASSES =
  * popover em si (posicionamento `absolute right-0 top-[calc(100%+8px)]`) espelha o do `EventsBell`.
  */
 export function ProfileMenu({ firstName, onLogout }: ProfileMenuProps) {
+  const { t } = useTranslation('common')
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -38,7 +40,7 @@ export function ProfileMenu({ firstName, onLogout }: ProfileMenuProps) {
         onClick={() => setIsOpen((prev) => !prev)}
         aria-haspopup="menu"
         aria-expanded={isOpen}
-        aria-label="Menu da conta"
+        aria-label={t('profileMenu.ariaLabel')}
         className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full bg-tertiary text-style-label-md text-on-primary"
       >
         {firstName.charAt(0).toUpperCase()}
@@ -47,18 +49,18 @@ export function ProfileMenu({ firstName, onLogout }: ProfileMenuProps) {
       {isOpen && (
         <div
           role="menu"
-          aria-label="Menu da conta"
+          aria-label={t('profileMenu.ariaLabel')}
           className="absolute right-0 top-[calc(100%+8px)] z-30 w-[200px] rounded-2xl border border-border bg-surface p-2 shadow-popover"
         >
           <Link role="menuitem" to="/perfil" onClick={() => setIsOpen(false)} className={MENU_ITEM_CLASSES}>
-            Perfil
+            {t('profileMenu.profile')}
           </Link>
           <Link role="menuitem" to="/configuracoes" onClick={() => setIsOpen(false)} className={MENU_ITEM_CLASSES}>
-            Configurações
+            {t('settingsLink')}
           </Link>
           <div role="separator" className="my-1 border-t border-border" />
           <button type="button" role="menuitem" onClick={handleLogoutClick} className={MENU_ITEM_CLASSES}>
-            Sair
+            {t('logout')}
           </button>
         </div>
       )}

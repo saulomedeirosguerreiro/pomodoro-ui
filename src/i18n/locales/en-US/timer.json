@@ -1,0 +1,108 @@
+{
+  "session": {
+    "foco": "Focus",
+    "descanso_curto": "Short break",
+    "descanso_longo": "Long break"
+  },
+  "notifications": {
+    "nextActionFocus": "Time for a break.",
+    "nextActionBreak": "Time to focus.",
+    "sessionCompleted": "{{label}} completed! {{nextAction}}"
+  },
+  "rewards": {
+    "message": "+{{xp}} XP · +{{seeds}} 🌱 {{seedsLabel}}",
+    "leveledUp": "{{rewardMessage}} · Leveled up to {{level}}! 🎉",
+    "achievementUnlocked": "Achievement unlocked: {{name}} — {{description}}"
+  },
+  "errors": {
+    "generic": "We couldn't register the session. Your data wasn't lost.",
+    "durationTooShort": "This {{label}} block lasted less than the minimum of {{min}} min, so it doesn't go into your history. This isn't an error — you can carry on normally.",
+    "durationTooLong": "This {{label}} block went over the maximum of {{max}} min, so it doesn't go into your history. This isn't an error — you can carry on normally."
+  },
+  "controls": {
+    "restartSession": "Restart session",
+    "pause": "Pause",
+    "resume": "Resume",
+    "startFocus": "Start Focus",
+    "startBreak": "Start Break",
+    "finalize": "Finish time",
+    "finalizeDialog": {
+      "title": "Finish time?",
+      "body": "It's okay to take a break — the time you've focused so far will still go to your history.",
+      "cancel": "Cancel",
+      "confirm": "Finish"
+    }
+  },
+  "display": {
+    "cycle": "Cycle {{current}} of {{total}}"
+  },
+  "modeSwitcher": {
+    "ariaLabel": "Session type",
+    "locked": "Mode locked during the session. Pause or end it to switch.",
+    "sequenceLockedReason": "Out of order — follow the Classic Pomodoro sequence",
+    "sequenceNotice": "Follow the Pomodoro sequence: right now you can only move on to {{nextLabel}}.",
+    "optionFoco": "Focus {{minutes}}m",
+    "optionShortBreak": "Short Break {{minutes}}m",
+    "optionLongBreak": "Long Break {{minutes}}m",
+    "confirmDialog": {
+      "title": "Switch mode?",
+      "body": "Switching modes will end the current session. The time already focused will be saved.",
+      "cancel": "Keep session",
+      "confirm": "Switch and end"
+    }
+  },
+  "flexibleModeToggle": {
+    "ariaLabel": "Focus or break",
+    "focus": "🌱 Focus",
+    "break": "☕ Break"
+  },
+  "durationPicker": {
+    "titleFocus": "How long do you want to plant?",
+    "titleBreak": "How long a break feels right for you now?",
+    "confirmVerbFocus": "Start focus of",
+    "confirmVerbBreak": "Start break of",
+    "decrease": "Decrease {{minuteCount}}",
+    "increase": "Increase {{minuteCount}}",
+    "sliderLabelFocus": "Focus duration",
+    "sliderLabelBreak": "Break duration",
+    "endsAt": "Ends at {{time}}",
+    "dragHint": "Drag the ring to any time between {{min}} and {{max}} min",
+    "presetsAriaLabel": "Suggested durations",
+    "confirmButton": "▶ {{verb}} {{minutes}} min"
+  },
+  "flexibleFocusView": {
+    "addedTime": "+{{minutes}} min added",
+    "nextSpecies": "Will become {{name}} {{emoji}}"
+  },
+  "addMinutesButton": "+{{minutes}} min",
+  "postFocusChoices": {
+    "title": "Focus completed!",
+    "subtitle": "Your {{species}} has sprouted. What's next?",
+    "extendTitle": "Still in the zone?",
+    "extendSubtitle": "Extend this same focus"
+  },
+  "postBreakChoices": {
+    "title": "Break completed! Ready to get back?"
+  },
+  "flexibleEnded": {
+    "title": "Session ended 🌼",
+    "summary_one": "You completed {{count}} focus session ({{duration}}). Great work!",
+    "summary_other": "You completed {{count}} focus sessions ({{duration}}). Great work!",
+    "noFocus": "See you next session!",
+    "startNew": "Start new session"
+  },
+  "timerModeToggle": {
+    "label": "Choose your mode",
+    "ariaLabel": "Timer mode",
+    "lockTooltip": "Mode locked while the session is running, in focus or on break, so you don't lose your cycle. End the session to switch.",
+    "classicTitle": "Classic Pomodoro",
+    "classicDescription": "The traditional way to grow focus.",
+    "flexibleTitle": "Custom",
+    "flexibleDescription": "Plant at your own pace."
+  },
+  "dismissWarning": "Dismiss warning",
+  "retryRegistration": "Try again",
+  "taskLoadError": "We couldn't load the tasks.",
+  "minuteCount_one": "{{count}} minute",
+  "minuteCount_other": "{{count}} minutes"
+}

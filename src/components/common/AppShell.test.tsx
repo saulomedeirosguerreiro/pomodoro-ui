@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import * as AuthContext from '../../context/AuthContext'
 import * as GuestContext from '../../context/GuestContext'
 import * as TimerContextModule from '../../context/TimerContext'
+import { LanguageProvider } from '../../context/LanguageContext'
 import { LofiPlayerProvider } from '../../context/LofiPlayerContext'
 import { SettingsProvider } from '../../context/SettingsContext'
 import { ThemeProvider } from '../../context/ThemeContext'
@@ -68,17 +69,19 @@ function mockTimer(phase: 'parado' | 'rodando' | 'pausado' = 'parado') {
 function renderShell() {
   return render(
     <MemoryRouter initialEntries={['/timer']}>
-      <ThemeProvider>
-        <SettingsProvider>
-          <LofiPlayerProvider>
-            <Routes>
-              <Route element={<AppShell />}>
-                <Route path="/timer" element={<p>Conteúdo da página</p>} />
-              </Route>
-            </Routes>
-          </LofiPlayerProvider>
-        </SettingsProvider>
-      </ThemeProvider>
+      <LanguageProvider>
+        <ThemeProvider>
+          <SettingsProvider>
+            <LofiPlayerProvider>
+              <Routes>
+                <Route element={<AppShell />}>
+                  <Route path="/timer" element={<p>Conteúdo da página</p>} />
+                </Route>
+              </Routes>
+            </LofiPlayerProvider>
+          </SettingsProvider>
+        </ThemeProvider>
+      </LanguageProvider>
     </MemoryRouter>,
   )
 }
@@ -88,18 +91,20 @@ function renderShell() {
 function renderShellOnTarefasRoute() {
   return render(
     <MemoryRouter initialEntries={['/tarefas']}>
-      <ThemeProvider>
-        <SettingsProvider>
-          <LofiPlayerProvider>
-            <Routes>
-              <Route element={<AppShell />}>
-                <Route path="/timer" element={<p>Conteúdo da página</p>} />
-                <Route path="/tarefas" element={<p>Conteúdo de tarefas</p>} />
-              </Route>
-            </Routes>
-          </LofiPlayerProvider>
-        </SettingsProvider>
-      </ThemeProvider>
+      <LanguageProvider>
+        <ThemeProvider>
+          <SettingsProvider>
+            <LofiPlayerProvider>
+              <Routes>
+                <Route element={<AppShell />}>
+                  <Route path="/timer" element={<p>Conteúdo da página</p>} />
+                  <Route path="/tarefas" element={<p>Conteúdo de tarefas</p>} />
+                </Route>
+              </Routes>
+            </LofiPlayerProvider>
+          </SettingsProvider>
+        </ThemeProvider>
+      </LanguageProvider>
     </MemoryRouter>,
   )
 }
@@ -109,18 +114,20 @@ function renderShellOnTarefasRoute() {
 function renderShellWithTarefasRoute() {
   return render(
     <MemoryRouter initialEntries={['/timer']}>
-      <ThemeProvider>
-        <SettingsProvider>
-          <LofiPlayerProvider>
-            <Routes>
-              <Route element={<AppShell />}>
-                <Route path="/timer" element={<p>Conteúdo da página</p>} />
-                <Route path="/tarefas" element={<p>Conteúdo de tarefas</p>} />
-              </Route>
-            </Routes>
-          </LofiPlayerProvider>
-        </SettingsProvider>
-      </ThemeProvider>
+      <LanguageProvider>
+        <ThemeProvider>
+          <SettingsProvider>
+            <LofiPlayerProvider>
+              <Routes>
+                <Route element={<AppShell />}>
+                  <Route path="/timer" element={<p>Conteúdo da página</p>} />
+                  <Route path="/tarefas" element={<p>Conteúdo de tarefas</p>} />
+                </Route>
+              </Routes>
+            </LofiPlayerProvider>
+          </SettingsProvider>
+        </ThemeProvider>
+      </LanguageProvider>
     </MemoryRouter>,
   )
 }

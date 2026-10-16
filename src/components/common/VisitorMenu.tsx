@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useDismissOnOutsideClick } from '../../hooks/useDismissOnOutsideClick'
 
@@ -19,6 +20,7 @@ const MENU_ITEM_CLASSES =
  * importante pra quem é visitante, merece destaque próprio, não só um item de menu) — ver `AppShell.tsx`.
  */
 export function VisitorMenu({ firstName, onSwitchPerson }: VisitorMenuProps) {
+  const { t } = useTranslation('common')
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -36,7 +38,7 @@ export function VisitorMenu({ firstName, onSwitchPerson }: VisitorMenuProps) {
         onClick={() => setIsOpen((prev) => !prev)}
         aria-haspopup="menu"
         aria-expanded={isOpen}
-        aria-label="Menu do visitante"
+        aria-label={t('visitorMenu.ariaLabel')}
         className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full bg-tertiary text-style-label-md text-on-primary"
       >
         {firstName.charAt(0).toUpperCase()}
@@ -45,15 +47,15 @@ export function VisitorMenu({ firstName, onSwitchPerson }: VisitorMenuProps) {
       {isOpen && (
         <div
           role="menu"
-          aria-label="Menu do visitante"
+          aria-label={t('visitorMenu.ariaLabel')}
           className="absolute right-0 top-[calc(100%+8px)] z-30 w-[200px] rounded-2xl border border-border bg-surface p-2 shadow-popover"
         >
           <button type="button" role="menuitem" onClick={handleSwitchPersonClick} className={MENU_ITEM_CLASSES}>
-            Trocar de pessoa
+            {t('visitorMenu.switchPerson')}
           </button>
           <div role="separator" className="my-1 border-t border-border" />
           <Link role="menuitem" to="/configuracoes" onClick={() => setIsOpen(false)} className={MENU_ITEM_CLASSES}>
-            Configurações
+            {t('settingsLink')}
           </Link>
         </div>
       )}

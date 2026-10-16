@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useFlexibleTimerContext } from '../../context/FlexibleTimerContext'
 import { formatMMSS } from '../../lib/timerLogic'
 import { Button } from '../common/Button'
@@ -11,6 +12,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS
  * paleta calma (`--color-calm`), sem o mascote (que continua espelhando só o timer clássico).
  */
 export function FlexibleBreakView() {
+  const { t } = useTranslation('timer')
   const { phase, totalSeconds, remainingSeconds, pause, resume, endCurrentBlockNow, backToFocusNow } =
     useFlexibleTimerContext()
 
@@ -53,10 +55,14 @@ export function FlexibleBreakView() {
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-4">
-        {isPaused ? <Button onClick={resume}>Continuar</Button> : <Button onClick={pause}>Pausar</Button>}
+        {isPaused ? (
+          <Button onClick={resume}>{t('controls.resume')}</Button>
+        ) : (
+          <Button onClick={pause}>{t('controls.pause')}</Button>
+        )}
 
         <Button variant="ghost" onClick={endCurrentBlockNow}>
-          Finalizar tempo
+          {t('controls.finalize')}
         </Button>
       </div>
     </section>

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export type TimerMode = 'classico' | 'flexivel'
 
@@ -8,9 +9,6 @@ interface TimerModeToggleProps {
   /** `true` enquanto a sessão do modo atual está em andamento (rodando OU pausada) — o outro modo trava. */
   isLocked?: boolean
 }
-
-const LOCK_TOOLTIP_TEXT =
-  'Modo travado enquanto a sessão está rodando, no foco ou na pausa, para não perder seu ciclo. Encerre a sessão para trocar.'
 
 interface ModeOption {
   value: TimerMode
@@ -39,21 +37,6 @@ function SlidersIcon() {
   )
 }
 
-const OPTIONS: ModeOption[] = [
-  {
-    value: 'classico',
-    title: 'Pomodoro Clássico',
-    description: 'O jeito tradicional de cultivar foco.',
-    icon: <ClockIcon />,
-  },
-  {
-    value: 'flexivel',
-    title: 'Personalizado',
-    description: 'Plante no seu próprio ritmo.',
-    icon: <SlidersIcon />,
-  },
-]
-
 /**
  * Seleção do modo de timer, como dois cards (não mais abas). Trava total durante sessão ativa: o
  * card do modo não escolhido some com o clique quando `isLocked` (sem diálogo de confirmação —
@@ -61,16 +44,33 @@ const OPTIONS: ModeOption[] = [
  * nele com Tab, e `disabled` tiraria o card da ordem de foco).
  */
 export function TimerModeToggle({ value, onChange, isLocked }: TimerModeToggleProps) {
+  const { t } = useTranslation('timer')
+
+  const options: ModeOption[] = [
+    {
+      value: 'classico',
+      title: t('timerModeToggle.classicTitle'),
+      description: t('timerModeToggle.classicDescription'),
+      icon: <ClockIcon />,
+    },
+    {
+      value: 'flexivel',
+      title: t('timerModeToggle.flexibleTitle'),
+      description: t('timerModeToggle.flexibleDescription'),
+      icon: <SlidersIcon />,
+    },
+  ]
+
   return (
     <div className="flex w-full flex-col gap-2">
-      <span className="text-style-label-sm uppercase tracking-wide text-text-muted">Escolha seu modo</span>
+      <span className="text-style-label-sm uppercase tracking-wide text-text-muted">{t('timerModeToggle.label')}</span>
 
       <div
         className="flex w-full flex-col gap-2 rounded-2xl border border-border bg-surface p-2 shadow-card sm:flex-row"
         role="tablist"
-        aria-label="Modo do timer"
+        aria-label={t('timerModeToggle.ariaLabel')}
       >
-        {OPTIONS.map((option) => {
+        {options.map((option) => {
           const isActive = option.value === value
           const isCardLocked = Boolean(isLocked) && !isActive
           const titleId = `mode-title-${option.value}`
@@ -127,7 +127,7 @@ export function TimerModeToggle({ value, onChange, isLocked }: TimerModeTogglePr
                   role="tooltip"
                   className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-max max-w-[260px] -translate-x-1/2 rounded-lg border border-border bg-surface px-3 py-2 text-style-body-sm text-text-h opacity-0 shadow-popover transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
                 >
-                  {LOCK_TOOLTIP_TEXT}
+                  {t('timerModeToggle.lockTooltip')}
                 </div>
               )}
             </div>
