@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { AppLoadingScreen } from './AppLoadingScreen'
 
 /**
  * Usuário com CONTA já autenticada em /login, /cadastro ou /esqueci-minha-senha vai direto para o
@@ -9,11 +10,11 @@ import { useAuth } from '../../context/AuthContext'
 export function PublicOnlyRoute() {
   const { user, isLoading } = useAuth()
 
-  // `return null` intencional, sem skeleton: a checagem de `isLoading` resolve rápido e de forma
-  // binária (sem token → síncrono; com token → uma chamada curta pra confirmar /me) e não tem uma
-  // "forma de conteúdo" pra espelhar — é decisão de roteamento, não a página em si.
+  // `AppLoadingScreen` em vez de `return null`: sem token é síncrono, mas com token é uma chamada de
+  // rede de verdade — e um backend lento pra acordar (cold start) pode levar essa espera a vários
+  // segundos (ver `REQUEST_TIMEOUT_MS` em `apiClient.ts`), tempo demais pra deixar a tela em branco.
   if (isLoading) {
-    return null
+    return <AppLoadingScreen />
   }
 
   return user ? <Navigate to="/dashboard" replace /> : <Outlet />

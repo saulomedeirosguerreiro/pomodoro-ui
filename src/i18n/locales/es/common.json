@@ -89,6 +89,7 @@
   },
   "sessionExpiredMessage": "Tu sesión expiró. Vuelve a entrar.",
   "networkError": "No pudimos conectar con la API.",
+  "appLoading": "Cargando…",
   "levelTitles": {
     "Semente Curiosa": "Semilla Curiosa",
     "Broto Aprendiz": "Brote Aprendiz",

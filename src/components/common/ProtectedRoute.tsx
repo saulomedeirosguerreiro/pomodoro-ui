@@ -5,6 +5,7 @@ import { GuestIdentityConfirmModal } from '../welcome/GuestIdentityConfirmModal'
 import { WelcomeModal } from '../welcome/WelcomeModal'
 import { useAuth } from '../../context/AuthContext'
 import { useGuest } from '../../context/GuestContext'
+import { AppLoadingScreen } from './AppLoadingScreen'
 
 /**
  * Exige identidade — conta OU guest. Sem nenhuma das duas, a rota pedida renderiza normalmente por
@@ -33,11 +34,12 @@ export function ProtectedRoute() {
     }
   }, [sessionExpired, clearGuestData])
 
-  // `return null` intencional, sem skeleton: mesma razão do PublicOnlyRoute — é guard de roteamento
-  // (sem forma de conteúdo própria), e empilhar um skeleton de guard antes do skeleton de conteúdo de
-  // cada página pioraria a percepção de carregamento em vez de melhorar.
+  // `AppLoadingScreen` em vez de `return null`: a checagem de `/me` não é mais "sempre rápida" (ver
+  // `REQUEST_TIMEOUT_MS` em `apiClient.ts`) — um backend lento pra acordar (cold start) podia deixar
+  // isto em branco por até um minuto, parecendo travado. O spinner só aparece se a espera for de
+  // verdade perceptível (guest resolve no mesmo tick; só a chamada de conta pode demorar).
   if (authLoading || guestLoading) {
-    return null
+    return <AppLoadingScreen />
   }
 
   if (sessionExpired) {
