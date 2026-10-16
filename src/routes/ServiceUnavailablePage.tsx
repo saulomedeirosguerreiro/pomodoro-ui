@@ -6,7 +6,8 @@ import { useAuth } from '../context/AuthContext'
 
 /**
  * Destino do redirect disparado por ServerErrorRedirect (App.tsx) sempre que algum `api.*` voltar com
- * 5xx de verdade — ver SERVER_ERROR_EVENT em apiClient.ts. Fora de ProtectedRoute/PublicOnlyRoute de
+ * 5xx de verdade, ou nem conseguir falar com a API (connection refused/backend fora do ar) — ver
+ * SERVER_ERROR_EVENT em apiClient.ts. Fora de ProtectedRoute/PublicOnlyRoute de
  * propósito, igual TermosDeUsoPage/PoliticaDePrivacidadePage: um 5xx pode acontecer tanto logado quanto
  * numa tentativa de login, então a rota precisa renderizar nos dois casos.
  *

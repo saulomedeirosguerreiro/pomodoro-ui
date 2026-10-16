@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { UNAUTHORIZED_EVENT, api } from './apiClient'
+import { SERVER_ERROR_EVENT, UNAUTHORIZED_EVENT, api } from './apiClient'
 import { tokenStorage } from './tokenStorage'
 
 function jsonResponse(status: number, body: unknown): Response {
@@ -81,5 +81,16 @@ describe('apiClient', () => {
     vi.mocked(fetch).mockRejectedValueOnce(new TypeError('network down'))
 
     await expect(api.get('/api/qualquer')).rejects.toMatchObject({ status: 0, code: 'network_error' })
+  })
+
+  it('erro de rede (ex.: connection refused) também dispara SERVER_ERROR_EVENT', async () => {
+    const listener = vi.fn()
+    window.addEventListener(SERVER_ERROR_EVENT, listener)
+    vi.mocked(fetch).mockRejectedValueOnce(new TypeError('network down'))
+
+    await expect(api.get('/api/qualquer')).rejects.toMatchObject({ status: 0, code: 'network_error' })
+
+    expect(listener).toHaveBeenCalledTimes(1)
+    window.removeEventListener(SERVER_ERROR_EVENT, listener)
   })
 })

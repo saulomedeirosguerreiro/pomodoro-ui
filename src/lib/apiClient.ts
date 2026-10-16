@@ -18,9 +18,10 @@ const REQUEST_TIMEOUT_MS = 20_000
 export const UNAUTHORIZED_EVENT = 'pomodoro:unauthorized'
 
 /**
- * Disparado quando qualquer chamada (autenticada ou não) volta com 5xx — "nosso backend caiu de
- * verdade", diferente de `network_error` (sem internet/DNS/timeout, tratado como guest/offline pelo
- * AuthContext). O gate em App.tsx escuta isso pra sobrepor a ServiceUnavailableScreen.
+ * Disparado quando qualquer chamada (autenticada ou não) volta com 5xx, ou quando o `fetch` nem
+ * consegue falar com a API (`network_error`: connection refused, backend fora do ar, timeout) — pra
+ * quem usa o app os dois casos são "o servidor não respondeu", então ambos levam à mesma tela. O gate
+ * em App.tsx escuta isso pra navegar para /500 (ServiceUnavailablePage).
  */
 export const SERVER_ERROR_EVENT = 'pomodoro:server_error'
 
@@ -55,6 +56,9 @@ async function rawFetch(method: string, path: string, body: unknown, auth: boole
     // Mesmo tratamento pra falha de rede de verdade e pro abort por timeout — pra quem usa o app as
     // duas são a mesma coisa ("não deu pra falar com o servidor"), e o código `network_error` já é o
     // único traduzido de propósito em `apiErrorMessage` (ver `lib/format.ts`/rotas de auth).
+    // Dispara SERVER_ERROR_EVENT também aqui: connection refused/backend fora do ar não gera resposta
+    // HTTP nenhuma (cai direto nesse catch), então sem isso o /500 global só pegava 5xx explícito.
+    window.dispatchEvent(new Event(SERVER_ERROR_EVENT))
     throw new ApiError(0, { code: 'network_error', message: 'Não foi possível conectar à API.' })
   } finally {
     clearTimeout(timeoutId)

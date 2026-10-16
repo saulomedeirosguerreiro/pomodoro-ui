@@ -53,8 +53,9 @@ function AnalyticsBootstrap() {
 
 /**
  * Ponte entre o apiClient (módulo comum, fora da árvore React) e o router: qualquer `request()` que
- * volte com 5xx dispara SERVER_ERROR_EVENT (apiClient.ts), e só um componente dentro do Router consegue
- * reagir chamando `useNavigate()`. `replace: true` pra um 500 em background não empilhar no histórico.
+ * volte com 5xx, ou que nem consiga falar com a API (connection refused/backend fora do ar), dispara
+ * SERVER_ERROR_EVENT (apiClient.ts), e só um componente dentro do Router consegue reagir chamando
+ * `useNavigate()`. `replace: true` pra um 500 em background não empilhar no histórico.
  */
 function ServerErrorRedirect() {
   const navigate = useNavigate()
