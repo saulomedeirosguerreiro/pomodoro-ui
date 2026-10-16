@@ -27,7 +27,7 @@ const ADD_TIME_OPTIONS_MINUTES = [5, 10] as const
  * (`gardenSpecies.ts`) antecipa qual vai florescer quando o bloco completar.
  */
 export function FlexibleFocusView() {
-  const { t } = useTranslation('timer')
+  const { t } = useTranslation(['timer', 'garden'])
   const flexible = useFlexibleTimerContext()
   const { settings } = useSettings()
 
@@ -85,7 +85,7 @@ export function FlexibleFocusView() {
           </span>
           <span className="text-style-display-timer-mobile text-text-h">{formatMMSS(remainingSeconds)}</span>
           <span className="text-style-label-sm text-text-muted">
-            {t('flexibleFocusView.nextSpecies', { name: nextSpecies.name, emoji: nextSpecies.emoji })}
+            {t('flexibleFocusView.nextSpecies', { name: t(`garden:species.${nextSpecies.code}`), emoji: nextSpecies.emoji })}
           </span>
         </div>
       </div>

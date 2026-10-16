@@ -43,10 +43,10 @@ export function JardimPage() {
     const counts = new Map<string, { emoji: string; count: number }>()
     oldestFirst.forEach((_, index) => {
       const species = speciesForIndex(index)
-      const current = counts.get(species.name) ?? { emoji: species.emoji, count: 0 }
-      counts.set(species.name, { ...current, count: current.count + 1 })
+      const current = counts.get(species.code) ?? { emoji: species.emoji, count: 0 }
+      counts.set(species.code, { ...current, count: current.count + 1 })
     })
-    return Array.from(counts.entries()).map(([name, value]) => ({ name, ...value }))
+    return Array.from(counts.entries()).map(([code, value]) => ({ code, ...value }))
   }, [items])
 
   function handleLoadMore() {
@@ -79,13 +79,13 @@ export function JardimPage() {
           <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2">
             {collection.map((species) => (
               <div
-                key={species.name}
+                key={species.code}
                 className="flex flex-col items-center gap-0.5 rounded-lg border border-border bg-bg-subtle p-2 text-center"
               >
                 <span className="text-[26px]" aria-hidden="true">
                   {species.emoji}
                 </span>
-                <span className="text-style-label-sm text-text-h">{species.name}</span>
+                <span className="text-style-label-sm text-text-h">{t(`species.${species.code}`)}</span>
                 <span className="text-style-label-md text-secondary-dark">×{species.count}</span>
               </div>
             ))}

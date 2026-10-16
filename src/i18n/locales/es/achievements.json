@@ -1,4 +1,16 @@
 {
+  "catalog": {
+    "primeira_semente": { "name": "Primera Semilla", "description": "Completa tu primer foco." },
+    "ciclo_completo": { "name": "Ciclo Completo", "description": "Completa 4 focos y una pausa larga." },
+    "dia_fertil": { "name": "Día Fértil", "description": "Completa 8 focos en un solo día." },
+    "constancia_3": { "name": "Constancia de 3 días", "description": "Mantén una racha de 3 días seguidos con foco." },
+    "constancia_7": { "name": "Constancia de 7 días", "description": "Mantén una racha de 7 días seguidos con foco." },
+    "constancia_30": { "name": "Constancia de 30 días", "description": "Mantén una racha de 30 días seguidos con foco." },
+    "primeira_colheita": { "name": "Primera Cosecha", "description": "Completa tu primera tarea." },
+    "cem_tomates": { "name": "Cien Tomates", "description": "Completa 100 focos." },
+    "nivel_5": { "name": "Nivel 5", "description": "Alcanza el nivel 5." },
+    "descanso_sabio": { "name": "Descanso Sabio", "description": "Completa 10 pausas." }
+  },
   "page": {
     "title": "Logros",
     "error": "No se pudieron cargar los logros.",

@@ -1,4 +1,5 @@
 import { useState, type InputHTMLAttributes } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface FormFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string
@@ -28,6 +29,7 @@ function EyeIcon({ revealed }: { revealed: boolean }) {
 }
 
 export function FormField({ label, error, id, type, ...inputProps }: FormFieldProps) {
+  const { t } = useTranslation('common')
   const fieldId = id ?? inputProps.name
   const errorId = error ? `${fieldId}-error` : undefined
   const isPassword = type === 'password'
@@ -53,7 +55,7 @@ export function FormField({ label, error, id, type, ...inputProps }: FormFieldPr
           <button
             type="button"
             onClick={() => setIsRevealed((prev) => !prev)}
-            aria-label={isRevealed ? 'Ocultar senha' : 'Mostrar senha'}
+            aria-label={isRevealed ? t('password.hide') : t('password.show')}
             aria-pressed={isRevealed}
             className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-text-muted hover:text-text-h"
           >

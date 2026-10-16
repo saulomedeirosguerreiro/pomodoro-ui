@@ -8,7 +8,7 @@ import { FOCI_PER_LONG_BREAK, sessionDurationsSecondsFrom } from '../lib/timerLo
 const CARD_CLASSES = 'flex flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card'
 
 export function AjudaPage() {
-  const { t } = useTranslation('legal')
+  const { t } = useTranslation(['legal', 'garden'])
   const { settings } = useSettings()
   const durations = sessionDurationsSecondsFrom(
     settings.focusMinutes,
@@ -97,7 +97,7 @@ export function AjudaPage() {
         </h2>
         <p className="text-style-body-md text-text">
           {t('help.gardenBody', {
-            species: GARDEN_SPECIES.map((species) => `${species.emoji} ${species.name}`).join(', '),
+            species: GARDEN_SPECIES.map((species) => `${species.emoji} ${t(`garden:species.${species.code}`)}`).join(', '),
           })}
         </p>
       </section>

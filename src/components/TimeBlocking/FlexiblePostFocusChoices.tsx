@@ -18,7 +18,7 @@ const PILL_BUTTON_CLASSES =
  * `focusBlocksCompleted - 1`.
  */
 export function FlexiblePostFocusChoices() {
-  const { t } = useTranslation('timer')
+  const { t } = useTranslation(['timer', 'garden'])
   const { startBreak, startAnotherFocus, addTime, focusBlocksCompleted } = useFlexibleTimerContext()
   const species = speciesForIndex(Math.max(0, focusBlocksCompleted - 1))
 
@@ -33,7 +33,9 @@ export function FlexiblePostFocusChoices() {
 
       <div>
         <h2 className="text-style-headline-sm text-text-h">{t('postFocusChoices.title')}</h2>
-        <p className="text-style-body-sm text-text-muted">{t('postFocusChoices.subtitle', { species: species.name })}</p>
+        <p className="text-style-body-sm text-text-muted">
+          {t('postFocusChoices.subtitle', { species: t(`garden:species.${species.code}`) })}
+        </p>
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-3">

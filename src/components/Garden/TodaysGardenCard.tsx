@@ -33,7 +33,7 @@ export function TodaysGardenCard({ maturedCount, isGrowing }: TodaysGardenCardPr
                 {species.emoji}
               </span>
               <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-style-label-sm text-text-h">
-                {species.name}
+                {t(`species.${species.code}`)}
               </span>
               <span className="text-style-label-sm text-secondary-dark">{t('todaysGarden.matured')}</span>
             </div>

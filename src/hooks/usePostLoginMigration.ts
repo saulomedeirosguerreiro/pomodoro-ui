@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useGuest } from '../context/GuestContext'
 import { hasAnyLocalGuestData } from '../lib/localDataWipe'
 import { buildImportRequestFromLocalData, migrationService, type ImportGuestDataResponse } from '../lib/migrationService'
@@ -27,6 +28,7 @@ interface UsePostLoginMigrationResult {
  * diálogo/relatório que este hook pede, sem lógica de decisão própria.
  */
 export function usePostLoginMigration(onFinished: () => void): UsePostLoginMigrationResult {
+  const { t } = useTranslation('auth')
   const { guest, clearGuestData } = useGuest()
   const [state, setState] = useState<MigrationState>({ phase: 'idle' })
 
@@ -54,10 +56,10 @@ export function usePostLoginMigration(onFinished: () => void): UsePostLoginMigra
     } catch {
       setState({
         phase: 'error',
-        message: 'Não foi possível importar seus dados agora. Tente novamente mais tarde.',
+        message: t('migration.postLoginImportFailed'),
       })
     }
-  }, [guest, clearGuestData, onFinished])
+  }, [guest, clearGuestData, onFinished, t])
 
   const chooseDiscard = useCallback(() => {
     clearGuestData()

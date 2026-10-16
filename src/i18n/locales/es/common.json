@@ -81,5 +81,12 @@
     "title": "Página no encontrada",
     "body": "Cavamos todo el huerto y esta página no brotó por aquí.",
     "backButton": "Volver al Timer"
-  }
+  },
+  "back": "Volver",
+  "password": {
+    "show": "Mostrar contraseña",
+    "hide": "Ocultar contraseña"
+  },
+  "sessionExpiredMessage": "Tu sesión expiró. Vuelve a entrar.",
+  "lockedDuringSession": "Bloqueado durante la sesión"
 }

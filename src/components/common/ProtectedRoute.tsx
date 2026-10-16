@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Navigate, Outlet } from 'react-router-dom'
 import { GuestIdentityConfirmModal } from '../welcome/GuestIdentityConfirmModal'
 import { WelcomeModal } from '../welcome/WelcomeModal'
@@ -19,6 +20,7 @@ import { useGuest } from '../../context/GuestContext'
  * outra `guest` presente), então nunca aparecem os dois modais ao mesmo tempo.
  */
 export function ProtectedRoute() {
+  const { t } = useTranslation('common')
   const { user, isLoading: authLoading, sessionExpired } = useAuth()
   const { guest, isLoading: guestLoading, isGuestSessionConfirmed, clearGuestData } = useGuest()
 
@@ -39,7 +41,7 @@ export function ProtectedRoute() {
   }
 
   if (sessionExpired) {
-    return <Navigate to="/login" replace state={{ message: 'Sua sessão expirou. Entre novamente.' }} />
+    return <Navigate to="/login" replace state={{ message: t('sessionExpiredMessage') }} />
   }
 
   const needsGuestIdentityConfirm = !user && Boolean(guest) && !isGuestSessionConfirmed

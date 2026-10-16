@@ -1,4 +1,16 @@
 {
+  "catalog": {
+    "primeira_semente": { "name": "First Seed", "description": "Complete your first focus session." },
+    "ciclo_completo": { "name": "Full Cycle", "description": "Complete 4 focus sessions and a long break." },
+    "dia_fertil": { "name": "Fertile Day", "description": "Complete 8 focus sessions in a single day." },
+    "constancia_3": { "name": "3-Day Streak", "description": "Keep a 3-day streak of focus sessions." },
+    "constancia_7": { "name": "7-Day Streak", "description": "Keep a 7-day streak of focus sessions." },
+    "constancia_30": { "name": "30-Day Streak", "description": "Keep a 30-day streak of focus sessions." },
+    "primeira_colheita": { "name": "First Harvest", "description": "Complete your first task." },
+    "cem_tomates": { "name": "A Hundred Tomatoes", "description": "Complete 100 focus sessions." },
+    "nivel_5": { "name": "Level 5", "description": "Reach level 5." },
+    "descanso_sabio": { "name": "Wise Rest", "description": "Complete 10 breaks." }
+  },
   "page": {
     "title": "Achievements",
     "error": "Could not load achievements.",

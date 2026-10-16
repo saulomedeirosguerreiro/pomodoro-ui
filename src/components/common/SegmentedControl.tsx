@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export interface SegmentedOption<T extends string> {
   value: T
@@ -17,6 +18,8 @@ interface SegmentedControlProps<T extends string> {
 }
 
 export function SegmentedControl<T extends string>({ options, value, onChange, ariaLabel }: SegmentedControlProps<T>) {
+  const { t } = useTranslation('common')
+
   return (
     <div
       className="inline-flex items-center gap-1 rounded-full border border-border bg-bg-subtle p-1.5 max-[480px]:w-full max-[480px]:overflow-x-auto"
@@ -32,7 +35,7 @@ export function SegmentedControl<T extends string>({ options, value, onChange, a
             role="tab"
             aria-selected={isActive}
             disabled={option.disabled}
-            title={option.disabled ? (option.disabledReason ?? 'Bloqueado durante a sessão') : undefined}
+            title={option.disabled ? (option.disabledReason ?? t('lockedDuringSession')) : undefined}
             className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-4 py-2.5 max-[480px]:px-3 text-style-label-md max-[480px]:text-style-label-sm text-text-muted transition-colors hover:text-text-h disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:text-text-muted ${
               isActive ? 'bg-surface-raised text-style-label-lg max-[480px]:text-style-label-md text-primary-dark' : 'bg-transparent'
             } ${option.disabled ? '' : 'cursor-pointer'}`}

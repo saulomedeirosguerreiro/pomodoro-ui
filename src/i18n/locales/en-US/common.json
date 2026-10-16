@@ -81,5 +81,12 @@
     "title": "Page not found",
     "body": "We dug the whole flowerbed and this page just didn't sprout here.",
     "backButton": "Back to the Timer"
-  }
+  },
+  "back": "Back",
+  "password": {
+    "show": "Show password",
+    "hide": "Hide password"
+  },
+  "sessionExpiredMessage": "Your session expired. Sign in again.",
+  "lockedDuringSession": "Locked during the session"
 }

@@ -1,4 +1,11 @@
 {
+  "species": {
+    "tomatinho": "Little Tomato",
+    "moranguinho": "Little Strawberry",
+    "cactoZen": "Zen Cactus",
+    "girassol": "Sunflower",
+    "cogumelo": "Mushroom"
+  },
   "harvestCount_one": "{{count}} harvest",
   "harvestCount_other": "{{count}} harvests",
   "todaysGarden": {

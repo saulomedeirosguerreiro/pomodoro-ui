@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { BrandLogo } from './BrandLogo'
 import { Button } from './Button'
@@ -13,13 +14,14 @@ function ChevronLeftIcon() {
 }
 
 export function AuthLayout({ title, children }: { title: string; children: ReactNode }) {
+  const { t } = useTranslation('common')
   const navigate = useNavigate()
 
   return (
     <div className="flex flex-1 flex-col bg-bg-subtle">
       <header className="flex items-center justify-between px-4 py-4 lg:px-6">
         <Button variant="ghost" onClick={() => navigate('/timer')}>
-          <ChevronLeftIcon /> Voltar
+          <ChevronLeftIcon /> {t('back')}
         </Button>
         <ThemeToggle />
       </header>

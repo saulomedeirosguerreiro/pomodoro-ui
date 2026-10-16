@@ -1,4 +1,16 @@
 {
+  "catalog": {
+    "primeira_semente": { "name": "Primeira Semente", "description": "Conclua seu primeiro foco." },
+    "ciclo_completo": { "name": "Ciclo Completo", "description": "Conclua 4 focos e uma pausa longa." },
+    "dia_fertil": { "name": "Dia Fértil", "description": "Conclua 8 focos em um único dia." },
+    "constancia_3": { "name": "Constância de 3 dias", "description": "Mantenha uma sequência de 3 dias seguidos com foco." },
+    "constancia_7": { "name": "Constância de 7 dias", "description": "Mantenha uma sequência de 7 dias seguidos com foco." },
+    "constancia_30": { "name": "Constância de 30 dias", "description": "Mantenha uma sequência de 30 dias seguidos com foco." },
+    "primeira_colheita": { "name": "Primeira Colheita", "description": "Conclua sua primeira tarefa." },
+    "cem_tomates": { "name": "Cem Tomates", "description": "Conclua 100 focos." },
+    "nivel_5": { "name": "Nível 5", "description": "Chegue ao nível 5." },
+    "descanso_sabio": { "name": "Descanso Sábio", "description": "Conclua 10 pausas." }
+  },
   "page": {
     "title": "Conquistas",
     "error": "Não foi possível carregar as conquistas.",

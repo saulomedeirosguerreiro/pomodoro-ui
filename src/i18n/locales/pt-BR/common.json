@@ -81,5 +81,12 @@
     "title": "Página não encontrada",
     "body": "Cavei o canteiro inteiro e essa página não brotou por aqui.",
     "backButton": "Voltar para o Timer"
-  }
+  },
+  "back": "Voltar",
+  "password": {
+    "show": "Mostrar senha",
+    "hide": "Ocultar senha"
+  },
+  "sessionExpiredMessage": "Sua sessão expirou. Entre novamente.",
+  "lockedDuringSession": "Bloqueado durante a sessão"
 }

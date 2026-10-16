@@ -1,4 +1,11 @@
 {
+  "species": {
+    "tomatinho": "Tomatito",
+    "moranguinho": "Fresita",
+    "cactoZen": "Cactus Zen",
+    "girassol": "Girasol",
+    "cogumelo": "Hongo"
+  },
   "harvestCount_one": "{{count}} cosecha",
   "harvestCount_other": "{{count}} cosechas",
   "todaysGarden": {

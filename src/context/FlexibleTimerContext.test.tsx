@@ -223,7 +223,9 @@ describe('FlexibleTimerContext', () => {
     renderProbe()
     await completeDefaultFocusBlock()
 
-    expect(screen.getByText('Conquista desbloqueada: Primeira Semente — Complete seu primeiro foco.')).toBeInTheDocument()
+    // A mensagem usa o catálogo real de i18n (achievements:catalog.<code>), não os campos `name`/`description`
+    // da fixture — o texto abaixo é o da tradução pt-BR, não o do objeto `achievement` construído acima.
+    expect(screen.getByText('Conquista desbloqueada: Primeira Semente — Conclua seu primeiro foco.')).toBeInTheDocument()
     expect(trackEvent).toHaveBeenCalledWith('achievement_unlocked', { achievement_code: 'primeira_semente' })
   })
 

@@ -74,7 +74,7 @@ export interface AppEvent {
  * do modo flexível), já que `dataSource.createSession` repassa o payload inteiro.
  */
 export function useSessionRegistration() {
-  const { t } = useTranslation(['common', 'timer'])
+  const { t } = useTranslation(['common', 'timer', 'achievements'])
   const { dataSource } = useDataSource()
   const { settings, updateSettings } = useSettings()
 
@@ -156,8 +156,8 @@ export function useSessionRegistration() {
             id: `achievement-${newlyUnlocked.code}`,
             type: 'achievement',
             message: t('timer:rewards.achievementUnlocked', {
-              name: newlyUnlocked.name,
-              description: newlyUnlocked.description,
+              name: t(`achievements:catalog.${newlyUnlocked.code}.name`),
+              description: t(`achievements:catalog.${newlyUnlocked.code}.description`),
             }),
           })
           trackEvent('achievement_unlocked', { achievement_code: newlyUnlocked.code })

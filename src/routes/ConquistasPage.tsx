@@ -60,8 +60,8 @@ export function ConquistasPage() {
                   🏆
                 </span>
                 <div className="flex flex-1 flex-col gap-0.5">
-                  <p className="text-style-label-md text-text-h">{achievement.name}</p>
-                  <p className="text-style-body-sm text-text-muted">{achievement.description}</p>
+                  <p className="text-style-label-md text-text-h">{t(`catalog.${achievement.code}.name`)}</p>
+                  <p className="text-style-body-sm text-text-muted">{t(`catalog.${achievement.code}.description`)}</p>
                   <p className="text-style-label-sm text-secondary-dark">
                     {t('page.unlockedAt', { date: formatDateTime(achievement.unlockedAt!) })}
                   </p>
@@ -91,8 +91,8 @@ export function ConquistasPage() {
                   🔒
                 </span>
                 <div className="flex flex-1 flex-col gap-0.5">
-                  <p className="text-style-label-md text-text-h">{achievement.name}</p>
-                  <p className="text-style-body-sm text-text-muted">{achievement.description}</p>
+                  <p className="text-style-label-md text-text-h">{t(`catalog.${achievement.code}.name`)}</p>
+                  <p className="text-style-body-sm text-text-muted">{t(`catalog.${achievement.code}.description`)}</p>
                   {achievement.progressCurrent !== null && achievement.progressTarget !== null && (
                     <>
                       <ProgressBar value={achievement.progressCurrent} max={achievement.progressTarget} />
