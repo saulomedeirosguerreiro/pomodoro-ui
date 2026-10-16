@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useGuest } from '../../context/GuestContext'
 import { useSettings } from '../../context/SettingsContext'
 import { useTimerContext } from '../../context/TimerContext'
-import { formatHoursAndMinutes, streakLabel } from '../../lib/format'
+import { formatHoursAndMinutes, levelTitleLabel, streakLabel } from '../../lib/format'
 import { formatMMSS, sessionLabel } from '../../lib/timerLogic'
 import type { ProgressSummary } from '../../types/api'
 import { LofiPlayerBar } from '../Sound/LofiPlayerBar'
@@ -82,7 +82,7 @@ function SidebarContent({
         {progress ? (
           <>
             <p className="text-style-label-sm text-primary-dark">
-              {t('level', { level: progress.level, title: progress.title })}
+              {t('level', { level: progress.level, title: levelTitleLabel(t, progress.title) })}
             </p>
             <div className="flex items-center gap-2">
               <div className="flex-1">

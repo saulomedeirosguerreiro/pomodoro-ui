@@ -10,7 +10,8 @@ import { ProgressBar } from '../components/common/ProgressBar'
 import { Skeleton } from '../components/common/Skeleton'
 import { useAuth } from '../context/AuthContext'
 import { useTimerContext } from '../context/TimerContext'
-import { streakLabel } from '../lib/format'
+import { apiErrorMessage } from '../lib/apiClient'
+import { levelTitleLabel, streakLabel } from '../lib/format'
 import { usersService } from '../lib/usersService'
 import { ApiError } from '../types/api'
 
@@ -58,7 +59,7 @@ export function PerfilPage() {
       await refreshProfile()
       setNameSuccess(t('profile.editName.success'))
     } catch (err) {
-      setNameError(err instanceof ApiError ? err.message : t('profile.editName.genericError'))
+      setNameError(err instanceof ApiError ? apiErrorMessage(t, err) : t('profile.editName.genericError'))
     } finally {
       setIsSavingName(false)
     }
@@ -85,7 +86,7 @@ export function PerfilPage() {
       setPasswordSuccess(t('profile.changePassword.success'))
     } catch (err) {
       if (err instanceof ApiError) {
-        setPasswordError(err.message)
+        setPasswordError(apiErrorMessage(t, err))
         setPasswordFieldErrors({
           currentPassword: err.fieldMessage('CurrentPassword') ?? '',
           newPassword: err.fieldMessage('NewPassword') ?? '',
@@ -133,7 +134,7 @@ export function PerfilPage() {
           <div className="flex flex-col gap-2 border-t border-border pt-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-style-label-sm text-primary-dark">
-                {t('common:level', { level: progress.level, title: progress.title })}
+                {t('common:level', { level: progress.level, title: levelTitleLabel(t, progress.title) })}
               </p>
               <Badge variant={progress.streakDays > 0 ? 'highlight' : 'neutral'}>
                 🔥 {streakLabel(t, progress.streakDays)}

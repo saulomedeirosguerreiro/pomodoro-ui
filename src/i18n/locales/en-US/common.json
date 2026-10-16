@@ -88,5 +88,17 @@
     "hide": "Hide password"
   },
   "sessionExpiredMessage": "Your session expired. Sign in again.",
+  "networkError": "We couldn't connect to the API.",
+  "levelTitles": {
+    "Semente Curiosa": "Curious Seed",
+    "Broto Aprendiz": "Apprentice Sprout",
+    "Jardineiro Produtivo": "Productive Gardener",
+    "Horticultor Focado": "Focused Horticulturist",
+    "Mestre da Horta": "Garden Master",
+    "Guardião do Pomar": "Orchard Guardian",
+    "Guardião da Floresta": "Forest Guardian",
+    "Protetor da Natureza": "Nature Protector",
+    "Lenda do Pomar Eterno": "Legend of the Eternal Orchard"
+  },
   "lockedDuringSession": "Locked during the session"
 }

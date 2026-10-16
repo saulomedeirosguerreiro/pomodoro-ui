@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next'
 import { ApiError, type ApiErrorBody, type RefreshResponse } from '../types/api'
 import { tokenStorage } from './tokenStorage'
 
@@ -94,6 +95,15 @@ async function parseErrorBody(response: Response): Promise<ApiErrorBody> {
   } catch {
     return { code: 'unknown_error', message: 'Erro desconhecido ao comunicar com o servidor.' }
   }
+}
+
+/**
+ * `err.message` vem do backend (ainda só em pt-BR, fora do escopo desta migração) — mas
+ * `network_error` é gerado aqui mesmo, no `rawFetch` (falha de `fetch`, ex.: sem internet/DNS/CORS),
+ * então é o único código de erro de API que este frontend consegue, de fato, traduzir.
+ */
+export function apiErrorMessage(t: TFunction, err: ApiError): string {
+  return err.code === 'network_error' ? t('common:networkError') : err.message
 }
 
 export const api = {

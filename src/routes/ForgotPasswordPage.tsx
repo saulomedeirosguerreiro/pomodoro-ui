@@ -5,6 +5,7 @@ import { AuthLayout } from '../components/common/AuthLayout'
 import { Banner } from '../components/common/Banner'
 import { Button } from '../components/common/Button'
 import { FormField } from '../components/common/FormField'
+import { apiErrorMessage } from '../lib/apiClient'
 import { authService } from '../lib/authService'
 import { ApiError } from '../types/api'
 
@@ -47,7 +48,7 @@ export function ForgotPasswordPage() {
         setFormError(t('forgotPassword.rateLimited'))
       } else if (err instanceof ApiError) {
         // 404 com mensagem genérica do backend — não revela se foi o nome ou o e-mail que não bateu.
-        setFormError(err.message)
+        setFormError(apiErrorMessage(t, err))
       } else {
         setFormError(t('forgotPassword.genericError'))
       }

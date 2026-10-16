@@ -10,6 +10,7 @@ import { MigrationReport } from '../components/migration/MigrationReport'
 import { useAuth } from '../context/AuthContext'
 import { useGuest } from '../context/GuestContext'
 import { trackEvent } from '../lib/analytics'
+import { apiErrorMessage } from '../lib/apiClient'
 import { authService } from '../lib/authService'
 import { hasAnyLocalGuestData } from '../lib/localDataWipe'
 import { buildImportRequestFromLocalData, migrationService, type ImportGuestDataResponse } from '../lib/migrationService'
@@ -54,7 +55,7 @@ export function RegisterPage() {
       await authService.register({ name, email, password, acceptedTerms })
     } catch (err) {
       if (err instanceof ApiError) {
-        setFormError(err.message)
+        setFormError(apiErrorMessage(t, err))
         setFieldErrors({
           name: err.fieldMessage('Name') ?? '',
           email: err.fieldMessage('Email') ?? '',

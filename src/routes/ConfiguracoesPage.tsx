@@ -11,8 +11,9 @@ import { useAuth } from '../context/AuthContext'
 import { useDataSource } from '../context/DataSourceContext'
 import { useGuest } from '../context/GuestContext'
 import { useSettings } from '../context/SettingsContext'
-import { DEFAULT_SETTINGS, type Settings } from '../lib/settings'
+import { apiErrorMessage } from '../lib/apiClient'
 import { getNotificationPermission, requestNotificationPermission } from '../lib/notifications'
+import { DEFAULT_SETTINGS, type Settings } from '../lib/settings'
 import { usersService } from '../lib/usersService'
 import { ApiError } from '../types/api'
 
@@ -101,7 +102,7 @@ export function ConfiguracoesPage() {
       clearGuestData()
       navigate('/timer', { replace: true })
     } catch (err) {
-      setDeleteError(err instanceof ApiError ? err.message : t('deleteAccount.genericError'))
+      setDeleteError(err instanceof ApiError ? apiErrorMessage(t, err) : t('deleteAccount.genericError'))
     } finally {
       setIsDeleting(false)
     }

@@ -9,6 +9,7 @@ import { MigrationDialog } from '../components/migration/MigrationDialog'
 import { MigrationReport } from '../components/migration/MigrationReport'
 import { useAuth } from '../context/AuthContext'
 import { usePostLoginMigration } from '../hooks/usePostLoginMigration'
+import { apiErrorMessage } from '../lib/apiClient'
 import { ApiError } from '../types/api'
 
 interface LocationState {
@@ -49,7 +50,7 @@ export function LoginPage() {
       migration.offerIfNeeded()
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.message)
+        setError(apiErrorMessage(t, err))
       } else {
         setError(t('login.genericError'))
       }

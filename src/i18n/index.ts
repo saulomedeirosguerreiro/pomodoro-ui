@@ -114,7 +114,7 @@ const resources = {
 /** Normaliza o idioma relatado pelo navegador (`en-GB`, `es-MX`, `pt-PT`...) para um dos 3 idiomas
  *  que o app de fato suporta — sem isso, o detector tentaria `fallbackLng` direto em vez de cair
  *  numa variante razoável do mesmo idioma. */
-function convertDetectedLanguage(lng: string): string {
+export function convertDetectedLanguage(lng: string): string {
   const lower = lng.toLowerCase()
   if (lower.startsWith('en')) return 'en-US'
   if (lower.startsWith('es')) return 'es'

@@ -51,3 +51,14 @@ export function formatHoursAndMinutes(totalSeconds: number): string {
 export function streakLabel(t: TFunction, streakDays: number): string {
   return streakDays > 0 ? t('common:streak.days', { count: streakDays }) : t('common:streak.none')
 }
+
+/**
+ * Traduz o título de nível (`ProgressSummary.title`) — vem em pt-BR tanto do modo convidado
+ * (`progressEngine.ts`, espelhando o backend) quanto do backend de verdade pra quem tem conta, já que
+ * os dois usam o mesmo catálogo fixo de 9 títulos. Usa `common:levelTitles` como tabela de tradução
+ * desses 9 valores conhecidos; qualquer título fora dela (ex.: uma faixa nova ainda não espelhada
+ * aqui) cai de volta no texto original em vez de mostrar uma chave de tradução quebrada.
+ */
+export function levelTitleLabel(t: TFunction, title: string): string {
+  return t(`common:levelTitles.${title}`, { defaultValue: title })
+}

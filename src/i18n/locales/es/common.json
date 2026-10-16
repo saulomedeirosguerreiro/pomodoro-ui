@@ -88,5 +88,17 @@
     "hide": "Ocultar contraseña"
   },
   "sessionExpiredMessage": "Tu sesión expiró. Vuelve a entrar.",
+  "networkError": "No pudimos conectar con la API.",
+  "levelTitles": {
+    "Semente Curiosa": "Semilla Curiosa",
+    "Broto Aprendiz": "Brote Aprendiz",
+    "Jardineiro Produtivo": "Jardinero Productivo",
+    "Horticultor Focado": "Horticultor Enfocado",
+    "Mestre da Horta": "Maestro del Huerto",
+    "Guardião do Pomar": "Guardián del Huerto",
+    "Guardião da Floresta": "Guardián del Bosque",
+    "Protetor da Natureza": "Protector de la Naturaleza",
+    "Lenda do Pomar Eterno": "Leyenda del Huerto Eterno"
+  },
   "lockedDuringSession": "Bloqueado durante la sesión"
 }
