@@ -3,6 +3,10 @@ import { DEFAULT_SESSION_DURATIONS_SECONDS } from './timerLogic'
 
 export interface Settings {
   notificationsEnabled: boolean
+  /** Marca se a sincronização automática one-time de `notificationsEnabled` com a permissão do
+   *  navegador já rodou (ver `useSessionRegistration`) — sem isso, toda recarga reativaria
+   *  notificações mesmo depois do usuário desligar manualmente o checkbox em Configurações. */
+  notificationsAutoSyncDone: boolean
   mascotSpeechEnabled: boolean
   reduceAnimations: boolean
   sessionEndSoundEnabled: boolean
@@ -20,6 +24,7 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = {
   notificationsEnabled: false,
+  notificationsAutoSyncDone: false,
   mascotSpeechEnabled: true,
   reduceAnimations: false,
   // G-Q15/US-64 (resolvido): playSessionEndSound() agora sintetiza um som de verdade, então o aviso já vem ligado.

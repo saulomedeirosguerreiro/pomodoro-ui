@@ -179,24 +179,47 @@ export function useSessionRegistration() {
     }
   }, [dataSource, refreshProgress, refreshFocusedTask, refreshAchievements, refreshTotalFociCompleted])
 
-  // Pede a permissão de notificação proativamente ao carregar o app (uma única vez, enquanto
-  // ainda não houver decisão do usuário) — o navegador pode silenciar o pop-up sem gesto prévio,
-  // o que é inofensivo: a permissão simplesmente continua 'default' até o usuário decidir.
+  // Sincroniza `notificationsEnabled` com a permissão do navegador — uma única vez por instalação
+  // (`notificationsAutoSyncDone`), nunca mais depois disso, pra não sobrescrever uma escolha
+  // explícita do usuário em Configurações a cada reload.
+  //
+  // Bug corrigido: a versão anterior só agia quando a permissão ainda estava 'default' (prestes a
+  // pedir). Se a permissão já tivesse sido concedida por outro caminho — build antiga sem esse
+  // flag, concedida direto pelo ícone do site na barra de endereço, outro perfil/sessão do mesmo
+  // navegador — o efeito saía sem fazer nada, e `notificationsEnabled` ficava travado em `false`
+  // (o default de fábrica) pra sempre: o sino tocava (`sessionEndSoundEnabled` começa `true`), mas
+  // a notificação nunca aparecia, porque dependia desse flag que nunca era ligado.
   useEffect(() => {
-    if (getNotificationPermission() !== 'default') {
+    if (settings.notificationsAutoSyncDone) {
       return
     }
+
+    const currentPermission = getNotificationPermission()
+
+    if (currentPermission === 'granted') {
+      updateSettings({ notificationsEnabled: true, notificationsAutoSyncDone: true })
+      return
+    }
+
+    if (currentPermission !== 'default') {
+      updateSettings({ notificationsAutoSyncDone: true })
+      return
+    }
+
+    // O navegador pode silenciar o pop-up sem gesto prévio do usuário — inofensivo: a permissão
+    // simplesmente continua 'default', e este efeito tenta de novo no próximo carregamento (ainda
+    // não marca `notificationsAutoSyncDone`, já que nenhuma decisão foi tomada ainda).
     requestNotificationPermission()
       .then((result) => {
-        if (result === 'granted') {
-          updateSettings({ notificationsEnabled: true })
-        }
+        if (result === 'default') return
+        updateSettings({ notificationsEnabled: result === 'granted', notificationsAutoSyncDone: true })
       })
       .catch(() => {
-        /* navegador sem suporte ou pedido recusado silenciosamente — nada a fazer aqui */
+        /* navegador sem suporte — nada a fazer aqui */
       })
-    // Intencionalmente só no mount — pedir de novo a cada mudança de `updateSettings` reabriria o prompt.
-  }, [])
+    // Intencionalmente só no mount — a própria condição de guarda (`notificationsAutoSyncDone`)
+    // evita repetir depois que uma decisão já foi sincronizada.
+  }, [settings.notificationsAutoSyncDone, updateSettings])
 
   const registerSession = useCallback(
     async (registration: SessionRegistration, options?: { skipLocalFeedback?: boolean }) => {
