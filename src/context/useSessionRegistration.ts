@@ -199,40 +199,44 @@ export function useSessionRegistration() {
   }, [])
 
   const registerSession = useCallback(
-    async (registration: SessionRegistration) => {
+    async (registration: SessionRegistration, options?: { skipLocalFeedback?: boolean }) => {
       if (!dataSource) return
       setRegistrationError(null)
+
+      const isFocus = registration.type === 'foco'
+      const isCompleted = registration.status === 'concluido'
+
+      // Dispara antes do registro remoto: o fim de foco/pausa é um evento local (o timer já chegou a
+      // zero no navegador) e não deve depender do sucesso da chamada à API — senão instabilidade de
+      // rede/backend silencia sino e notificação só pra contas logadas (guest usa dataSource local,
+      // que praticamente não falha). `skipLocalFeedback` evita repetir no retry manual do mesmo registro.
+      if (isCompleted && !options?.skipLocalFeedback) {
+        // Dispara sempre que foco/pausa (curta ou longa) termina, com a aba focada ou não —
+        // só depende da permissão já concedida (CA-002).
+        if (settings.notificationsEnabled) {
+          const nextAction = t(isFocus ? 'timer:notifications.nextActionFocus' : 'timer:notifications.nextActionBreak')
+          showSessionNotification(
+            t('common:appName'),
+            t('timer:notifications.sessionCompleted', { label: sessionLabel(t, registration.type), nextAction }),
+          )
+        }
+        if (settings.sessionEndSoundEnabled) {
+          playSessionEndSound()
+        }
+      }
+
       try {
-        const taskId = registration.type === 'foco' ? (focusedTaskRef.current?.id ?? undefined) : undefined
+        const taskId = isFocus ? (focusedTaskRef.current?.id ?? undefined) : undefined
         const created = await dataSource.createSession({ ...registration, taskId })
         setLastRegisteredSession(created)
         setPendingRegistration(null)
 
-        const isFocus = registration.type === 'foco'
-        const isCompleted = registration.status === 'concluido'
         trackEvent(
           isFocus ? (isCompleted ? 'focus_completed' : 'focus_interrupted') : (isCompleted ? 'break_completed' : 'break_interrupted'),
           { duration_seconds: registration.durationSeconds },
         )
 
-        if (registration.status === 'concluido') {
-          // Dispara sempre que foco/pausa (curta ou longa) termina, com a aba focada ou não —
-          // só depende da permissão já concedida (CA-002).
-          if (settings.notificationsEnabled) {
-            const nextAction = t(
-              registration.type === 'foco' ? 'timer:notifications.nextActionFocus' : 'timer:notifications.nextActionBreak',
-            )
-            showSessionNotification(
-              t('common:appName'),
-              t('timer:notifications.sessionCompleted', { label: sessionLabel(t, registration.type), nextAction }),
-            )
-          }
-          if (settings.sessionEndSoundEnabled) {
-            playSessionEndSound()
-          }
-        }
-
-        if (registration.type === 'foco' && registration.status === 'concluido') {
+        if (isFocus && isCompleted) {
           await refreshTotalFociCompleted()
           const { updated, previous } = await refreshProgress()
           if (updated && previous) {
@@ -266,7 +270,7 @@ export function useSessionRegistration() {
 
   const retryRegistration = useCallback(() => {
     if (pendingRegistration) {
-      registerSession(pendingRegistration)
+      registerSession(pendingRegistration, { skipLocalFeedback: true })
     }
   }, [pendingRegistration, registerSession])
 
