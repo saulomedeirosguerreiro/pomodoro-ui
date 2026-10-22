@@ -150,8 +150,28 @@ function clamp(value: number, target: number): number {
   return Math.min(value, target)
 }
 
+/** Atalho para critérios numéricos simples de um único campo de `AchievementStats`. */
+function tier(
+  code: string,
+  name: string,
+  description: string,
+  field: keyof AchievementStats,
+  target: number,
+): AchievementCriterion {
+  return {
+    code,
+    name,
+    description,
+    evaluate: (ctx) => {
+      const value = getStats(ctx)[field]
+      return { met: value >= target, progressCurrent: clamp(value, target), progressTarget: target }
+    },
+  }
+}
+
 /**
- * As 10 entradas fixas, replicando `AchievementCatalog.All` (C#) critério a critério, incluindo
+ * As 50 entradas fixas, replicando `AchievementCatalog.All` (C#) critério a critério e na mesma
+ * ordem (é essa ordem que a paginação de `/conquistas` corta em páginas de 10), incluindo
  * `progressCurrent`/`progressTarget` (nulos para critérios binários, igual ao backend).
  */
 export const ACHIEVEMENT_CATALOG: readonly AchievementCriterion[] = [
@@ -161,6 +181,18 @@ export const ACHIEVEMENT_CATALOG: readonly AchievementCriterion[] = [
     description: 'Conclua seu primeiro foco.',
     evaluate: (ctx) => ({ met: getStats(ctx).completedFocusCount >= 1, progressCurrent: null, progressTarget: null }),
   },
+  tier('constancia_1', 'Primeiro Passo', 'Mantenha uma sequência de 1 dia seguido com foco.', 'longestStreakDays', 1),
+  tier('nivel_2', 'Primeiro Broto', 'Chegue ao nível 2.', 'level', 2),
+  {
+    code: 'primeira_colheita',
+    name: 'Primeira Colheita',
+    description: 'Conclua sua primeira tarefa.',
+    evaluate: (ctx) => ({ met: getStats(ctx).completedTasksCount >= 1, progressCurrent: null, progressTarget: null }),
+  },
+  tier('descanso_1', 'Primeira Pausa', 'Conclua 1 pausa.', 'completedRestCount', 1),
+  tier('pausa_longa_1', 'Primeira Pausa Longa', 'Conclua 1 pausa longa.', 'completedLongBreakCount', 1),
+  tier('constancia_3', 'Constância de 3 dias', 'Mantenha uma sequência de 3 dias seguidos com foco.', 'longestStreakDays', 3),
+  tier('dia_produtivo_4', 'Dia Produtivo', 'Conclua 4 focos em um único dia.', 'maxFocusInOneDay', 4),
   {
     code: 'ciclo_completo',
     name: 'Ciclo Completo',
@@ -174,75 +206,47 @@ export const ACHIEVEMENT_CATALOG: readonly AchievementCriterion[] = [
       }
     },
   },
-  {
-    code: 'dia_fertil',
-    name: 'Dia Fértil',
-    description: 'Conclua 8 focos em um único dia.',
-    evaluate: (ctx) => {
-      const stats = getStats(ctx)
-      return { met: stats.maxFocusInOneDay >= 8, progressCurrent: clamp(stats.maxFocusInOneDay, 8), progressTarget: 8 }
-    },
-  },
-  {
-    code: 'constancia_3',
-    name: 'Constância de 3 dias',
-    description: 'Mantenha uma sequência de 3 dias seguidos com foco.',
-    evaluate: (ctx) => {
-      const stats = getStats(ctx)
-      return { met: stats.longestStreakDays >= 3, progressCurrent: clamp(stats.longestStreakDays, 3), progressTarget: 3 }
-    },
-  },
-  {
-    code: 'constancia_7',
-    name: 'Constância de 7 dias',
-    description: 'Mantenha uma sequência de 7 dias seguidos com foco.',
-    evaluate: (ctx) => {
-      const stats = getStats(ctx)
-      return { met: stats.longestStreakDays >= 7, progressCurrent: clamp(stats.longestStreakDays, 7), progressTarget: 7 }
-    },
-  },
-  {
-    code: 'constancia_30',
-    name: 'Constância de 30 dias',
-    description: 'Mantenha uma sequência de 30 dias seguidos com foco.',
-    evaluate: (ctx) => {
-      const stats = getStats(ctx)
-      return { met: stats.longestStreakDays >= 30, progressCurrent: clamp(stats.longestStreakDays, 30), progressTarget: 30 }
-    },
-  },
-  {
-    code: 'primeira_colheita',
-    name: 'Primeira Colheita',
-    description: 'Conclua sua primeira tarefa.',
-    evaluate: (ctx) => ({ met: getStats(ctx).completedTasksCount >= 1, progressCurrent: null, progressTarget: null }),
-  },
-  {
-    code: 'cem_tomates',
-    name: 'Cem Tomates',
-    description: 'Conclua 100 focos.',
-    evaluate: (ctx) => {
-      const stats = getStats(ctx)
-      return { met: stats.completedFocusCount >= 100, progressCurrent: clamp(stats.completedFocusCount, 100), progressTarget: 100 }
-    },
-  },
-  {
-    code: 'nivel_5',
-    name: 'Nível 5',
-    description: 'Chegue ao nível 5.',
-    evaluate: (ctx) => {
-      const stats = getStats(ctx)
-      return { met: stats.level >= 5, progressCurrent: clamp(stats.level, 5), progressTarget: 5 }
-    },
-  },
-  {
-    code: 'descanso_sabio',
-    name: 'Descanso Sábio',
-    description: 'Conclua 10 pausas.',
-    evaluate: (ctx) => {
-      const stats = getStats(ctx)
-      return { met: stats.completedRestCount >= 10, progressCurrent: clamp(stats.completedRestCount, 10), progressTarget: 10 }
-    },
-  },
+  tier('constancia_5', 'Cinco Dias Seguidos', 'Mantenha uma sequência de 5 dias seguidos com foco.', 'longestStreakDays', 5),
+  tier('nivel_5', 'Nível 5', 'Chegue ao nível 5.', 'level', 5),
+  tier('colheita_5', 'Pequena Colheita', 'Conclua 5 tarefas.', 'completedTasksCount', 5),
+  tier('descanso_5', 'Respirando Bem', 'Conclua 5 pausas.', 'completedRestCount', 5),
+  tier('pausa_longa_5', 'Recarregando aos Poucos', 'Conclua 5 pausas longas.', 'completedLongBreakCount', 5),
+  tier('constancia_7', 'Constância de 7 dias', 'Mantenha uma sequência de 7 dias seguidos com foco.', 'longestStreakDays', 7),
+  tier('dia_fertil', 'Dia Fértil', 'Conclua 8 focos em um único dia.', 'maxFocusInOneDay', 8),
+  tier('foco_10', 'Aquecendo', 'Conclua 10 focos.', 'completedFocusCount', 10),
+  tier('nivel_10', 'Nível 10', 'Chegue ao nível 10.', 'level', 10),
+  tier('colheita_10', 'Colheita Farta', 'Conclua 10 tarefas.', 'completedTasksCount', 10),
+  tier('descanso_sabio', 'Descanso Sábio', 'Conclua 10 pausas.', 'completedRestCount', 10),
+  tier('pausa_longa_10', 'Recarregando', 'Conclua 10 pausas longas.', 'completedLongBreakCount', 10),
+  tier('dia_lendario_12', 'Dia Lendário', 'Conclua 12 focos em um único dia.', 'maxFocusInOneDay', 12),
+  tier('constancia_14', 'Duas Semanas de Foco', 'Mantenha uma sequência de 14 dias seguidos com foco.', 'longestStreakDays', 14),
+  tier('nivel_20', 'Nível 20', 'Chegue ao nível 20.', 'level', 20),
+  tier('foco_25', 'Ganhando Ritmo', 'Conclua 25 focos.', 'completedFocusCount', 25),
+  tier('colheita_25', 'Produtor Rural', 'Conclua 25 tarefas.', 'completedTasksCount', 25),
+  tier('descanso_25', 'Equilíbrio', 'Conclua 25 pausas.', 'completedRestCount', 25),
+  tier('pausa_longa_25', 'Equilíbrio Perfeito', 'Conclua 25 pausas longas.', 'completedLongBreakCount', 25),
+  tier('constancia_30', 'Constância de 30 dias', 'Mantenha uma sequência de 30 dias seguidos com foco.', 'longestStreakDays', 30),
+  tier('nivel_30', 'Nível 30', 'Chegue ao nível 30.', 'level', 30),
+  tier('nivel_40', 'Nível 40', 'Chegue ao nível 40.', 'level', 40),
+  tier('foco_50', 'Meio Caminho', 'Conclua 50 focos.', 'completedFocusCount', 50),
+  tier('nivel_50', 'Nível 50', 'Chegue ao nível 50.', 'level', 50),
+  tier('colheita_50', 'Fazendeiro Experiente', 'Conclua 50 tarefas.', 'completedTasksCount', 50),
+  tier('descanso_50', 'Mestre do Descanso', 'Conclua 50 pausas.', 'completedRestCount', 50),
+  tier('pausa_longa_50', 'Mestre do Descanso Longo', 'Conclua 50 pausas longas.', 'completedLongBreakCount', 50),
+  tier('constancia_60', 'Dois Meses Firmes', 'Mantenha uma sequência de 60 dias seguidos com foco.', 'longestStreakDays', 60),
+  tier('constancia_90', 'Trimestre Impecável', 'Mantenha uma sequência de 90 dias seguidos com foco.', 'longestStreakDays', 90),
+  tier('cem_tomates', 'Cem Tomates', 'Conclua 100 focos.', 'completedFocusCount', 100),
+  tier('colheita_100', 'Mestre da Colheita', 'Conclua 100 tarefas.', 'completedTasksCount', 100),
+  tier('constancia_180', 'Meio Ano de Disciplina', 'Mantenha uma sequência de 180 dias seguidos com foco.', 'longestStreakDays', 180),
+  tier('foco_250', 'Produtividade em Alta', 'Conclua 250 focos.', 'completedFocusCount', 250),
+  tier('colheita_250', 'Celeiro Cheio', 'Conclua 250 tarefas.', 'completedTasksCount', 250),
+  tier('constancia_365', 'Um Ano Inteiro', 'Mantenha uma sequência de 365 dias seguidos com foco.', 'longestStreakDays', 365),
+  tier('foco_500', 'Meio Milhar', 'Conclua 500 focos.', 'completedFocusCount', 500),
+  tier('colheita_500', 'Agricultor Lendário', 'Conclua 500 tarefas.', 'completedTasksCount', 500),
+  tier('foco_1000', 'Mil Tomates', 'Conclua 1000 focos.', 'completedFocusCount', 1000),
+  tier('colheita_1000', 'Mil Tarefas', 'Conclua 1000 tarefas.', 'completedTasksCount', 1000),
+  tier('foco_2500', 'Máquina de Foco', 'Conclua 2500 focos.', 'completedFocusCount', 2500),
+  tier('foco_5000', 'Lenda do Foco', 'Conclua 5000 focos.', 'completedFocusCount', 5000),
 ]
 
 /**

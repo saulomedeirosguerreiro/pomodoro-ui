@@ -23,5 +23,5 @@ export interface DataSource {
   removeTask(id: number): Promise<void>
 
   getProgress(): Promise<ProgressSummary>
-  listAchievements(): Promise<Achievement[]>
+  listAchievements(limit?: number, offset?: number): Promise<PagedResult<Achievement>>
 }

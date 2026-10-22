@@ -1,34 +1,46 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AchievementRowSkeleton } from '../components/Achievements/AchievementRowSkeleton'
+import { Button } from '../components/common/Button'
 import { ProgressBar } from '../components/common/ProgressBar'
 import { useDataSource } from '../context/DataSourceContext'
 import { formatDateTime } from '../lib/format'
 import type { Achievement } from '../types/api'
 
+const PAGE_SIZE = 10
 const CARD_CLASSES = 'flex flex-col gap-2 rounded-2xl border border-border bg-surface p-4 shadow-card'
 
 export function ConquistasPage() {
   const { t } = useTranslation('achievements')
   const { dataSource } = useDataSource()
   const [achievements, setAchievements] = useState<Achievement[] | null>(null)
+  const [totalCount, setTotalCount] = useState(0)
   const [error, setError] = useState<string | null>(null)
 
-  const load = useCallback(async () => {
-    if (!dataSource) return
-    try {
-      const items = await dataSource.listAchievements()
-      setError(null)
-      setAchievements(items)
-    } catch {
-      setError(t('page.error'))
-    }
-  }, [dataSource, t])
+  const load = useCallback(
+    async (offset: number, append: boolean) => {
+      if (!dataSource) return
+      try {
+        const page = await dataSource.listAchievements(PAGE_SIZE, offset)
+        setError(null)
+        setTotalCount(page.totalCount)
+        setAchievements((prev) => (append && prev ? [...prev, ...page.items] : page.items))
+      } catch {
+        setError(t('page.error'))
+      }
+    },
+    [dataSource, t],
+  )
 
   useEffect(() => {
-    load()
+    load(0, false)
   }, [load])
 
+  function handleLoadMore() {
+    load(achievements?.length ?? 0, true)
+  }
+
+  const hasMore = (achievements?.length ?? 0) < totalCount
   const unlocked = (achievements ?? []).filter((a) => a.unlockedAt)
   const locked = (achievements ?? []).filter((a) => !a.unlockedAt)
 
@@ -107,6 +119,12 @@ export function ConquistasPage() {
           </ul>
         )}
       </section>
+
+      {hasMore && !error && (
+        <Button variant="ghost" fullWidth onClick={handleLoadMore}>
+          {t('page.loadMore')}
+        </Button>
+      )}
     </div>
   )
 }

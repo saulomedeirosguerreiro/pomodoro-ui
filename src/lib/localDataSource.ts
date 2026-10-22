@@ -196,12 +196,14 @@ export function makeLocalDataSource(_guestId: string): DataSource {
     // ⚠️ Efeito colateral deliberado (documentado no plano, seção 2.3): além de calcular, grava no
     // ledger qualquer conquista recém-desbloqueada, para congelar `unlockedAt` nas próximas leituras.
     // Quebra a expectativa de "getter sem side effect" de propósito — é o único lugar que persiste.
-    async listAchievements() {
+    async listAchievements(limit = 10, offset = 0) {
       const sessions = loadLocalSessions()
       const tasks = loadLocalTasks().map((task) => toTaskItem(task, sessions))
       const level = computeLevelInfo(computeTotals(sessions).totalXp).level
       const ledger = loadUnlockedLedger()
 
+      // Avalia o catálogo INTEIRO sempre, mesmo paginando o retorno — senão conquistas fora da
+      // página pedida nunca seriam detectadas/congeladas no ledger.
       const achievements = evaluateAchievements({ sessions, tasks, level }, ledger)
 
       const nextLedger = new Map(ledger)
@@ -216,7 +218,12 @@ export function makeLocalDataSource(_guestId: string): DataSource {
         saveUnlockedLedger(nextLedger)
       }
 
-      return achievements
+      return {
+        items: achievements.slice(offset, offset + limit),
+        totalCount: achievements.length,
+        limit,
+        offset,
+      }
     },
   }
 }

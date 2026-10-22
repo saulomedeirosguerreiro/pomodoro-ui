@@ -100,7 +100,7 @@ describe('FlexibleTimerContext', () => {
     vi.useFakeTimers()
     dataSource = buildMockDataSource()
     vi.mocked(dataSource.listTasks).mockResolvedValue([])
-    vi.mocked(dataSource.listAchievements).mockResolvedValue([])
+    vi.mocked(dataSource.listAchievements).mockResolvedValue({ items: [], totalCount: 0, limit: 50, offset: 0 })
     vi.mocked(dataSource.getProgress).mockResolvedValue(progress())
     vi.mocked(dataSource.getTotalCompletedFocusCount).mockResolvedValue(0)
     mockUseDataSource(dataSource, 'guest')
@@ -217,8 +217,8 @@ describe('FlexibleTimerContext', () => {
     }
     vi.mocked(dataSource.createSession).mockResolvedValue(session())
     vi.mocked(dataSource.listAchievements)
-      .mockResolvedValueOnce([{ ...achievement, unlockedAt: null }]) // baseline, no mount
-      .mockResolvedValueOnce([achievement]) // após o registro
+      .mockResolvedValueOnce({ items: [{ ...achievement, unlockedAt: null }], totalCount: 1, limit: 50, offset: 0 }) // baseline, no mount
+      .mockResolvedValueOnce({ items: [achievement], totalCount: 1, limit: 50, offset: 0 }) // após o registro
 
     renderProbe()
     await completeDefaultFocusBlock()

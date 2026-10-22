@@ -2,6 +2,7 @@ import type { TFunction } from 'i18next'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SessionRegistration } from '../components/Timer/useTimer'
+import { ACHIEVEMENT_CATALOG } from '../lib/achievementsEngine'
 import { trackEvent } from '../lib/analytics'
 import { getNotificationPermission, requestNotificationPermission, showSessionNotification } from '../lib/notifications'
 import { playSessionEndSound } from '../lib/sound'
@@ -144,7 +145,9 @@ export function useSessionRegistration() {
   const refreshAchievements = useCallback(async () => {
     if (!dataSource) return
     try {
-      const items = await dataSource.listAchievements()
+      // Busca o catálogo inteiro (não só a primeira página) — senão uma conquista desbloqueada
+      // fora das primeiras posições nunca dispararia o toast de "nova conquista".
+      const { items } = await dataSource.listAchievements(ACHIEVEMENT_CATALOG.length, 0)
       const unlockedCodes = new Set(items.filter((a) => a.unlockedAt).map((a) => a.code))
       const previous = unlockedAchievementCodesRef.current
       unlockedAchievementCodesRef.current = unlockedCodes

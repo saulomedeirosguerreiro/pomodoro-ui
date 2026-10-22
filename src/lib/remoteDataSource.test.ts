@@ -88,10 +88,11 @@ describe('remoteDataSource', () => {
     await expect(remoteDataSource.getProgress()).resolves.toBe(progress)
   })
 
-  it('listAchievements delega para achievementsService.list', async () => {
-    const achievements = [{ code: 'primeira_semente' }]
-    vi.mocked(achievementsService.list).mockResolvedValue(achievements as never)
+  it('listAchievements delega para achievementsService.list com limit/offset repassados', async () => {
+    const page = { items: [{ code: 'primeira_semente' }], totalCount: 50, limit: 10, offset: 20 }
+    vi.mocked(achievementsService.list).mockResolvedValue(page as never)
 
-    await expect(remoteDataSource.listAchievements()).resolves.toBe(achievements)
+    await expect(remoteDataSource.listAchievements(10, 20)).resolves.toBe(page)
+    expect(achievementsService.list).toHaveBeenCalledWith(10, 20)
   })
 })

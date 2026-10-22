@@ -23,5 +23,5 @@ export const remoteDataSource: DataSource = {
   removeTask: (id) => tasksService.remove(id),
 
   getProgress: () => progressService.getMyProgress(),
-  listAchievements: () => achievementsService.list(),
+  listAchievements: (limit, offset) => achievementsService.list(limit, offset),
 }

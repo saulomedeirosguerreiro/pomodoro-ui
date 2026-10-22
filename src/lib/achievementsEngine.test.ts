@@ -105,20 +105,23 @@ describe('streak UTC (conquista) vs. streak local (progresso) divergindo perto d
   })
 })
 
-describe('ACHIEVEMENT_CATALOG — catálogo fixo com os 10 códigos esperados', () => {
-  it('tem exatamente os 10 códigos, na ordem documentada', () => {
+describe('ACHIEVEMENT_CATALOG — catálogo fixo com os 50 códigos esperados', () => {
+  it('tem exatamente os 50 códigos, na ordem documentada', () => {
     expect(ACHIEVEMENT_CATALOG.map((c) => c.code)).toEqual([
-      'primeira_semente',
-      'ciclo_completo',
-      'dia_fertil',
-      'constancia_3',
-      'constancia_7',
-      'constancia_30',
-      'primeira_colheita',
-      'cem_tomates',
-      'nivel_5',
-      'descanso_sabio',
+      'primeira_semente', 'constancia_1', 'nivel_2', 'primeira_colheita', 'descanso_1', 'pausa_longa_1',
+      'constancia_3', 'dia_produtivo_4', 'ciclo_completo', 'constancia_5', 'nivel_5', 'colheita_5',
+      'descanso_5', 'pausa_longa_5', 'constancia_7', 'dia_fertil', 'foco_10', 'nivel_10', 'colheita_10',
+      'descanso_sabio', 'pausa_longa_10', 'dia_lendario_12', 'constancia_14', 'nivel_20', 'foco_25',
+      'colheita_25', 'descanso_25', 'pausa_longa_25', 'constancia_30', 'nivel_30', 'nivel_40', 'foco_50',
+      'nivel_50', 'colheita_50', 'descanso_50', 'pausa_longa_50', 'constancia_60', 'constancia_90',
+      'cem_tomates', 'colheita_100', 'constancia_180', 'foco_250', 'colheita_250', 'constancia_365',
+      'foco_500', 'colheita_500', 'foco_1000', 'colheita_1000', 'foco_2500', 'foco_5000',
     ])
+  })
+
+  it('não tem códigos duplicados', () => {
+    const codes = ACHIEVEMENT_CATALOG.map((c) => c.code)
+    expect(new Set(codes).size).toBe(codes.length)
   })
 })
 

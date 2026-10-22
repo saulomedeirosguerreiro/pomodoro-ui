@@ -178,7 +178,7 @@ describe('localDataSource', () => {
       await dataSource.createSession(sessionPayload())
 
       const achievements = await dataSource.listAchievements()
-      const primeiraSemente = achievements.find((a) => a.code === 'primeira_semente')
+      const primeiraSemente = achievements.items.find((a) => a.code === 'primeira_semente')
       expect(primeiraSemente?.unlockedAt).not.toBeNull()
 
       const ledger = loadUnlockedLedger()
@@ -188,8 +188,8 @@ describe('localDataSource', () => {
     it('congela unlockedAt em leituras subsequentes (não recalcula a data a cada chamada)', async () => {
       await dataSource.createSession(sessionPayload())
 
-      const firstUnlockedAt = (await dataSource.listAchievements()).find((a) => a.code === 'primeira_semente')?.unlockedAt
-      const secondUnlockedAt = (await dataSource.listAchievements()).find((a) => a.code === 'primeira_semente')?.unlockedAt
+      const firstUnlockedAt = (await dataSource.listAchievements()).items.find((a) => a.code === 'primeira_semente')?.unlockedAt
+      const secondUnlockedAt = (await dataSource.listAchievements()).items.find((a) => a.code === 'primeira_semente')?.unlockedAt
 
       expect(secondUnlockedAt).toBe(firstUnlockedAt)
     })
