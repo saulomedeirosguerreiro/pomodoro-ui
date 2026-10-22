@@ -51,40 +51,6 @@ export function ConquistasPage() {
       {error && <p className="text-style-body-sm text-danger">{error}</p>}
 
       <section className={CARD_CLASSES}>
-        <h2 className="text-style-headline-sm">{t('page.unlockedTitle')}</h2>
-        {achievements === null ? (
-          <ul className="flex list-none flex-col gap-2 m-0 p-0" role="status" aria-live="polite" aria-busy="true">
-            <span className="sr-only">{t('page.loading')}</span>
-            {Array.from({ length: 2 }, (_, index) => (
-              <AchievementRowSkeleton key={index} />
-            ))}
-          </ul>
-        ) : unlocked.length === 0 ? (
-          <p className="text-style-body-sm text-text-muted">{t('page.unlockedEmpty')}</p>
-        ) : (
-          <ul className="flex list-none flex-col gap-2 m-0 p-0">
-            {unlocked.map((achievement) => (
-              <li
-                key={achievement.code}
-                className="flex gap-2 rounded-lg border border-tertiary bg-bg-subtle p-2"
-              >
-                <span className="shrink-0 text-[28px]" aria-hidden="true">
-                  🏆
-                </span>
-                <div className="flex flex-1 flex-col gap-0.5">
-                  <p className="text-style-label-md text-text-h">{t(`catalog.${achievement.code}.name`)}</p>
-                  <p className="text-style-body-sm text-text-muted">{t(`catalog.${achievement.code}.description`)}</p>
-                  <p className="text-style-label-sm text-secondary-dark">
-                    {t('page.unlockedAt', { date: formatDateTime(achievement.unlockedAt!) })}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section className={CARD_CLASSES}>
         <h2 className="text-style-headline-sm">{t('page.lockedTitle')}</h2>
         {achievements === null ? (
           <ul className="flex list-none flex-col gap-2 m-0 p-0" role="status" aria-live="polite" aria-busy="true">
@@ -113,6 +79,40 @@ export function ConquistasPage() {
                       </p>
                     </>
                   )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className={CARD_CLASSES}>
+        <h2 className="text-style-headline-sm">{t('page.unlockedTitle')}</h2>
+        {achievements === null ? (
+          <ul className="flex list-none flex-col gap-2 m-0 p-0" role="status" aria-live="polite" aria-busy="true">
+            <span className="sr-only">{t('page.loading')}</span>
+            {Array.from({ length: 2 }, (_, index) => (
+              <AchievementRowSkeleton key={index} />
+            ))}
+          </ul>
+        ) : unlocked.length === 0 ? (
+          <p className="text-style-body-sm text-text-muted">{t('page.unlockedEmpty')}</p>
+        ) : (
+          <ul className="flex list-none flex-col gap-2 m-0 p-0">
+            {unlocked.map((achievement) => (
+              <li
+                key={achievement.code}
+                className="flex gap-2 rounded-lg border border-tertiary bg-bg-subtle p-2"
+              >
+                <span className="shrink-0 text-[28px]" aria-hidden="true">
+                  🏆
+                </span>
+                <div className="flex flex-1 flex-col gap-0.5">
+                  <p className="text-style-label-md text-text-h">{t(`catalog.${achievement.code}.name`)}</p>
+                  <p className="text-style-body-sm text-text-muted">{t(`catalog.${achievement.code}.description`)}</p>
+                  <p className="text-style-label-sm text-secondary-dark">
+                    {t('page.unlockedAt', { date: formatDateTime(achievement.unlockedAt!) })}
+                  </p>
                 </div>
               </li>
             ))}
