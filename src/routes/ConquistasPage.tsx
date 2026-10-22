@@ -84,6 +84,11 @@ export function ConquistasPage() {
             ))}
           </ul>
         )}
+        {hasMore && !error && (
+          <Button variant="ghost" fullWidth onClick={handleLoadMore}>
+            {t('page.loadMore')}
+          </Button>
+        )}
       </section>
 
       <section className={CARD_CLASSES}>
@@ -119,12 +124,6 @@ export function ConquistasPage() {
           </ul>
         )}
       </section>
-
-      {hasMore && !error && (
-        <Button variant="ghost" fullWidth onClick={handleLoadMore}>
-          {t('page.loadMore')}
-        </Button>
-      )}
     </div>
   )
 }
