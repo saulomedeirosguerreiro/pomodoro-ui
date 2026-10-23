@@ -241,7 +241,10 @@ export function AppShell() {
                 className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-border bg-surface"
                 aria-label={t('menu.close')}
               >
-                ✕
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
+                  <line x1="5" y1="5" x2="19" y2="19" />
+                  <line x1="19" y1="5" x2="5" y2="19" />
+                </svg>
               </button>
             </div>
 
@@ -267,10 +270,14 @@ export function AppShell() {
             <button
               type="button"
               onClick={() => setIsMenuOpen(true)}
-              className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border bg-surface text-[18px] lg:hidden"
+              className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border bg-surface lg:hidden"
               aria-label={t('menu.open')}
             >
-              ☰
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
             </button>
 
             <div className="flex min-w-0 flex-col gap-1">
