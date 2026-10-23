@@ -122,13 +122,13 @@ describe('LofiPlayerBar', () => {
     const volumeIcon = screen.getByTitle('Volume')
 
     fireEvent.change(slider, { target: { value: '0' } })
-    expect(volumeIcon).toHaveTextContent('🔇')
+    expect(volumeIcon).toHaveAttribute('data-volume-level', 'muted')
 
     fireEvent.change(slider, { target: { value: '0.3' } })
-    expect(volumeIcon).toHaveTextContent('🔈')
+    expect(volumeIcon).toHaveAttribute('data-volume-level', 'low')
 
     fireEvent.change(slider, { target: { value: '0.8' } })
-    expect(volumeIcon).toHaveTextContent('🔊')
+    expect(volumeIcon).toHaveAttribute('data-volume-level', 'high')
   })
 
   it('mostra o crédito do autor da faixa atual e atualiza ao trocar de faixa', async () => {

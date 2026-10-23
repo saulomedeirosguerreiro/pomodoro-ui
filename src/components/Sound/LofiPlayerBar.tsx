@@ -4,11 +4,34 @@ import { useLofiPlayer } from '../../context/LofiPlayerContext'
 import { formatMMSS } from '../../lib/timerLogic'
 import { LOFI_TRACKS } from '../../lib/soundCatalog'
 
-/** Ícone de volume conforme o nível atual — deixa claro, só de olhar, o que o controle ao lado faz. */
-function volumeIcon(value: number): string {
-  if (value <= 0) return '🔇'
-  if (value < 0.5) return '🔈'
-  return '🔊'
+/** Nível do volume em texto — só pra expor um atributo testável no ícone (ver `data-volume-level`
+    abaixo), já que o SVG não tem mais um texto/emoji simples pra asserção de teste verificar. */
+function volumeLevel(value: number): 'muted' | 'low' | 'high' {
+  if (value <= 0) return 'muted'
+  if (value < 0.5) return 'low'
+  return 'high'
+}
+
+/** Ícone de volume conforme o nível atual (SVG, não emoji — mesmo motivo do `LoopIcon`/ícones de
+    transporte abaixo: herda `currentColor` e mantém o estilo monocromático dos outros ícones do
+    app, em vez de destoar com um emoji colorido do lado). */
+function VolumeIcon({ value, className }: { value: number; className?: string }) {
+  if (value <= 0) {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <path d="M11 5 6 9H3v6h3l5 4V5z" />
+        <line x1="16" y1="9" x2="22" y2="15" />
+        <line x1="22" y1="9" x2="16" y2="15" />
+      </svg>
+    )
+  }
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M11 5 6 9H3v6h3l5 4V5z" />
+      {value >= 0.5 && <path d="M18.5 8.5a6 6 0 0 1 0 7" />}
+      <path d="M15.5 10.5a2.5 2.5 0 0 1 0 3" />
+    </svg>
+  )
 }
 
 /** Ícone de repetição em SVG (não emoji), pra herdar `currentColor` e ficar no mesmo estilo visual
@@ -210,8 +233,8 @@ export function LofiPlayerBar() {
 
         {/* Direita: volume — só desktop, igual ao mini player mobile do Spotify (que esconde o volume). */}
         <div className="hidden shrink-0 items-center gap-2 lg:flex lg:w-[160px] lg:justify-end">
-          <span aria-hidden="true" title={t('volume')}>
-            {volumeIcon(volume)}
+          <span className="text-text-h" title={t('volume')} data-volume-level={volumeLevel(volume)}>
+            <VolumeIcon value={volume} className="h-4 w-4" />
           </span>
           <input
             type="range"
