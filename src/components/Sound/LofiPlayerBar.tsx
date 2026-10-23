@@ -12,7 +12,7 @@ function volumeIcon(value: number): string {
 }
 
 /** Ícone de repetição em SVG (não emoji), pra herdar `currentColor` e ficar no mesmo estilo visual
-    dos outros ícones do app (ex.: `ThemeToggle`) em vez de destoar dos glifos de transporte. */
+    dos outros ícones do app (ex.: `ThemeToggle`, `SkipBackIcon`/`PlayIcon`/etc. abaixo). */
 function LoopIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -29,6 +29,44 @@ function LoopIcon({ className }: { className?: string }) {
       <path d="M3 11V9a4 4 0 0 1 4-4h14" />
       <path d="M7 23l-4-4 4-4" />
       <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+    </svg>
+  )
+}
+
+/** Mesmo motivo do `LoopIcon` acima: os glifos de transporte (⏮ ⏸ ▶ ⏭) dependem de fallback de
+    fonte, que varia de tamanho/alinhamento entre navegadores (ok no Chrome devtools, pequeno e
+    desalinhado no Safari iOS real) — por isso viram SVG também, em vez de texto. */
+function SkipBackIcon({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <rect x="5" y="5" width="2" height="14" rx="1" />
+      <path d="M19 5.5v13a1 1 0 0 1-1.5.87l-10-6.5a1 1 0 0 1 0-1.74l10-6.5A1 1 0 0 1 19 5.5z" />
+    </svg>
+  )
+}
+
+function SkipForwardIcon({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <rect x="17" y="5" width="2" height="14" rx="1" />
+      <path d="M5 5.5v13a1 1 0 0 0 1.5.87l10-6.5a1 1 0 0 0 0-1.74l-10-6.5A1 1 0 0 0 5 5.5z" />
+    </svg>
+  )
+}
+
+function PlayIcon({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M7 5.5v13a1 1 0 0 0 1.5.87l10-6.5a1 1 0 0 0 0-1.74l-10-6.5A1 1 0 0 0 7 5.5z" />
+    </svg>
+  )
+}
+
+function PauseIcon({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <rect x="6" y="5" width="4" height="14" rx="1" />
+      <rect x="14" y="5" width="4" height="14" rx="1" />
     </svg>
   )
 }
@@ -125,7 +163,7 @@ export function LofiPlayerBar() {
               onClick={handlePrevious}
               aria-label={t('previous')}
             >
-              ⏮
+              <SkipBackIcon className="h-4 w-4" />
             </button>
             <button
               type="button"
@@ -133,7 +171,7 @@ export function LofiPlayerBar() {
               onClick={handlePlayPause}
               aria-label={isPlaying ? t('pause') : t('play')}
             >
-              {isPlaying ? '⏸' : '▶'}
+              {isPlaying ? <PauseIcon className="h-4 w-4" /> : <PlayIcon className="h-4 w-4" />}
             </button>
             <button
               type="button"
@@ -141,7 +179,7 @@ export function LofiPlayerBar() {
               onClick={handleNext}
               aria-label={t('next')}
             >
-              ⏭
+              <SkipForwardIcon className="h-4 w-4" />
             </button>
             <button
               type="button"

@@ -41,23 +41,23 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       aria-label={label}
       title={label}
-      className={`relative inline-flex h-8 w-14 shrink-0 cursor-pointer items-center rounded-full border p-1 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-border ${
+      className={`relative inline-flex h-9 w-16 shrink-0 cursor-pointer items-center rounded-full border p-1 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-border ${
         isDark ? 'border-primary-border bg-primary-bg' : 'border-border bg-bg-subtle'
       }`}
     >
       <SunIcon
-        className={`pointer-events-none absolute left-1.5 h-4 w-4 ${isDark ? 'text-text-muted' : 'text-primary-dark'}`}
+        className={`pointer-events-none absolute left-2 h-5 w-5 ${isDark ? 'text-text-muted' : 'text-primary-dark'}`}
       />
       <MoonIcon
-        className={`pointer-events-none absolute right-1.5 h-4 w-4 ${isDark ? 'text-primary-dark' : 'text-text-muted'}`}
+        className={`pointer-events-none absolute right-2 h-5 w-5 ${isDark ? 'text-primary-dark' : 'text-text-muted'}`}
       />
       <span
         aria-hidden="true"
-        className={`relative inline-flex h-5 w-5 items-center justify-center rounded-full border border-border bg-surface text-primary shadow-card transition-transform duration-200 ${
-          isDark ? 'translate-x-[26px]' : 'translate-x-0'
+        className={`relative inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-surface text-primary shadow-card transition-transform duration-200 ${
+          isDark ? 'translate-x-[30px]' : 'translate-x-0'
         }`}
       >
-        {isDark ? <MoonIcon className="h-3 w-3" /> : <SunIcon className="h-3 w-3" />}
+        {isDark ? <MoonIcon className="h-4 w-4" /> : <SunIcon className="h-4 w-4" />}
       </span>
     </button>
   )

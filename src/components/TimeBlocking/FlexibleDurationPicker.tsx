@@ -24,7 +24,7 @@ const RADIUS = 100
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 const STEP_MINUTES = 5
 const ICON_BUTTON_CLASSES =
-  'flex h-11 w-11 shrink-0 max-[480px]:h-9 max-[480px]:w-9 cursor-pointer items-center justify-center rounded-full border-2 border-border bg-surface text-[20px] text-text-h transition-[background-color,transform] duration-150 ease-out hover:bg-bg-subtle active:scale-95'
+  'flex h-11 w-11 shrink-0 max-[480px]:h-9 max-[480px]:w-9 cursor-pointer items-center justify-center rounded-full border-2 border-border bg-surface text-text-h transition-[background-color,transform] duration-150 ease-out hover:bg-bg-subtle active:scale-95'
 
 const RING_CLASSES: Record<FlexibleDurationContext, { stroke: string; handle: string }> = {
   foco: { stroke: 'var(--color-primary)', handle: 'bg-primary' },
@@ -163,7 +163,9 @@ export function FlexibleDurationPicker({
           aria-label={t('durationPicker.decrease', { minuteCount: t('minuteCount', { count: STEP_MINUTES }) })}
           onClick={() => onChooseCustom(clamp(draftMinutes - STEP_MINUTES, minMinutes, maxMinutes))}
         >
-          −
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
         </button>
 
         <div
@@ -228,7 +230,10 @@ export function FlexibleDurationPicker({
           aria-label={t('durationPicker.increase', { minuteCount: t('minuteCount', { count: STEP_MINUTES }) })}
           onClick={() => onChooseCustom(clamp(draftMinutes + STEP_MINUTES, minMinutes, maxMinutes))}
         >
-          +
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
         </button>
       </div>
 

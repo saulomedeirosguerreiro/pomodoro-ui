@@ -63,13 +63,16 @@ export function EventsBell() {
     <>
       <button
         type="button"
-        className="relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-border bg-surface text-base"
+        className="relative inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-border bg-surface"
         onClick={handleToggle}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
         aria-label={t('notifications.bellLabel')}
       >
-        <span aria-hidden="true">🔔</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+        </svg>
         {unseenCount > 0 && (
           <span className="absolute -right-1 -top-1 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary-dark px-1 text-style-label-sm text-on-primary">
             {unseenCount}
@@ -101,7 +104,10 @@ export function EventsBell() {
                   className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-border bg-surface"
                   aria-label={t('notifications.close')}
                 >
-                  ✕
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
+                    <line x1="5" y1="5" x2="19" y2="19" />
+                    <line x1="19" y1="5" x2="5" y2="19" />
+                  </svg>
                 </button>
               </div>
 

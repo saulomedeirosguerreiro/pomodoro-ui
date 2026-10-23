@@ -116,7 +116,10 @@ export function ClassicTimerView() {
               className="absolute right-2 top-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-danger"
               aria-label={t('dismissWarning')}
             >
-              ✕
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
+                <line x1="5" y1="5" x2="19" y2="19" />
+                <line x1="19" y1="5" x2="5" y2="19" />
+              </svg>
             </button>
             <p>{timer.registrationError}</p>
             {timer.canRetryRegistration && (
