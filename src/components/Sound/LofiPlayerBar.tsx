@@ -5,7 +5,7 @@ import { formatMMSS } from '../../lib/timerLogic'
 import { LOFI_TRACKS } from '../../lib/soundCatalog'
 
 /** Nível do volume em texto — só pra expor um atributo testável no ícone (ver `data-volume-level`
-    abaixo), já que o SVG não tem mais um texto/emoji simples pra asserção de teste verificar. */
+    abaixo). */
 function volumeLevel(value: number): 'muted' | 'low' | 'high' {
   if (value <= 0) return 'muted'
   if (value < 0.5) return 'low'
