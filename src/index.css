@@ -55,6 +55,17 @@
     font: inherit;
   }
 
+  /* iOS Safari dá zoom automático ao focar campos com font-size computado < 16px.
+     Forçamos 16px só no mobile para evitar o zoom indevido, sem alterar a
+     tipografia em telas maiores e sem desabilitar o zoom manual (pinch-to-zoom). */
+  @media (max-width: 767px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+
   a {
     color: var(--color-primary);
   }
