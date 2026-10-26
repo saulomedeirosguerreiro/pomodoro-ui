@@ -6,7 +6,7 @@
     "budai-app": {
       "label": "App",
       "title": "BudAI",
-      "description": "Organize suas finanças pessoais sem esforço",
+      "description": "Organize suas finanças de forma inteligente",
       "cta": "Conhecer o BudAI"
     },
     "cla-da-grana": {
@@ -18,7 +18,7 @@
     "budai-instagram": {
       "label": "Instagram",
       "title": "BudAI no Instagram",
-      "description": "Dicas de finanças no feed e nos stories",
+      "description": "Acompanhe novidades, tutoriais e ofertas do BudAI",
       "cta": "Seguir no Instagram"
     }
   }
